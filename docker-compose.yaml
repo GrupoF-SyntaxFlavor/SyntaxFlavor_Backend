@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  syntaxflavor_db:
+    image: postgres:latest
+    container_name: syntaxflavor_db
+    ports:
+      - '5432:5432'
+    restart: always
+    env_file:
+      - ./env/postgres.env
+    
