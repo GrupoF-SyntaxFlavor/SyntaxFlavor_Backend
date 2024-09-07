@@ -9,4 +9,17 @@ services:
     restart: always
     env_file:
       - ./env/postgres.env
+
+  syntaxflavor_backend:
+    build: .
+    container_name: syntaxflavor_backend
+    ports:
+      - '8000:8000'
+    depends_on:
+      - syntaxflavor_db
+    restart: always
+    env_file:
+      - ./env/backend_docker.env
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     
