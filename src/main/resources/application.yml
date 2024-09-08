@@ -1,0 +1,42 @@
+spring:
+    application:
+        name: syntax_flavor_backend
+    config:
+        activate:
+            on-profile: default
+    datasource:
+        url: jdbc:postgresql://localhost:5432/syntaxflavor
+        username: postgres
+        password: 123456 # TODO: Change this password set from .env file
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+server:
+    port: 8080
+
+
+---
+
+spring:
+    application:
+        name: syntax_flavor_backend
+    config:
+        activate:
+            on-profile: docker
+    datasource:
+        url: jdbc:postgresql://syntaxflavor_db:5432/syntaxflavor
+        username: postgres
+        password: 123456 # TODO: Change this password set from .env file
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: false
+        
+server:
+    port: 8080
+
+

@@ -18,8 +18,6 @@ services:
     depends_on:
       - syntaxflavor_db
     restart: always
-    env_file:
-      - ./env/backend_docker.env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     
