@@ -45,3 +45,9 @@ Los números de código deben seguir la siguiente estructura:
 | 003   | `DELETE`              | Los datos se han eliminado correctamente     |
 | 00X   | `ANY`                 | La operación X se ha realizado correctamente |
 | 6XX   | `ANY`                 | Ha ocurrido un error en la operación XX      |
+
+**Nota:** El número de error corresponde a su relación con la operacion.
+   - Ejemplo:
+        Error al escribir en DB: **601**
+
+
