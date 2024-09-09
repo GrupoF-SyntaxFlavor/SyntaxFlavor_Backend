@@ -1,5 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.menu.bl;
 
+import java.util.Set;
 import java.util.List;
 
 import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
@@ -16,7 +17,7 @@ public class MenuBL {
     @Autowired
     private MenuItemRepository menuItemRepository;
 
-    public List<MenuItem> getMenuItemsFromIds(List<Integer> menuItemsIdList) {
+    public List<MenuItem> getMenuItemsFromIds(Set<Integer> menuItemsIdList) {
         LOGGER.info("Getting menu items from ids: {}", menuItemsIdList);
         List<MenuItem> menuItems = menuItemRepository.findAllById(menuItemsIdList);
         return menuItems;
