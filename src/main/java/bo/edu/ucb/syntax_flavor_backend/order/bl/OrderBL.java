@@ -11,6 +11,7 @@ import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
+import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 
 public class OrderBL {
     

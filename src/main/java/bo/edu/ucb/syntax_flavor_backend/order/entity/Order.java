@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
-import bo.edu.ucb.syntax_flavor_backend.user.entity.Customers;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,7 +64,7 @@ public class Order implements Serializable {
     private Collection<Bill> billsCollection;
     @JoinColumn(name = "custom", referencedColumnName = "id")
     @ManyToOne
-    private Customers custom;
+    private Customer custom;
 
     public Order() {
     }
@@ -129,11 +129,11 @@ public class Order implements Serializable {
         this.billsCollection = billsCollection;
     }
 
-    public Customers getCustom() {
+    public Customer getCustom() {
         return custom;
     }
 
-    public void setCustom(Customers custom) {
+    public void setCustom(Customer custom) {
         this.custom = custom;
     }
 
