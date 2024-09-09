@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bills;
+import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customers;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -39,7 +39,7 @@ import jakarta.persistence.TemporalType;
     @NamedQuery(name = "Orders.findByStatus", query = "SELECT o FROM Orders o WHERE o.status = :status"),
     @NamedQuery(name = "Orders.findByCreatedAt", query = "SELECT o FROM Orders o WHERE o.createdAt = :createdAt"),
     @NamedQuery(name = "Orders.findByUpdatedAt", query = "SELECT o FROM Orders o WHERE o.updatedAt = :updatedAt")})
-public class Orders implements Serializable {
+public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,17 +59,17 @@ public class Orders implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @OneToMany(mappedBy = "orderId")
-    private Collection<OrderItems> OrderItemsCollection;
+    private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")
-    private Collection<Bills> billsCollection;
+    private Collection<Bill> billsCollection;
     @JoinColumn(name = "custom", referencedColumnName = "id")
     @ManyToOne
     private Customers custom;
 
-    public Orders() {
+    public Order() {
     }
 
-    public Orders(Integer id) {
+    public Order(Integer id) {
         this.id = id;
     }
 
@@ -113,19 +113,19 @@ public class Orders implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<OrderItems> getOrderItemsCollection() {
+    public Collection<OrderItem> getOrderItemsCollection() {
         return OrderItemsCollection;
     }
 
-    public void setOrderItemsCollection(Collection<OrderItems> OrderItemsCollection) {
+    public void setOrderItemsCollection(Collection<OrderItem> OrderItemsCollection) {
         this.OrderItemsCollection = OrderItemsCollection;
     }
 
-    public Collection<Bills> getBillsCollection() {
+    public Collection<Bill> getBillsCollection() {
         return billsCollection;
     }
 
-    public void setBillsCollection(Collection<Bills> billsCollection) {
+    public void setBillsCollection(Collection<Bill> billsCollection) {
         this.billsCollection = billsCollection;
     }
 
@@ -147,10 +147,10 @@ public class Orders implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Orders)) {
+        if (!(object instanceof Order)) {
             return false;
         }
-        Orders other = (Orders) object;
+        Order other = (Order) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

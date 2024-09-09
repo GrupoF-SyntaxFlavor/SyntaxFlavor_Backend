@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItems;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +39,7 @@ import jakarta.persistence.TemporalType;
     @NamedQuery(name = "MenuItems.findByPrice", query = "SELECT m FROM MenuItems m WHERE m.price = :price"),
     @NamedQuery(name = "MenuItems.findByCreatedAt", query = "SELECT m FROM MenuItems m WHERE m.createdAt = :createdAt"),
     @NamedQuery(name = "MenuItems.findByUpdatedAt", query = "SELECT m FROM MenuItems m WHERE m.updatedAt = :updatedAt")})
-public class MenuItems implements Serializable {
+public class MenuItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,16 +63,16 @@ public class MenuItems implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @OneToMany(mappedBy = "menuItemId")
-    private Collection<OrderItems> OrderItemsCollection;
+    private Collection<OrderItem> OrderItemsCollection;
 
-    public MenuItems() {
+    public MenuItem() {
     }
 
-    public MenuItems(Integer id) {
+    public MenuItem(Integer id) {
         this.id = id;
     }
 
-    public MenuItems(Integer id, String name, BigDecimal price) {
+    public MenuItem(Integer id, String name, BigDecimal price) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -126,11 +126,11 @@ public class MenuItems implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<OrderItems> getOrderItemsCollection() {
+    public Collection<OrderItem> getOrderItemsCollection() {
         return OrderItemsCollection;
     }
 
-    public void setOrderItemsCollection(Collection<OrderItems> OrderItemsCollection) {
+    public void setOrderItemsCollection(Collection<OrderItem> OrderItemsCollection) {
         this.OrderItemsCollection = OrderItemsCollection;
     }
 
@@ -144,10 +144,10 @@ public class MenuItems implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof MenuItems)) {
+        if (!(object instanceof MenuItem)) {
             return false;
         }
-        MenuItems other = (MenuItems) object;
+        MenuItem other = (MenuItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

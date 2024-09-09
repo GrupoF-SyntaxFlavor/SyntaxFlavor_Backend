@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.Orders;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,7 +55,7 @@ public class Customers implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @OneToMany(mappedBy = "custom")
-    private Collection<Orders> ordersCollection;
+    private Collection<Order> ordersCollection;
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     @ManyToOne
     private Users usersId;
@@ -99,11 +99,11 @@ public class Customers implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<Orders> getOrdersCollection() {
+    public Collection<Order> getOrdersCollection() {
         return ordersCollection;
     }
 
-    public void setOrdersCollection(Collection<Orders> ordersCollection) {
+    public void setOrdersCollection(Collection<Order> ordersCollection) {
         this.ordersCollection = ordersCollection;
     }
 

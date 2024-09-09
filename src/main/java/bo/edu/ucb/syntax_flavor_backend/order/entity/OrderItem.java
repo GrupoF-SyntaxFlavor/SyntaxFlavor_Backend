@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItems;
+import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +38,7 @@ import jakarta.persistence.TemporalType;
     @NamedQuery(name = "OrderItems.findByPrice", query = "SELECT o FROM OrderItems o WHERE o.price = :price"),
     @NamedQuery(name = "OrderItems.findByCreatedAt", query = "SELECT o FROM OrderItems o WHERE o.createdAt = :createdAt"),
     @NamedQuery(name = "OrderItems.findByUpdatedAt", query = "SELECT o FROM OrderItems o WHERE o.updatedAt = :updatedAt")})
-public class OrderItems implements Serializable {
+public class OrderItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -61,19 +61,19 @@ public class OrderItems implements Serializable {
     private Date updatedAt;
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     @ManyToOne
-    private MenuItems menuItemId;
+    private MenuItem menuItemId;
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     @ManyToOne
-    private Orders orderId;
+    private Order orderId;
 
-    public OrderItems() {
+    public OrderItem() {
     }
 
-    public OrderItems(Integer id) {
+    public OrderItem(Integer id) {
         this.id = id;
     }
 
-    public OrderItems(Integer id, int quantity, BigDecimal price) {
+    public OrderItem(Integer id, int quantity, BigDecimal price) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
@@ -119,19 +119,19 @@ public class OrderItems implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public MenuItems getMenuItemId() {
+    public MenuItem getMenuItemId() {
         return menuItemId;
     }
 
-    public void setMenuItemId(MenuItems menuItemId) {
+    public void setMenuItemId(MenuItem menuItemId) {
         this.menuItemId = menuItemId;
     }
 
-    public Orders getOrderId() {
+    public Order getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Orders orderId) {
+    public void setOrderId(Order orderId) {
         this.orderId = orderId;
     }
 
@@ -145,10 +145,10 @@ public class OrderItems implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof OrderItems)) {
+        if (!(object instanceof OrderItem)) {
             return false;
         }
-        OrderItems other = (OrderItems) object;
+        OrderItem other = (OrderItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

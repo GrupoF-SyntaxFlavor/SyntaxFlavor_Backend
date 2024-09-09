@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.Orders;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +38,7 @@ import jakarta.persistence.TemporalType;
     @NamedQuery(name = "Bills.findByTotalCost", query = "SELECT b FROM Bills b WHERE b.totalCost = :totalCost"),
     @NamedQuery(name = "Bills.findByCreatedAt", query = "SELECT b FROM Bills b WHERE b.createdAt = :createdAt"),
     @NamedQuery(name = "Bills.findByUpdatedAt", query = "SELECT b FROM Bills b WHERE b.updatedAt = :updatedAt")})
-public class Bills implements Serializable {
+public class Bill implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -60,16 +60,16 @@ public class Bills implements Serializable {
     private Date updatedAt;
     @JoinColumn(name = "orders_id", referencedColumnName = "id")
     @ManyToOne
-    private Orders ordersId;
+    private Order ordersId;
 
-    public Bills() {
+    public Bill() {
     }
 
-    public Bills(Integer id) {
+    public Bill(Integer id) {
         this.id = id;
     }
 
-    public Bills(Integer id, BigDecimal totalCost) {
+    public Bill(Integer id, BigDecimal totalCost) {
         this.id = id;
         this.totalCost = totalCost;
     }
@@ -114,11 +114,11 @@ public class Bills implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Orders getOrdersId() {
+    public Order getOrdersId() {
         return ordersId;
     }
 
-    public void setOrdersId(Orders ordersId) {
+    public void setOrdersId(Order ordersId) {
         this.ordersId = ordersId;
     }
 
@@ -132,10 +132,10 @@ public class Bills implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Bills)) {
+        if (!(object instanceof Bill)) {
             return false;
         }
-        Bills other = (Bills) object;
+        Bill other = (Bill) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
