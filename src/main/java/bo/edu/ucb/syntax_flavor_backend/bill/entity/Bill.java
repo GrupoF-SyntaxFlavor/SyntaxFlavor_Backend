@@ -32,12 +32,12 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "bills")
 @NamedQueries({
-    @NamedQuery(name = "Bills.findAll", query = "SELECT b FROM Bills b"),
-    @NamedQuery(name = "Bills.findById", query = "SELECT b FROM Bills b WHERE b.id = :id"),
-    @NamedQuery(name = "Bills.findByNit", query = "SELECT b FROM Bills b WHERE b.nit = :nit"),
-    @NamedQuery(name = "Bills.findByTotalCost", query = "SELECT b FROM Bills b WHERE b.totalCost = :totalCost"),
-    @NamedQuery(name = "Bills.findByCreatedAt", query = "SELECT b FROM Bills b WHERE b.createdAt = :createdAt"),
-    @NamedQuery(name = "Bills.findByUpdatedAt", query = "SELECT b FROM Bills b WHERE b.updatedAt = :updatedAt")})
+    @NamedQuery(name = "Bill.findAll", query = "SELECT b FROM Bill b"),
+    @NamedQuery(name = "Bill.findById", query = "SELECT b FROM Bill b WHERE b.id = :id"),
+    @NamedQuery(name = "Bill.findByNit", query = "SELECT b FROM Bill b WHERE b.nit = :nit"),
+    @NamedQuery(name = "Bill.findByTotalCost", query = "SELECT b FROM Bill b WHERE b.totalCost = :totalCost"),
+    @NamedQuery(name = "Bill.findByCreatedAt", query = "SELECT b FROM Bill b WHERE b.createdAt = :createdAt"),
+    @NamedQuery(name = "Bill.findByUpdatedAt", query = "SELECT b FROM Bill b WHERE b.updatedAt = :updatedAt")})
 public class Bill implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -144,7 +144,7 @@ public class Bill implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Bills[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Bill[ id=" + id + " ]";
     }
     
 }

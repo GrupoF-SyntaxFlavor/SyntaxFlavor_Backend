@@ -33,11 +33,11 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "customers")
 @NamedQueries({
-    @NamedQuery(name = "Customers.findAll", query = "SELECT c FROM Customers c"),
-    @NamedQuery(name = "Customers.findById", query = "SELECT c FROM Customers c WHERE c.id = :id"),
-    @NamedQuery(name = "Customers.findByNit", query = "SELECT c FROM Customers c WHERE c.nit = :nit"),
-    @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt"),
-    @NamedQuery(name = "Customers.findByUpdatedAt", query = "SELECT c FROM Customers c WHERE c.updatedAt = :updatedAt")})
+    @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c"),
+    @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id"),
+    @NamedQuery(name = "Customer.findByNit", query = "SELECT c FROM Customer c WHERE c.nit = :nit"),
+    @NamedQuery(name = "Customer.findByCreatedAt", query = "SELECT c FROM Customer c WHERE c.createdAt = :createdAt"),
+    @NamedQuery(name = "Customer.findByUpdatedAt", query = "SELECT c FROM Customer c WHERE c.updatedAt = :updatedAt")})
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -137,7 +137,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Customers[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Customer[ id=" + id + " ]";
     }
     
 }

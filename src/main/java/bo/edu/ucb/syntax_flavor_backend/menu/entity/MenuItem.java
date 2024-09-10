@@ -32,13 +32,13 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "MenuItems")
 @NamedQueries({
-    @NamedQuery(name = "MenuItems.findAll", query = "SELECT m FROM MenuItems m"),
-    @NamedQuery(name = "MenuItems.findById", query = "SELECT m FROM MenuItems m WHERE m.id = :id"),
-    @NamedQuery(name = "MenuItems.findByName", query = "SELECT m FROM MenuItems m WHERE m.name = :name"),
-    @NamedQuery(name = "MenuItems.findByDescription", query = "SELECT m FROM MenuItems m WHERE m.description = :description"),
-    @NamedQuery(name = "MenuItems.findByPrice", query = "SELECT m FROM MenuItems m WHERE m.price = :price"),
-    @NamedQuery(name = "MenuItems.findByCreatedAt", query = "SELECT m FROM MenuItems m WHERE m.createdAt = :createdAt"),
-    @NamedQuery(name = "MenuItems.findByUpdatedAt", query = "SELECT m FROM MenuItems m WHERE m.updatedAt = :updatedAt")})
+    @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
+    @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
+    @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
+    @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
+    @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
+    @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
+    @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt")})
 public class MenuItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -156,7 +156,7 @@ public class MenuItem implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.MenuItems[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.MenuItem[ id=" + id + " ]";
     }
     
 }
