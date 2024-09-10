@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
@@ -13,6 +14,7 @@ import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderItemRepository;
 
+@Component
 public class OrderItemBL {
 
     Logger LOGGER = LoggerFactory.getLogger(OrderItemBL.class);

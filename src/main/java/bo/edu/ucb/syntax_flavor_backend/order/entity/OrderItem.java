@@ -32,12 +32,12 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "OrderItems")
 @NamedQueries({
-    @NamedQuery(name = "OrderItems.findAll", query = "SELECT o FROM OrderItems o"),
-    @NamedQuery(name = "OrderItems.findById", query = "SELECT o FROM OrderItems o WHERE o.id = :id"),
-    @NamedQuery(name = "OrderItems.findByQuantity", query = "SELECT o FROM OrderItems o WHERE o.quantity = :quantity"),
-    @NamedQuery(name = "OrderItems.findByPrice", query = "SELECT o FROM OrderItems o WHERE o.price = :price"),
-    @NamedQuery(name = "OrderItems.findByCreatedAt", query = "SELECT o FROM OrderItems o WHERE o.createdAt = :createdAt"),
-    @NamedQuery(name = "OrderItems.findByUpdatedAt", query = "SELECT o FROM OrderItems o WHERE o.updatedAt = :updatedAt")})
+    @NamedQuery(name = "OrderItem.findAll", query = "SELECT o FROM OrderItem o"),
+    @NamedQuery(name = "OrderItem.findById", query = "SELECT o FROM OrderItem o WHERE o.id = :id"),
+    @NamedQuery(name = "OrderItem.findByQuantity", query = "SELECT o FROM OrderItem o WHERE o.quantity = :quantity"),
+    @NamedQuery(name = "OrderItem.findByPrice", query = "SELECT o FROM OrderItem o WHERE o.price = :price"),
+    @NamedQuery(name = "OrderItem.findByCreatedAt", query = "SELECT o FROM OrderItem o WHERE o.createdAt = :createdAt"),
+    @NamedQuery(name = "OrderItem.findByUpdatedAt", query = "SELECT o FROM OrderItem o WHERE o.updatedAt = :updatedAt")})
 public class OrderItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -157,7 +157,7 @@ public class OrderItem implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.OrderItems[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.OrderItem[ id=" + id + " ]";
     }
     
 }
