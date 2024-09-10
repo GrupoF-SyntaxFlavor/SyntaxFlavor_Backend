@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.order.bl.OrderBL;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
-import bo.edu.ucb.syntax_flavor_backend.web.SyntaxFlavorResponse;
+import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 
 @RestController
 @RequestMapping(value = "/api/v1/order")
