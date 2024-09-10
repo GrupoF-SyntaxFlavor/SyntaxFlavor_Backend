@@ -14,8 +14,13 @@ public class CustomerBL {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public Customer findCustomerById(Integer customerId) {
+    public Customer findCustomerById(Integer customerId) throws RuntimeException{
         LOGGER.info("Finding customer by id: {}", customerId);
-        return customerRepository.findById(customerId).orElse(null);
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if(customer == null) {
+            LOGGER.error("No customer with provided ID was found");
+            throw new RuntimeException("No customer with provided ID was found");
+        }
+        return customer;
     }
 }
