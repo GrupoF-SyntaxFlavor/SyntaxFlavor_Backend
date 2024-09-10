@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.web;
+package bo.edu.ucb.syntax_flavor_backend.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
