@@ -57,10 +57,10 @@ public class OrderBL {
         try {
             order.setCustom(customerBL.findCustomerById(cart.getCustomerId()));
             order.setStatus(STATUS_PENDING);
-            order.setOrderTimestamp(null); // TODO: set the current timestamp. Will need a change to DB
-        
+            order.setOrderTimestamp(new Date()); 
+
             orderRepository.save(order);
-            orderItemBL.createOrderItemFromCartItemIds(cart.getItemIdQuantityMap(), order); // TODO: test this
+            orderItemBL.createOrderItemFromCartItemIds(cart.getItemIdQuantityMap(), order);
         } catch (Exception e) {
             LOGGER.error("Error creating order from cart: {}", e);
             throw e;

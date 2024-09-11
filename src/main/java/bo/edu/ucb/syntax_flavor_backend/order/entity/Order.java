@@ -49,15 +49,15 @@ public class Order implements Serializable {
     private Integer id;
     @Column(name = "order_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date orderTimestamp;
+    private Date orderTimestamp = new Date();
     @Column(name = "status")
     private String status;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @OneToMany(mappedBy = "orderId")
     private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")

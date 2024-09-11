@@ -54,10 +54,10 @@ public class Bill implements Serializable {
     private BigDecimal totalCost;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @JoinColumn(name = "orders_id", referencedColumnName = "id")
     @ManyToOne
     private Order ordersId;

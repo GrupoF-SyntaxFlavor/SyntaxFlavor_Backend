@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,14 +45,14 @@ public class OrderAPI {
     }
 
     @PostMapping
-    public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(CartDTO cart) {
+    public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(@RequestBody CartDTO cart) {
         LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
         SyntaxFlavorResponse<CartDTO> sfr = new SyntaxFlavorResponse<>();
         try {
             orderBL.createOrderFromCart(cart);
             sfr.setResponseCode("ORD-001");
             sfr.setPayload(cart);
-            return ResponseEntity.ok(sfr);
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-601");
             sfr.setErrorMessage(e.getMessage());

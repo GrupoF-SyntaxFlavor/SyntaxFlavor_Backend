@@ -50,10 +50,10 @@ public class Customer implements Serializable {
     private String nit;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @OneToMany(mappedBy = "custom")
     private Collection<Order> ordersCollection;
     @JoinColumn(name = "users_id", referencedColumnName = "id")
