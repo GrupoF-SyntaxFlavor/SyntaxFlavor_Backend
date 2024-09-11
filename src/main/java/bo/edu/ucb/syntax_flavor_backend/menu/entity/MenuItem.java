@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.order.entity;
+package bo.edu.ucb.syntax_flavor_backend.menu.entity;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -8,19 +8,19 @@ package bo.edu.ucb.syntax_flavor_backend.order.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItems;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -30,15 +30,16 @@ import jakarta.persistence.TemporalType;
  * @author Usuario
  */
 @Entity
-@Table(name = "OrderItems")
+@Table(name = "MenuItems")
 @NamedQueries({
-    @NamedQuery(name = "OrderItems.findAll", query = "SELECT o FROM OrderItems o"),
-    @NamedQuery(name = "OrderItems.findById", query = "SELECT o FROM OrderItems o WHERE o.id = :id"),
-    @NamedQuery(name = "OrderItems.findByQuantity", query = "SELECT o FROM OrderItems o WHERE o.quantity = :quantity"),
-    @NamedQuery(name = "OrderItems.findByPrice", query = "SELECT o FROM OrderItems o WHERE o.price = :price"),
-    @NamedQuery(name = "OrderItems.findByCreatedAt", query = "SELECT o FROM OrderItems o WHERE o.createdAt = :createdAt"),
-    @NamedQuery(name = "OrderItems.findByUpdatedAt", query = "SELECT o FROM OrderItems o WHERE o.updatedAt = :updatedAt")})
-public class OrderItems implements Serializable {
+    @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
+    @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
+    @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
+    @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
+    @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
+    @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
+    @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt")})
+public class MenuItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,35 +48,33 @@ public class OrderItems implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "quantity")
-    private int quantity;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "description")
+    private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
-    @ManyToOne
-    private MenuItems menuItemId;
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    @ManyToOne
-    private Orders orderId;
+    private Date updatedAt = new Date();
+    @OneToMany(mappedBy = "menuItemId")
+    private Collection<OrderItem> OrderItemsCollection;
 
-    public OrderItems() {
+    public MenuItem() {
     }
 
-    public OrderItems(Integer id) {
+    public MenuItem(Integer id) {
         this.id = id;
     }
 
-    public OrderItems(Integer id, int quantity, BigDecimal price) {
+    public MenuItem(Integer id, String name, BigDecimal price) {
         this.id = id;
-        this.quantity = quantity;
+        this.name = name;
         this.price = price;
     }
 
@@ -87,12 +86,20 @@ public class OrderItems implements Serializable {
         this.id = id;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getName() {
+        return name;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public BigDecimal getPrice() {
@@ -119,20 +126,12 @@ public class OrderItems implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public MenuItems getMenuItemId() {
-        return menuItemId;
+    public Collection<OrderItem> getOrderItemsCollection() {
+        return OrderItemsCollection;
     }
 
-    public void setMenuItemId(MenuItems menuItemId) {
-        this.menuItemId = menuItemId;
-    }
-
-    public Orders getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Orders orderId) {
-        this.orderId = orderId;
+    public void setOrderItemsCollection(Collection<OrderItem> OrderItemsCollection) {
+        this.OrderItemsCollection = OrderItemsCollection;
     }
 
     @Override
@@ -145,10 +144,10 @@ public class OrderItems implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof OrderItems)) {
+        if (!(object instanceof MenuItem)) {
             return false;
         }
-        OrderItems other = (OrderItems) object;
+        MenuItem other = (MenuItem) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -157,7 +156,7 @@ public class OrderItems implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.OrderItems[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.MenuItem[ id=" + id + " ]";
     }
     
 }

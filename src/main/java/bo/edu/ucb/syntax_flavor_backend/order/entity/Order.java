@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bills;
-import bo.edu.ucb.syntax_flavor_backend.user.entity.Customers;
+import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,13 +33,13 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "orders")
 @NamedQueries({
-    @NamedQuery(name = "Orders.findAll", query = "SELECT o FROM Orders o"),
-    @NamedQuery(name = "Orders.findById", query = "SELECT o FROM Orders o WHERE o.id = :id"),
-    @NamedQuery(name = "Orders.findByOrderTimestamp", query = "SELECT o FROM Orders o WHERE o.orderTimestamp = :orderTimestamp"),
-    @NamedQuery(name = "Orders.findByStatus", query = "SELECT o FROM Orders o WHERE o.status = :status"),
-    @NamedQuery(name = "Orders.findByCreatedAt", query = "SELECT o FROM Orders o WHERE o.createdAt = :createdAt"),
-    @NamedQuery(name = "Orders.findByUpdatedAt", query = "SELECT o FROM Orders o WHERE o.updatedAt = :updatedAt")})
-public class Orders implements Serializable {
+    @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o"),
+    @NamedQuery(name = "Order.findById", query = "SELECT o FROM Order o WHERE o.id = :id"),
+    @NamedQuery(name = "Order.findByOrderTimestamp", query = "SELECT o FROM Order o WHERE o.orderTimestamp = :orderTimestamp"),
+    @NamedQuery(name = "Order.findByStatus", query = "SELECT o FROM Order o WHERE o.status = :status"),
+    @NamedQuery(name = "Order.findByCreatedAt", query = "SELECT o FROM Order o WHERE o.createdAt = :createdAt"),
+    @NamedQuery(name = "Order.findByUpdatedAt", query = "SELECT o FROM Order o WHERE o.updatedAt = :updatedAt")})
+public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -49,27 +49,27 @@ public class Orders implements Serializable {
     private Integer id;
     @Column(name = "order_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date orderTimestamp;
+    private Date orderTimestamp = new Date();
     @Column(name = "status")
     private String status;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @OneToMany(mappedBy = "orderId")
-    private Collection<OrderItems> OrderItemsCollection;
+    private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")
-    private Collection<Bills> billsCollection;
+    private Collection<Bill> billsCollection;
     @JoinColumn(name = "custom", referencedColumnName = "id")
     @ManyToOne
-    private Customers custom;
+    private Customer custom;
 
-    public Orders() {
+    public Order() {
     }
 
-    public Orders(Integer id) {
+    public Order(Integer id) {
         this.id = id;
     }
 
@@ -113,27 +113,27 @@ public class Orders implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<OrderItems> getOrderItemsCollection() {
+    public Collection<OrderItem> getOrderItemsCollection() {
         return OrderItemsCollection;
     }
 
-    public void setOrderItemsCollection(Collection<OrderItems> OrderItemsCollection) {
+    public void setOrderItemsCollection(Collection<OrderItem> OrderItemsCollection) {
         this.OrderItemsCollection = OrderItemsCollection;
     }
 
-    public Collection<Bills> getBillsCollection() {
+    public Collection<Bill> getBillsCollection() {
         return billsCollection;
     }
 
-    public void setBillsCollection(Collection<Bills> billsCollection) {
+    public void setBillsCollection(Collection<Bill> billsCollection) {
         this.billsCollection = billsCollection;
     }
 
-    public Customers getCustom() {
+    public Customer getCustom() {
         return custom;
     }
 
-    public void setCustom(Customers custom) {
+    public void setCustom(Customer custom) {
         this.custom = custom;
     }
 
@@ -147,10 +147,10 @@ public class Orders implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Orders)) {
+        if (!(object instanceof Order)) {
             return false;
         }
-        Orders other = (Orders) object;
+        Order other = (Order) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -159,7 +159,7 @@ public class Orders implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Orders[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Order[ id=" + id + " ]";
     }
     
 }

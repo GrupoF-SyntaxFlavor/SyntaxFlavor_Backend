@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.user.entity;
+package bo.edu.ucb.syntax_flavor_backend.bill.entity;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -7,10 +7,10 @@ package bo.edu.ucb.syntax_flavor_backend.user.entity;
 
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.math.BigDecimal;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.Orders;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -31,14 +30,15 @@ import jakarta.persistence.TemporalType;
  * @author Usuario
  */
 @Entity
-@Table(name = "customers")
+@Table(name = "bills")
 @NamedQueries({
-    @NamedQuery(name = "Customers.findAll", query = "SELECT c FROM Customers c"),
-    @NamedQuery(name = "Customers.findById", query = "SELECT c FROM Customers c WHERE c.id = :id"),
-    @NamedQuery(name = "Customers.findByNit", query = "SELECT c FROM Customers c WHERE c.nit = :nit"),
-    @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt"),
-    @NamedQuery(name = "Customers.findByUpdatedAt", query = "SELECT c FROM Customers c WHERE c.updatedAt = :updatedAt")})
-public class Customers implements Serializable {
+    @NamedQuery(name = "Bill.findAll", query = "SELECT b FROM Bill b"),
+    @NamedQuery(name = "Bill.findById", query = "SELECT b FROM Bill b WHERE b.id = :id"),
+    @NamedQuery(name = "Bill.findByNit", query = "SELECT b FROM Bill b WHERE b.nit = :nit"),
+    @NamedQuery(name = "Bill.findByTotalCost", query = "SELECT b FROM Bill b WHERE b.totalCost = :totalCost"),
+    @NamedQuery(name = "Bill.findByCreatedAt", query = "SELECT b FROM Bill b WHERE b.createdAt = :createdAt"),
+    @NamedQuery(name = "Bill.findByUpdatedAt", query = "SELECT b FROM Bill b WHERE b.updatedAt = :updatedAt")})
+public class Bill implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,23 +48,30 @@ public class Customers implements Serializable {
     private Integer id;
     @Column(name = "nit")
     private String nit;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @Column(name = "total_cost")
+    private BigDecimal totalCost;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    @OneToMany(mappedBy = "custom")
-    private Collection<Orders> ordersCollection;
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    private Date updatedAt = new Date();
+    @JoinColumn(name = "orders_id", referencedColumnName = "id")
     @ManyToOne
-    private Users usersId;
+    private Order ordersId;
 
-    public Customers() {
+    public Bill() {
     }
 
-    public Customers(Integer id) {
+    public Bill(Integer id) {
         this.id = id;
+    }
+
+    public Bill(Integer id, BigDecimal totalCost) {
+        this.id = id;
+        this.totalCost = totalCost;
     }
 
     public Integer getId() {
@@ -83,6 +90,14 @@ public class Customers implements Serializable {
         this.nit = nit;
     }
 
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        this.totalCost = totalCost;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -99,20 +114,12 @@ public class Customers implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<Orders> getOrdersCollection() {
-        return ordersCollection;
+    public Order getOrdersId() {
+        return ordersId;
     }
 
-    public void setOrdersCollection(Collection<Orders> ordersCollection) {
-        this.ordersCollection = ordersCollection;
-    }
-
-    public Users getUsersId() {
-        return usersId;
-    }
-
-    public void setUsersId(Users usersId) {
-        this.usersId = usersId;
+    public void setOrdersId(Order ordersId) {
+        this.ordersId = ordersId;
     }
 
     @Override
@@ -125,10 +132,10 @@ public class Customers implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Customers)) {
+        if (!(object instanceof Bill)) {
             return false;
         }
-        Customers other = (Customers) object;
+        Bill other = (Bill) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -137,8 +144,7 @@ public class Customers implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Customers[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Bill[ id=" + id + " ]";
     }
     
 }
-
