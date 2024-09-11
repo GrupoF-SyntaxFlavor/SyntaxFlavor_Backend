@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class OrderBL {
     private static final String STATUS_DELIVERED = "DELIVERED";
     private static final String STATUS_CANCELLED = "CANCELLED";
 
-    private static final int MAX_ORDERS_PER_PAGE = 9;
+    private static final int MAX_ORDERS_PER_PAGE = 3;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -38,15 +39,15 @@ public class OrderBL {
     @Autowired
     private CustomerBL customerBL;
 
-    public List<OrderDTO> listOrdersByDatetime(int pageNumber){
+    public Page<OrderDTO> listOrdersByDatetime(int pageNumber) {
         LOGGER.info("Listing orders by datetime");
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
-        List<Order> orders = orderRepository.findAllByOrderByOrderTimestampDesc(pageable);
-        if (orders == null) {
+        Page<Order> orderPage = orderRepository.findAllByOrderByOrderTimestampDesc(pageable);
+        if (orderPage == null || orderPage.isEmpty()) {
             LOGGER.error("Error listing orders by datetime");
             throw new RuntimeException("Error listing orders by datetime");
         }
-        return OrderDTO.fromEntityList(orders);
+        return orderPage.map(order -> OrderDTO.fromEntity(order));
     }
 
 

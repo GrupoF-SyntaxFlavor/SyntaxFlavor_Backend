@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import bo.edu.ucb.syntax_flavor_backend.order.bl.OrderBL;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping(value = "/api/v1/order")
@@ -28,12 +30,13 @@ public class OrderAPI {
     @Autowired
     private OrderBL orderBL;
 
+    @Operation(summary = "List orders by datetime", description = "Can page through orders by datetime, the displayed orders are the most recent ones. No filters are applied at this moment.")
     @GetMapping
-    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByDatetime(@RequestParam int pageNumber) {
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByDatetime(@RequestParam int pageNumber) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
-        SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            List<OrderDTO> orders = orderBL.listOrdersByDatetime(pageNumber);
+            Page<OrderDTO> orders = orderBL.listOrdersByDatetime(pageNumber);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
@@ -44,6 +47,7 @@ public class OrderAPI {
         }
     }
 
+    @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The cart must have a customer ID and a map of menu item IDs to quantities ordered.")
     @PostMapping
     public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(@RequestBody CartDTO cart) {
         LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
