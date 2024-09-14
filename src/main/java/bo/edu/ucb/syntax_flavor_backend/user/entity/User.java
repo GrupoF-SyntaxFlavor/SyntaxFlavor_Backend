@@ -54,10 +54,10 @@ public class User implements Serializable {
     private String phone;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @OneToMany(mappedBy = "usersId")
     private Collection<Customer> customersCollection;
 

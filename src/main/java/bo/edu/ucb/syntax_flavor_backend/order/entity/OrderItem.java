@@ -55,10 +55,10 @@ public class OrderItem implements Serializable {
     private BigDecimal price;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     @ManyToOne
     private MenuItem menuItemId;
