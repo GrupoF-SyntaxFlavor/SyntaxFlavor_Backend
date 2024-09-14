@@ -1,0 +1,14 @@
+### obtener información del comensal por id #####
+GET http://localhost:8080/api/v1/user/customer/profile
+Accept: application/json
+customerId: 1
+
+### actualizar información de facturación del comensal #####
+PATCH http://localhost:8080/api/v1/user/customer
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "billName": "MonteroUpdated",
+  "nit":"12334135"
+}

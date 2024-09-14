@@ -48,6 +48,8 @@ public class Customer implements Serializable {
     private Integer id;
     @Column(name = "nit")
     private String nit;
+    @Column(name = "bill_name")
+    private String billName;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -81,6 +83,14 @@ public class Customer implements Serializable {
 
     public void setNit(String nit) {
         this.nit = nit;
+    }
+
+    public String getBillName() {
+        return billName;
+    }
+
+    public void setBillName(String billName) {
+        this.billName = billName;
     }
 
     public Date getCreatedAt() {
