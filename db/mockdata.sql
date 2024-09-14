@@ -34,3 +34,13 @@ INSERT INTO Bills (id, orders_id, nit, total_cost, created_at, updated_at) VALUE
 (1, 1, 123456789, 24.97, current_timestamp, current_timestamp), -- Bill for order 1
 (2, 2, 987654321, 29.97, current_timestamp, current_timestamp), -- Bill for order 2
 (3, 3, 555555555, 8.99, current_timestamp, current_timestamp);  -- Bill for order 3
+
+-- Insertar en la tabla Customers, utilizando los ids correspondientes de Users
+INSERT INTO Customers (users_id, nit, bill_name)
+VALUES (1, '123456789', 'John Doe Billing');
+
+INSERT INTO Customers (users_id, nit, bill_name)
+VALUES (2, '987654321', 'Jane Smith Billing');
+
+INSERT INTO Customers (users_id, nit, bill_name)
+VALUES (3, '456789123', 'Michael Johnson Billing');
