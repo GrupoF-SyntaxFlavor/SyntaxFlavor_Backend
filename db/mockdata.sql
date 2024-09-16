@@ -44,3 +44,55 @@ VALUES (2, '987654321', 'Jane Smith Billing');
 
 INSERT INTO Customers (users_id, nit, bill_name)
 VALUES (3, '456789123', 'Michael Johnson Billing');
+
+-- Insertando datos en la tabla MenuItems
+INSERT INTO menu_items (name, description, price, created_at, updated_at) VALUES
+    ('Onigiris de Atún', 
+    'Deliciosos triángulos de arroz rellenos de atún fresco, sazonados con un toque de salsa de soya y envueltos en una capa de alga nori crujiente.', 
+    25, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://images.pond5.com/pixel-sushi-vector-illustration-isolated-illustration-155825087_iconm.jpeg'
+    ),
+    ('Cheesecake de Uvas', 
+    'Un postre delicioso y fresco, perfecto para cualquier ocasión.', 
+    30, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://assets.tmecosys.com/image/upload/t_web767x639/img/recipe/vimdb/230649.jpg'
+    ),
+    ('Tacos de Pollo', 
+    'Tacos de pollo con guacamole y salsa de chipotle.', 
+    40, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://www.vvsupremo.com/wp-content/uploads/2017/06/Chicken-Tacos-900x570-sRGB.jpg'
+    ),
+    ('Pizza de Pepperoni', 
+    'Pizza de pepperoni con queso mozzarella y salsa de tomate.', 
+    50, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIoXjS-sXqWGIsMTB_m3av-Oh-Fgi93hBrzg&s'
+    ),
+    ('Hamburguesa Clásica', 
+    'Hamburguesa con carne de res, lechuga, tomate, cebolla y queso cheddar.', 
+    35, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://img.freepik.com/fotos-premium/foto-stock-hamburguesa-clasica-aislada-blanco_940723-217.jpg'
+    ),
+    ('Té Helado', 
+    'Té helado de limón, perfecto para refrescarte en un día caluroso.', 
+    15, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://imag.bonviveur.com/te-helado.jpg'
+    ),
+    ('Pastel de Chocolate', 
+    'Un pastel de chocolate esponjoso y delicioso, perfecto para los amantes del chocolate.', 
+    30, 
+    CURRENT_TIMESTAMP, 
+    CURRENT_TIMESTAMP 
+    -- Imagen: 'https://i.pinimg.com/736x/42/36/b1/4236b10d070cb898106d84a6f2fa4a2c.jpg'
+);
