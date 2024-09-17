@@ -35,6 +35,7 @@ import jakarta.persistence.TemporalType;
     @NamedQuery(name = "Bill.findAll", query = "SELECT b FROM Bill b"),
     @NamedQuery(name = "Bill.findById", query = "SELECT b FROM Bill b WHERE b.id = :id"),
     @NamedQuery(name = "Bill.findByNit", query = "SELECT b FROM Bill b WHERE b.nit = :nit"),
+    @NamedQuery(name = "Bill.findByBillName", query = "SELECT b FROM Bill b WHERE b.billName = :billName"),
     @NamedQuery(name = "Bill.findByTotalCost", query = "SELECT b FROM Bill b WHERE b.totalCost = :totalCost"),
     @NamedQuery(name = "Bill.findByCreatedAt", query = "SELECT b FROM Bill b WHERE b.createdAt = :createdAt"),
     @NamedQuery(name = "Bill.findByUpdatedAt", query = "SELECT b FROM Bill b WHERE b.updatedAt = :updatedAt")})
@@ -48,6 +49,8 @@ public class Bill implements Serializable {
     private Integer id;
     @Column(name = "nit")
     private String nit;
+    @Column(name = "bill_name")
+    private String billName;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "total_cost")
@@ -88,6 +91,14 @@ public class Bill implements Serializable {
 
     public void setNit(String nit) {
         this.nit = nit;
+    }
+
+    public String getBillName() {
+        return billName;
+    }
+
+    public void setBillName(String billName) {
+        this.billName = billName;
     }
 
     public BigDecimal getTotalCost() {
