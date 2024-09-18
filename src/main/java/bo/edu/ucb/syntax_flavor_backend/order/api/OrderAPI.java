@@ -47,15 +47,15 @@ public class OrderAPI {
         }
     }
 
-    @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The cart must have a customer ID and a map of menu item IDs to quantities ordered.")
+    @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The cart must have a customer ID and a map of menu item IDs to quantities ordered. Returns the same object plus an ID of insertion")
     @PostMapping
     public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(@RequestBody CartDTO cart) {
         LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
         SyntaxFlavorResponse<CartDTO> sfr = new SyntaxFlavorResponse<>();
         try {
-            orderBL.createOrderFromCart(cart);
+            CartDTO cartResponse = orderBL.createOrderFromCart(cart);
             sfr.setResponseCode("ORD-001");
-            sfr.setPayload(cart);
+            sfr.setPayload(cartResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-601");
