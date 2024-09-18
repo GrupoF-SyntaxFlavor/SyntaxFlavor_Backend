@@ -51,22 +51,30 @@ public class OrderBL {
     }
 
 
-    public boolean createOrderFromCart(CartDTO cart) {
+    public CartDTO createOrderFromCart(CartDTO cart) {
         LOGGER.info("Creating order from cart: {}", cart);
         
+        CartDTO cartResponse = new CartDTO();
         Order order = new Order();
         try {
             order.setCustom(customerBL.findCustomerById(cart.getCustomerId()));
             order.setStatus(STATUS_PENDING);
             order.setOrderTimestamp(new Date()); 
 
-            orderRepository.save(order);
+            // Save the order and get the insertion ID
+            order = orderRepository.save(order);
             orderItemBL.createOrderItemFromCartItemIds(cart.getItemIdQuantityMap(), order);
+
+            // Set the order ID in the response
+            cartResponse.setOrderId(order.getId());
+            cartResponse.setCustomerId(order.getCustom().getId());
+            cartResponse.setItemIdQuantityMap(cart.getItemIdQuantityMap());
+
         } catch (Exception e) {
             LOGGER.error("Error creating order from cart: {}", e);
             throw e;
         }
 
-        return true;
+        return cartResponse;
     }
 }

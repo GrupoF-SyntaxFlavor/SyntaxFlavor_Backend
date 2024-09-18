@@ -14,6 +14,7 @@ import bo.edu.ucb.syntax_flavor_backend.bill.bl.BillBL;
 import bo.edu.ucb.syntax_flavor_backend.bill.dto.BillRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.bill.dto.BillResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping(value = "/api/v1/bill")
@@ -27,6 +28,7 @@ public class BillAPI {
         this.billBL = billBL;
     }
 
+    @Operation(summary = "Create bill for and Order", description = "Creates a bill for an order, the rquest contains the orderId, the name for the bill and the payment, a NIT code, and the total cost of the order.")
     @PostMapping()
     public ResponseEntity<SyntaxFlavorResponse<BillResponseDTO>> createBillFromOrder(@RequestBody BillRequestDTO billRequest) {
         LOGGER.info("Endpoint POST /api/v1/bill with billRequest: {}", billRequest);

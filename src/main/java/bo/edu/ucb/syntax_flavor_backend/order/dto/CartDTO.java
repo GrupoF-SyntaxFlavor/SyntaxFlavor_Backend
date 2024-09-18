@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDTO {
+    private Integer orderId;
     private Integer customerId;
     private Map<Integer, Integer> itemIdQuantityMap;
 }
