@@ -20,4 +20,16 @@ services:
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    
+
+  minio:
+    image: minio/minio
+    container_name: syntaxflavor_minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+
