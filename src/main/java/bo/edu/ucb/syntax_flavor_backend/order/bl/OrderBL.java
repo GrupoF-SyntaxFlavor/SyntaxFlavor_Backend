@@ -28,7 +28,7 @@ public class OrderBL {
     private static final String STATUS_DELIVERED = "DELIVERED";
     private static final String STATUS_CANCELLED = "CANCELLED";
 
-    private static final int MAX_ORDERS_PER_PAGE = 3;
+    private static final int MAX_ORDERS_PER_PAGE = 10;
 
     @Autowired
     private OrderRepository orderRepository;
