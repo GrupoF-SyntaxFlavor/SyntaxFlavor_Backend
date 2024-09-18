@@ -17,6 +17,7 @@ import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
+import io.swagger.v3.oas.annotations.Operation;
 
 
 @RestController
@@ -28,6 +29,7 @@ public class CustomerAPI {
     @Autowired
     private CustomerBL customerBL;
     
+    @Operation(summary = "Get customer profile", description = "Returns the profile (name, email, NIT) of a customer given its ID as a")
     @GetMapping("/customer/profile")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> getCustomerProfile(@RequestHeader ("customerId") Integer customerId) {
         SyntaxFlavorResponse<CustomerDTO> response = new SyntaxFlavorResponse<>();
@@ -45,6 +47,7 @@ public class CustomerAPI {
         }
     }
 
+    @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerRequestDTO all of the information in the body will override the data for the user")
     @PatchMapping("/customer") 
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> updateCustomerData(@RequestBody CustomerRequestDTO customerRequestDTO) {
         SyntaxFlavorResponse<CustomerDTO> response = new SyntaxFlavorResponse<>();

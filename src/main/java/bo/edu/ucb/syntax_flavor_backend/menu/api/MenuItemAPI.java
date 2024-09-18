@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
+import io.swagger.v3.oas.annotations.Operation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class MenuItemAPI {
     }
 
     // Endpoint para obtener todos los platillos disponibles
+    @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
     @GetMapping("/item")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems() {
         LOGGER.info("Endpoint GET /api/v1/menu/item");
