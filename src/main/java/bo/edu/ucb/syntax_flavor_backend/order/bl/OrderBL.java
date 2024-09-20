@@ -27,6 +27,7 @@ public class OrderBL {
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_DELIVERED = "DELIVERED";
     private static final String STATUS_CANCELLED = "CANCELLED";
+    // TODO: Should add a status for "PAID"????
 
     private static final int MAX_ORDERS_PER_PAGE = 10;
 
@@ -42,7 +43,7 @@ public class OrderBL {
     public Page<OrderDTO> listOrdersByDatetime(int pageNumber) {
         LOGGER.info("Listing orders by datetime");
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAllByOrderByOrderTimestampDesc(pageable);
+        Page<Order> orderPage = orderRepository.findAllByOrderByOrderTimestampAsc(pageable);
         if (orderPage == null || orderPage.isEmpty()) {
             LOGGER.error("Error listing orders by datetime");
             throw new RuntimeException("Error listing orders by datetime");
