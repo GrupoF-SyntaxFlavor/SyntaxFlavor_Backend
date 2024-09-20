@@ -181,29 +181,29 @@ INSERT INTO order_items (order_id, menu_item_id, quantity, price, created_at, up
 (25, 4, 1, 50.00, '2024-09-18 15:45:50', '2024-09-18 15:45:50'); -- Pizza de Pepperoni x1
 
 -- Insert data into Bills
-INSERT INTO Bills (id, orders_id, nit, bill_name, total_cost, created_at, updated_at) VALUES
-(1, 1, '123456789', 'John Doe Billing', 90.00, '2024-09-18 12:34:56', '2024-09-18 12:34:56'),  -- Bill for order 1
-(2, 2, '987654321', 'Jane Smith Billing', 135.00, '2024-09-18 08:12:34', '2024-09-18 08:12:34'), -- Bill for order 2
-(3, 3, '456789123', 'Alice Johnson Billing', 90.00, '2024-09-18 14:23:45', '2024-09-18 14:23:45'), -- Bill for order 3
-(4, 4, '123456789', 'John Doe Billing', 15.00, '2024-09-18 09:45:12', '2024-09-18 09:45:12'), -- Bill for order 4
-(5, 5, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 10:05:23', '2024-09-18 10:05:23'), -- Bill for order 5
-(6, 6, '456789123', 'Alice Johnson Billing', 25.00, '2024-09-18 13:22:19', '2024-09-18 13:22:19'), -- Bill for order 6
-(7, 7, '123456789', 'John Doe Billing', 105.00, '2024-09-18 11:15:30', '2024-09-18 11:15:30'), -- Bill for order 7
-(8, 8, '987654321', 'Jane Smith Billing', 100.00, '2024-09-18 16:45:12', '2024-09-18 16:45:12'), -- Bill for order 8
-(9, 9, '456789123', 'Alice Johnson Billing', 15.00, '2024-09-18 07:50:34', '2024-09-18 07:50:34'), -- Bill for order 9
-(10, 10, '123456789', 'John Doe Billing', 90.00, '2024-09-18 15:00:00', '2024-09-18 15:00:00'), -- Bill for order 10
-(11, 11, '987654321', 'Jane Smith Billing', 95.00, '2024-09-18 09:00:45', '2024-09-18 09:00:45'), -- Bill for order 11
-(12, 12, '456789123', 'Alice Johnson Billing', 35.00, '2024-09-18 14:55:12', '2024-09-18 14:55:12'), -- Bill for order 12
-(13, 13, '123456789', 'John Doe Billing', 120.00, '2024-09-18 08:30:15', '2024-09-18 08:30:15'), -- Bill for order 13
-(14, 14, '987654321', 'Jane Smith Billing', 25.00, '2024-09-18 13:10:40', '2024-09-18 13:10:40'), -- Bill for order 14
-(15, 15, '456789123', 'Alice Johnson Billing', 100.00, '2024-09-18 15:22:30', '2024-09-18 15:22:30'), -- Bill for order 15
-(16, 16, '123456789', 'John Doe Billing', 60.00, '2024-09-18 12:00:00', '2024-09-18 12:00:00'), -- Bill for order 16
-(17, 17, '987654321', 'Jane Smith Billing', 105.00, '2024-09-18 11:45:33', '2024-09-18 11:45:33'), -- Bill for order 17
-(18, 18, '456789123', 'Alice Johnson Billing', 30.00, '2024-09-18 07:30:45', '2024-09-18 07:30:45'), -- Bill for order 18
-(19, 19, '123456789', 'John Doe Billing', 45.00, '2024-09-18 10:22:18', '2024-09-18 10:22:18'), -- Bill for order 19
-(20, 20, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 16:00:00', '2024-09-18 16:00:00'), -- Bill for order 20
-(21, 21, '123456789', 'John Doe Billing', 130.00, '2024-09-18 11:00:11', '2024-09-18 11:00:11'), -- Bill for order 21
-(22, 22, '987654321', 'Jane Smith Billing', 35.00, '2024-09-18 08:15:30', '2024-09-18 08:15:30'), -- Bill for order 22
-(23, 23, '456789123', 'Alice Johnson Billing', 90.00, '2024-09-18 14:05:20', '2024-09-18 14:05:20'), -- Bill for order 23
-(24, 24, '123456789', 'John Doe Billing', 140.00, '2024-09-18 09:30:40', '2024-09-18 09:30:40'), -- Bill for order 24
-(25, 25, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 15:45:50', '2024-09-18 15:45:50'); -- Bill for order 25
+INSERT INTO Bills (orders_id, nit, bill_name, total_cost, created_at, updated_at) VALUES
+(1, '123456789', 'John Doe Billing', 90.00, '2024-09-18 12:34:56', '2024-09-18 12:34:56'),  -- Bill for order 1
+(2, '987654321', 'Jane Smith Billing', 135.00, '2024-09-18 08:12:34', '2024-09-18 08:12:34'), -- Bill for order 2
+(3, '456789123', 'Alice Johnson Billing', 90.00, '2024-09-18 14:23:45', '2024-09-18 14:23:45'), -- Bill for order 3
+(4, '123456789', 'John Doe Billing', 15.00, '2024-09-18 09:45:12', '2024-09-18 09:45:12'), -- Bill for order 4
+(5, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 10:05:23', '2024-09-18 10:05:23'), -- Bill for order 5
+(6, '456789123', 'Alice Johnson Billing', 25.00, '2024-09-18 13:22:19', '2024-09-18 13:22:19'), -- Bill for order 6
+(7, '123456789', 'John Doe Billing', 105.00, '2024-09-18 11:15:30', '2024-09-18 11:15:30'), -- Bill for order 7
+(8, '987654321', 'Jane Smith Billing', 100.00, '2024-09-18 16:45:12', '2024-09-18 16:45:12'), -- Bill for order 8
+(9, '456789123', 'Alice Johnson Billing', 15.00, '2024-09-18 07:50:34', '2024-09-18 07:50:34'), -- Bill for order 9
+(10, '123456789', 'John Doe Billing', 90.00, '2024-09-18 15:00:00', '2024-09-18 15:00:00'), -- Bill for order 10
+(11, '987654321', 'Jane Smith Billing', 95.00, '2024-09-18 09:00:45', '2024-09-18 09:00:45'), -- Bill for order 11
+(12, '456789123', 'Alice Johnson Billing', 35.00, '2024-09-18 14:55:12', '2024-09-18 14:55:12'), -- Bill for order 12
+(13, '123456789', 'John Doe Billing', 120.00, '2024-09-18 08:30:15', '2024-09-18 08:30:15'), -- Bill for order 13
+(14, '987654321', 'Jane Smith Billing', 25.00, '2024-09-18 13:10:40', '2024-09-18 13:10:40'), -- Bill for order 14
+(15, '456789123', 'Alice Johnson Billing', 100.00, '2024-09-18 15:22:30', '2024-09-18 15:22:30'), -- Bill for order 15
+(16, '123456789', 'John Doe Billing', 60.00, '2024-09-18 12:00:00', '2024-09-18 12:00:00'), -- Bill for order 16
+(17, '987654321', 'Jane Smith Billing', 105.00, '2024-09-18 11:45:33', '2024-09-18 11:45:33'), -- Bill for order 17
+(18, '456789123', 'Alice Johnson Billing', 30.00, '2024-09-18 07:30:45', '2024-09-18 07:30:45'), -- Bill for order 18
+(19, '123456789', 'John Doe Billing', 45.00, '2024-09-18 10:22:18', '2024-09-18 10:22:18'), -- Bill for order 19
+(20, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 16:00:00', '2024-09-18 16:00:00'), -- Bill for order 20
+(21, '123456789', 'John Doe Billing', 130.00, '2024-09-18 11:00:11', '2024-09-18 11:00:11'), -- Bill for order 21
+(22, '987654321', 'Jane Smith Billing', 35.00, '2024-09-18 08:15:30', '2024-09-18 08:15:30'), -- Bill for order 22
+(23, '456789123', 'Alice Johnson Billing', 90.00, '2024-09-18 14:05:20', '2024-09-18 14:05:20'), -- Bill for order 23
+(24, '123456789', 'John Doe Billing', 140.00, '2024-09-18 09:30:40', '2024-09-18 09:30:40'), -- Bill for order 24
+(25, '987654321', 'Jane Smith Billing', 60.00, '2024-09-18 15:45:50', '2024-09-18 15:45:50'); -- Bill for order 25
