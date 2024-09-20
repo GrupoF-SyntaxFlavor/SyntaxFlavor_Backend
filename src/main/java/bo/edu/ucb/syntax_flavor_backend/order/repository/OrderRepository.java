@@ -16,7 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     // @Query(value = " SELECT * FROM Orders o WHERE o.order_timestamp BETWEEN :startOfDay AND :endOfDay AND o.status <> 'FINISHED';", nativeQuery = true)
     // Page<Order> findOrdersFromToday(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay, Pageable pageable);
 
-    Page<Order> findAllByOrderTimestampBetweenOrderByOrderTimestampDesc(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
+    Page<Order> findAllByOrderTimestampBetweenOrderByOrderTimestampAsc(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
     
     Optional<Order> findById(Integer id);
 }
