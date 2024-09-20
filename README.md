@@ -19,9 +19,9 @@ Todas las salidas de API deben seguir el siguiente formato:
 
 ```json
 {
-    "code": "DOM-001" //código del resultado REF: Catálogo de códigos
+    "responseCode": "DOM-001" //código del resultado REF: Catálogo de códigos
     "payload": {} // DTO del resultado del endpoint
-    "error_message": "" // Mensaje de error (si hay o null en caso contrario)
+    "errorMessage": "" // Mensaje de error (si hay o null en caso contrario)
 }
 ```
 

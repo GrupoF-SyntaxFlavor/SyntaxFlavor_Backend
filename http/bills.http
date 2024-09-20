@@ -1,0 +1,13 @@
+### Crear el registro de una "factura" #####
+POST http://localhost:8080/api/v1/bill
+Content-Type: application/json
+Accept: application/json
+
+{
+    "orderId":26,
+    "billName": "Montero",
+    "nit":"12334135",
+    "totalCost":123.3
+}
+
+####

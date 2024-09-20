@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.Orders;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,13 +32,14 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "bills")
 @NamedQueries({
-    @NamedQuery(name = "Bills.findAll", query = "SELECT b FROM Bills b"),
-    @NamedQuery(name = "Bills.findById", query = "SELECT b FROM Bills b WHERE b.id = :id"),
-    @NamedQuery(name = "Bills.findByNit", query = "SELECT b FROM Bills b WHERE b.nit = :nit"),
-    @NamedQuery(name = "Bills.findByTotalCost", query = "SELECT b FROM Bills b WHERE b.totalCost = :totalCost"),
-    @NamedQuery(name = "Bills.findByCreatedAt", query = "SELECT b FROM Bills b WHERE b.createdAt = :createdAt"),
-    @NamedQuery(name = "Bills.findByUpdatedAt", query = "SELECT b FROM Bills b WHERE b.updatedAt = :updatedAt")})
-public class Bills implements Serializable {
+    @NamedQuery(name = "Bill.findAll", query = "SELECT b FROM Bill b"),
+    @NamedQuery(name = "Bill.findById", query = "SELECT b FROM Bill b WHERE b.id = :id"),
+    @NamedQuery(name = "Bill.findByNit", query = "SELECT b FROM Bill b WHERE b.nit = :nit"),
+    @NamedQuery(name = "Bill.findByBillName", query = "SELECT b FROM Bill b WHERE b.billName = :billName"),
+    @NamedQuery(name = "Bill.findByTotalCost", query = "SELECT b FROM Bill b WHERE b.totalCost = :totalCost"),
+    @NamedQuery(name = "Bill.findByCreatedAt", query = "SELECT b FROM Bill b WHERE b.createdAt = :createdAt"),
+    @NamedQuery(name = "Bill.findByUpdatedAt", query = "SELECT b FROM Bill b WHERE b.updatedAt = :updatedAt")})
+public class Bill implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,28 +49,30 @@ public class Bills implements Serializable {
     private Integer id;
     @Column(name = "nit")
     private String nit;
+    @Column(name = "bill_name")
+    private String billName;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "total_cost")
     private BigDecimal totalCost;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @JoinColumn(name = "orders_id", referencedColumnName = "id")
     @ManyToOne
-    private Orders ordersId;
+    private Order ordersId;
 
-    public Bills() {
+    public Bill() {
     }
 
-    public Bills(Integer id) {
+    public Bill(Integer id) {
         this.id = id;
     }
 
-    public Bills(Integer id, BigDecimal totalCost) {
+    public Bill(Integer id, BigDecimal totalCost) {
         this.id = id;
         this.totalCost = totalCost;
     }
@@ -88,6 +91,14 @@ public class Bills implements Serializable {
 
     public void setNit(String nit) {
         this.nit = nit;
+    }
+
+    public String getBillName() {
+        return billName;
+    }
+
+    public void setBillName(String billName) {
+        this.billName = billName;
     }
 
     public BigDecimal getTotalCost() {
@@ -114,11 +125,11 @@ public class Bills implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Orders getOrdersId() {
+    public Order getOrdersId() {
         return ordersId;
     }
 
-    public void setOrdersId(Orders ordersId) {
+    public void setOrdersId(Order ordersId) {
         this.ordersId = ordersId;
     }
 
@@ -132,10 +143,10 @@ public class Bills implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Bills)) {
+        if (!(object instanceof Bill)) {
             return false;
         }
-        Bills other = (Bills) object;
+        Bill other = (Bill) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -144,7 +155,7 @@ public class Bills implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Bills[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Bill[ id=" + id + " ]";
     }
     
 }

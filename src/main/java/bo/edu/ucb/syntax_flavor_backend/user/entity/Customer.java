@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import bo.edu.ucb.syntax_flavor_backend.order.entity.Orders;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,12 +33,12 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "customers")
 @NamedQueries({
-    @NamedQuery(name = "Customers.findAll", query = "SELECT c FROM Customers c"),
-    @NamedQuery(name = "Customers.findById", query = "SELECT c FROM Customers c WHERE c.id = :id"),
-    @NamedQuery(name = "Customers.findByNit", query = "SELECT c FROM Customers c WHERE c.nit = :nit"),
-    @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt"),
-    @NamedQuery(name = "Customers.findByUpdatedAt", query = "SELECT c FROM Customers c WHERE c.updatedAt = :updatedAt")})
-public class Customers implements Serializable {
+    @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c"),
+    @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id"),
+    @NamedQuery(name = "Customer.findByNit", query = "SELECT c FROM Customer c WHERE c.nit = :nit"),
+    @NamedQuery(name = "Customer.findByCreatedAt", query = "SELECT c FROM Customer c WHERE c.createdAt = :createdAt"),
+    @NamedQuery(name = "Customer.findByUpdatedAt", query = "SELECT c FROM Customer c WHERE c.updatedAt = :updatedAt")})
+public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,22 +48,24 @@ public class Customers implements Serializable {
     private Integer id;
     @Column(name = "nit")
     private String nit;
+    @Column(name = "bill_name")
+    private String billName;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
     @OneToMany(mappedBy = "custom")
-    private Collection<Orders> ordersCollection;
+    private Collection<Order> ordersCollection;
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     @ManyToOne
-    private Users usersId;
+    private User usersId;
 
-    public Customers() {
+    public Customer() {
     }
 
-    public Customers(Integer id) {
+    public Customer(Integer id) {
         this.id = id;
     }
 
@@ -83,6 +85,14 @@ public class Customers implements Serializable {
         this.nit = nit;
     }
 
+    public String getBillName() {
+        return billName;
+    }
+
+    public void setBillName(String billName) {
+        this.billName = billName;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -99,19 +109,19 @@ public class Customers implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Collection<Orders> getOrdersCollection() {
+    public Collection<Order> getOrdersCollection() {
         return ordersCollection;
     }
 
-    public void setOrdersCollection(Collection<Orders> ordersCollection) {
+    public void setOrdersCollection(Collection<Order> ordersCollection) {
         this.ordersCollection = ordersCollection;
     }
 
-    public Users getUsersId() {
+    public User getUsersId() {
         return usersId;
     }
 
-    public void setUsersId(Users usersId) {
+    public void setUsersId(User usersId) {
         this.usersId = usersId;
     }
 
@@ -125,10 +135,10 @@ public class Customers implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Customers)) {
+        if (!(object instanceof Customer)) {
             return false;
         }
-        Customers other = (Customers) object;
+        Customer other = (Customer) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -137,7 +147,7 @@ public class Customers implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Customers[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Customer[ id=" + id + " ]";
     }
     
 }
