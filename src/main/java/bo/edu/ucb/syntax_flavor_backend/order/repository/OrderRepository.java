@@ -10,7 +10,7 @@ import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    Page<Order> findAllByOrderByOrderTimestampDesc(Pageable pageable);
+    Page<Order> findAllByOrderByOrderTimestampAsc(Pageable pageable);
     
     Optional<Order> findById(Integer id);
 }
