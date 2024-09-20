@@ -45,7 +45,7 @@ public class OrderBL {
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-        Page<Order> orderPage = orderRepository.findOrdersFromToday(startOfDay, endOfDay, pageable);
+        Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenOrderByOrderTimestampAsc(startOfDay, endOfDay, pageable);
         if (orderPage == null) {
             LOGGER.error("Error listing orders by datetime");
             throw new RuntimeException("Error listing orders by datetime");
