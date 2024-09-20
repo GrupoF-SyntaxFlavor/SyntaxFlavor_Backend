@@ -1,7 +1,9 @@
 package bo.edu.ucb.syntax_flavor_backend.order.bl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
-import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
@@ -43,8 +43,10 @@ public class OrderBL {
     public Page<OrderDTO> listOrdersByDatetime(int pageNumber) {
         LOGGER.info("Listing orders by datetime");
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAllByOrderByOrderTimestampAsc(pageable);
-        if (orderPage == null || orderPage.isEmpty()) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+        Page<Order> orderPage = orderRepository.findOrdersFromToday(startOfDay, endOfDay, pageable);
+        if (orderPage == null) {
             LOGGER.error("Error listing orders by datetime");
             throw new RuntimeException("Error listing orders by datetime");
         }
