@@ -17,8 +17,14 @@ spring:
     mail:
         host: localhost
         port: 1025
-        username: user123
-        password: admin
+        default-encoding: UTF-8
+        protocol: smtp
+        properties:
+            mail:
+                smtp:
+                    auth: false
+                    starttls:
+                        enable: false
 
 server:
     port: 8080
