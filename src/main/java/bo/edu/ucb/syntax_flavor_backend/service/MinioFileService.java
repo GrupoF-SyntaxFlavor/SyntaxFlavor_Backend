@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.menu.service;
+package bo.edu.ucb.syntax_flavor_backend.service;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -18,14 +20,14 @@ import io.minio.errors.MinioException;
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class MinioImageService {
+public class MinioFileService {
 
-    Logger LOGGER = LoggerFactory.getLogger(MinioImageService.class);
+    Logger LOGGER = LoggerFactory.getLogger(MinioFileService.class);
 
     private final MinioClient minioClient;
     private final String bucketName;
 
-    public MinioImageService(MinioClient minioClient, @Value("${spring.minio.bucket-name}") String bucketName) {
+    public MinioFileService(MinioClient minioClient, @Value("${spring.minio.bucket-name}") String bucketName) {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
     }
@@ -60,7 +62,7 @@ public class MinioImageService {
         }
 }
 
-    public String uploadImage(MultipartFile file){
+    public String uploadFile(MultipartFile file){
         try {
             String fileName = file.getOriginalFilename();
             minioClient.putObject(PutObjectArgs.builder()
@@ -75,7 +77,24 @@ public class MinioImageService {
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Invalid Minio credentials", e);
         } catch (Exception e) {
-            throw new RuntimeException("Error uploading image to Minio", e);
+            throw new RuntimeException("Error uploading file to Minio", e);
+        }
+    }
+
+    // Function to get s single file from Minio
+    public byte[] getFile(String fileName) {
+        try {
+            GetObjectResponse response = minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .build());
+            return response.readAllBytes();
+        } catch (MinioException e) {
+            throw new RuntimeException("Error during Minio download", e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException("Invalid Minio credentials", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error downloading file from Minio", e);
         }
     }
     

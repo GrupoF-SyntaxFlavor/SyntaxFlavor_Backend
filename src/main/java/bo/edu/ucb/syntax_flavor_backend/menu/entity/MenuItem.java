@@ -56,6 +56,9 @@ public class MenuItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
+    @Basic(optional = true)
+    @Column(name = "image_url")
+    private String imageUrl;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -108,6 +111,14 @@ public class MenuItem implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Date getCreatedAt() {
