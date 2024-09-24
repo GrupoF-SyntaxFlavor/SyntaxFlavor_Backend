@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.email.bl;
+package bo.edu.ucb.syntax_flavor_backend.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class EmailBL {
+public class EmailService {
 
-    Logger logger = LoggerFactory.getLogger(EmailBL.class);
+    Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private JavaMailSenderImpl emailSender;
