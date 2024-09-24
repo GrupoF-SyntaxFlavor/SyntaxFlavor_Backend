@@ -20,4 +20,18 @@ services:
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+
+  syntaxflavor_keycloak:
+    image: quay.io/keycloak/keycloak
+    container_name: syntaxflavor_keycloak
+    ports:
+      - '8082:8080'
+    env_file:
+      - ./env/keycloak.env
+    volumes:
+      - ./src/main/resources/imports/keycloak-realm:/opt/keycloak/data/import
+    depends_on:
+      - syntaxflavor_db
+    command: ["start-dev", "--import-realm"]
+    restart: always
     

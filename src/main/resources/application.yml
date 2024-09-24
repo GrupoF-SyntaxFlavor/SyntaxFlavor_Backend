@@ -39,4 +39,20 @@ spring:
 server:
     port: 8080
 
+---
+keycloak:
+  auth-server-url: http://localhost:8082/realms/syntaxflavor_users
+  realm: syntaxflavor_users
+  resource: syntaxflavor # El nombre del cliente que creaste en Keycloak
+  public-client: true
+  ssl-required: external
+  bearer-only: false
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/syntaxflavor_users
+
 
