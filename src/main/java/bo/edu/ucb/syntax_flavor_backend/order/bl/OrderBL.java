@@ -1,5 +1,8 @@
 package bo.edu.ucb.syntax_flavor_backend.order.bl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +26,9 @@ public class OrderBL {
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_DELIVERED = "DELIVERED";
     private static final String STATUS_CANCELLED = "CANCELLED";
+    // TODO: Should add a status for "PAID"????
 
-    private static final int MAX_ORDERS_PER_PAGE = 3;
+    private static final int MAX_ORDERS_PER_PAGE = 10;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -38,8 +42,10 @@ public class OrderBL {
     public Page<OrderDTO> listOrdersByDatetime(int pageNumber) {
         LOGGER.info("Listing orders by datetime");
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAllByOrderByOrderTimestampDesc(pageable);
-        if (orderPage == null || orderPage.isEmpty()) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+        Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenOrderByOrderTimestampAsc(startOfDay, endOfDay, pageable);
+        if (orderPage == null) {
             LOGGER.error("Error listing orders by datetime");
             throw new RuntimeException("Error listing orders by datetime");
         }
