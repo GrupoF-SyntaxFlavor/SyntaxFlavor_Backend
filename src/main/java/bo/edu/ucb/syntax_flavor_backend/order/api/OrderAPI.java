@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,6 +58,40 @@ public class OrderAPI {
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-601");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "Cancel order", description = "Cancels an order by ID. Returns the order with the new status")
+    @PutMapping("/cancel")
+    public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> cancelOrder(@RequestParam int orderId) {
+        LOGGER.info("Endpoint PUT /api/v1/order/cancel with orderId: {}", orderId);
+        SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
+        try {
+            OrderDTO order = orderBL.setOrderStatusById(orderId, OrderBL.STATUS_CANCELLED);
+            sfr.setResponseCode("ORD-002");
+            sfr.setPayload(order);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-602");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "Deliver order", description = "Delivers an order by ID. Returns the order with the new status")
+    @PutMapping("/deliver")
+    public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> deliverOrder(@RequestParam int orderId) {
+        LOGGER.info("Endpoint PUT /api/v1/order/deliver with orderId: {}", orderId);
+        SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
+        try {
+            OrderDTO order = orderBL.setOrderStatusById(orderId, OrderBL.STATUS_DELIVERED);
+            sfr.setResponseCode("ORD-003");
+            sfr.setPayload(order);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-603");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
