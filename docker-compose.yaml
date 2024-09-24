@@ -14,10 +14,21 @@ services:
     build: .
     container_name: syntaxflavor_backend
     ports:
-      - '8000:8000'
+      - '8080:8080'
     depends_on:
       - syntaxflavor_db
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    
+
+  minio:
+    image: minio/minio:latest
+    container_name: syntaxflavor_minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: always
+    env_file:
+      - ./env/minio.env
+    command: server /data --console-address ":9001"
+
