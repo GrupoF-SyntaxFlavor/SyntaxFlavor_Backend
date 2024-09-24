@@ -13,9 +13,28 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: true
+    minio:
+        url: http://localhost:9000
+        access-key: minioadmin
+        secret-key: minioadmin
+        bucket-name: syntaxflavorbucket
+            
+
+    mail:
+        host: localhost
+        port: 1025
+        default-encoding: UTF-8
+        protocol: smtp
+        properties:
+            mail:
+                smtp:
+                    auth: false
+                    starttls:
+                        enable: false
 
 server:
     port: 8080
+
 
 
 ---
@@ -35,6 +54,11 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: false
+    minio:
+        endpoint: http://minio:9000
+        access-key: minioadmin
+        secret-key: minioadmin
+        bucket: syntaxflavor_bucket
         
 server:
     port: 8080

@@ -2,3 +2,21 @@
 ### 
 GET http://localhost:8080/api/v1/menu/item
 Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/menu/item/1/image
+
+### 
+PATCH https://localhost:8080/api/v1/menu/item/1/image
+Content-Type: multipart/form-data boundary="------uploadImageLimiter"
+
+------uploadImageLimiter
+Content-Disposition: form-data; name="text"
+
+title
+------uploadImageLimiter
+Content-Disposition: form-data; name="file"; filename="photo1.png"
+Content-Type: image/png
+
+< ./resources/photo1.png
+------uploadImageLimiter--

@@ -1,0 +1,3 @@
+### POST /send-email
+POST http://localhost:8080/api/v1/send-email?to=recipient@example.com&subject=Test Subject&body=Hello,%20this%20is%20a%20test%20email.
+Accept: application/json
