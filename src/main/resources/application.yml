@@ -14,8 +14,21 @@ spring:
             ddl-auto: update
         show-sql: true
 
+    mail:
+        host: localhost
+        port: 1025
+        default-encoding: UTF-8
+        protocol: smtp
+        properties:
+            mail:
+                smtp:
+                    auth: false
+                    starttls:
+                        enable: false
+
 server:
     port: 8080
+
 
 
 ---
