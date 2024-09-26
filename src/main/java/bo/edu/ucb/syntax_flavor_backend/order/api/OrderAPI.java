@@ -20,6 +20,8 @@ import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/v1/order")
 public class OrderAPI {
@@ -92,6 +94,23 @@ public class OrderAPI {
             return ResponseEntity.ok(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-603");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer by ID")
+    @GetMapping("/customer")
+    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestParam int customerId) {
+        LOGGER.info("Endpoint GET /api/v1/order/customer with customerId: {}", customerId);
+        SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        try {
+            List<OrderDTO> orders = orderBL.listOrdersByCustomerId(customerId);
+            sfr.setResponseCode("ORD-004");
+            sfr.setPayload(orders);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-604");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
