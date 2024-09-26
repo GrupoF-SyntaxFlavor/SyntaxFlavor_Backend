@@ -998,3 +998,4 @@ insert into users (name, email) values ('abelleero', 'nshaftoro@furl.net');
 insert into users (name, email) values ('mrobiotrp', 'tgonzalvorp@i2i.jp');
 insert into users (name, email) values ('piapicorq', 'emathesrq@businesswire.com');
 insert into users (name, email) values ('bmarioneaurr', 'nmcfaderr@indiegogo.com');
+select count(*) from users;

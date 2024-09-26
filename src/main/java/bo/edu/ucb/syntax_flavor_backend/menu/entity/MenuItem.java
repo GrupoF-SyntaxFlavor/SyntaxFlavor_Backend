@@ -59,10 +59,10 @@ public class MenuItem implements Serializable {
     @Basic(optional = true)
     @Column(name = "image_url")
     private String imageUrl;
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "menuItemId")

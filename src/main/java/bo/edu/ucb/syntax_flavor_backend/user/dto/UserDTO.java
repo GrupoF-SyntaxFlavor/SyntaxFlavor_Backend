@@ -12,12 +12,10 @@ public class UserDTO {
     private Integer userId;
     private String name;
     private String email;
-    private String phone;
 
     public UserDTO(User user) {
         this.userId = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.phone = user.getPhone();
     }
 }
