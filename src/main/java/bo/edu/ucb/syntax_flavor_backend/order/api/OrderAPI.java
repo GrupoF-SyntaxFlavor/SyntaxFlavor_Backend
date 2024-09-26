@@ -106,11 +106,11 @@ public class OrderAPI {
         SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             List<OrderDTO> orders = orderBL.listOrdersByCustomerId(customerId);
-            sfr.setResponseCode("ORD-004");
+            sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
         } catch (Exception e) {
-            sfr.setResponseCode("ORD-604");
+            sfr.setResponseCode("ORD-600");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
