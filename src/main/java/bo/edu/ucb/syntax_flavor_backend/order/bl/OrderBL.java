@@ -25,9 +25,9 @@ public class OrderBL {
     
     Logger LOGGER = LoggerFactory.getLogger(OrderBL.class);
 
-    public static final String STATUS_PENDING = "PENDING";
-    public static final String STATUS_DELIVERED = "DELIVERED";
-    public static final String STATUS_CANCELLED = "CANCELLED";
+    public static final String STATUS_PENDING = "Pendiente";
+    public static final String STATUS_DELIVERED = "Entregado";
+    public static final String STATUS_CANCELLED = "Cancelado";
     // TODO: Should add a status for "PAID"????
 
     private static final int MAX_ORDERS_PER_PAGE = 10;
