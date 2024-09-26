@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,5 +105,16 @@ public class OrderBL {
         }
         order = orderRepository.save(order);
         return OrderDTO.fromEntity(order);
+    }
+
+    public List<OrderDTO> listOrdersByCustomerId(int customerId) {
+        LOGGER.info("Listing orders by customer ID: {}", customerId);
+        Pageable topTen = PageRequest.of(0, 10);
+        List<Order> order = orderRepository.findAllByCustomIdOrderByOrderTimestampDesc(customerId, topTen);
+        if (order == null) {
+            LOGGER.error("Error listing orders by customer ID");
+            throw new RuntimeException("Error listing orders by customer ID");
+        }
+        return OrderDTO.fromEntityList(order);
     }
 }
