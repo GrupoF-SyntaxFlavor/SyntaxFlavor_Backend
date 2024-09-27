@@ -61,4 +61,5 @@ public class EmailService {
             throw new RuntimeException("Error sending email with attachment: " + e.getMessage(), e);
         }
     }
+
 }

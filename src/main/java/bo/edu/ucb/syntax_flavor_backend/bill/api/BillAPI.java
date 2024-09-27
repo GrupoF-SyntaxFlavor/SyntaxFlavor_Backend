@@ -54,20 +54,16 @@ public class BillAPI {
             // Prepare the email to send
             String emailSubject = "Bill for order " + billRequest.getOrderId();
             String emailBody = "Dear customer, please find attached the bill for your order " + billRequest.getOrderId();
-
-            // Generate and upload the PDF of the bill
-            String fileName = "bills/pdf/" + createdBill.getId() + "/" + System.currentTimeMillis() + "_bill.pdf";
-            String pdfUrl = billBL.generateBillPdf(createdBill);
-
-            // Fetch the PDF data from Minio for attachment
-            byte[] pdfData = minioFileService.getFile(fileName);  // Retrieve PDF data from Minio
+            String pdfUrl = billBL.generateBillPdf(createdBill);  // This uploads the PDF to Minio
+            // Generate PDF bytes for the bill
+            byte[] pdfData = billBL.generateBillPdfBytes(createdBill); // Generate PDF as byte array
 
             // Send the email with the attached PDF
             emailService.sendEmailWithAttachment(
                     billRequest.getCustomerEmail(),
                     emailSubject,
                     emailBody,
-                    pdfData,  // Pass the PDF byte array as the attachment
+                    pdfData,  // Use the PDF byte array as the attachment
                     "bill.pdf"
             );
 
@@ -76,10 +72,12 @@ public class BillAPI {
             sfr.setPayload(billResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) {
+            LOGGER.error("Error creating bill: {}", e.getMessage());
             sfr.setResponseCode("BIL-600");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
     }
+
 
 }

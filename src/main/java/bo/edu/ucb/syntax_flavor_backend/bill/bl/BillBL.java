@@ -56,8 +56,8 @@ public class BillBL {
         
     }
 
-    public String generateBillPdf(Bill bill) {
-        LOGGER.info("Generating and uploading bill PDF for bill id: {}", bill.getId());
+    public byte[] generateBillPdfBytes(Bill bill) {
+        LOGGER.info("Generating PDF for bill id: {}", bill.getId());
         try {
             // Create a PDF document
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -73,9 +73,24 @@ public class BillBL {
 
             document.close();
 
+            // Return the PDF as a byte array
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            LOGGER.error("Error generating bill PDF: {}", e.getMessage());
+            throw new RuntimeException("Error generating bill PDF: " + e.getMessage(), e);
+        }
+    }
+
+
+    public String generateBillPdf(Bill bill) {
+        LOGGER.info("Generating and uploading bill PDF for bill id: {}", bill.getId());
+        try {
+            // Generate PDF bytes
+            byte[] pdfBytes = generateBillPdfBytes(bill);
+
             // Now upload the PDF to Minio
             String fileName = "bills/pdf/" + bill.getId() + "/" + System.currentTimeMillis() + "_bill.pdf";
-            String pdfUrl = minioFileService.uploadPdf(fileName, outputStream.toByteArray());
+            String pdfUrl = minioFileService.uploadFile(fileName, pdfBytes, "application/pdf");
 
             LOGGER.info("Bill PDF uploaded successfully for bill id: {}", bill.getId());
             return pdfUrl;  // Return the URL of the uploaded PDF
@@ -84,8 +99,4 @@ public class BillBL {
             throw new RuntimeException("Error generating and uploading bill PDF: " + e.getMessage(), e);
         }
     }
-
-
-
-
 }
