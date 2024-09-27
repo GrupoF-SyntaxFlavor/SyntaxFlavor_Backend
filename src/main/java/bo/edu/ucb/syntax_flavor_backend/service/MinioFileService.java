@@ -87,12 +87,35 @@ public class MinioFileService {
         }
     }
 
+    public String uploadPdf(String fileName, byte[] pdfData) {
+        try (ByteArrayInputStream pdfStream = new ByteArrayInputStream(pdfData)) {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .stream(pdfStream, pdfData.length, -1)
+                    .contentType("application/pdf") // Set content type to PDF
+                    .build());
+
+            // Construct the URL manually
+            String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001)
+            return minioBaseUrl + "/" + bucketName + "/" + fileName; // Constructed URL for the uploaded file
+        } catch (MinioException e) {
+            throw new RuntimeException("MinIO error during upload: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("IO error during upload: " + e.getMessage(), e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("No such algorithm error: " + e.getMessage(), e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException("Invalid key error: " + e.getMessage(), e);
+        }
+    }
+
     // Function to get s single file from Minio
-    public byte[] getFile(String fileName) {
+    public byte[] getFile(String objectName) {
         try {
             GetObjectResponse response = minioClient.getObject(GetObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fileName)
+                    .object(objectName) // Use just the object name here
                     .build());
             return response.readAllBytes();
         } catch (MinioException e) {
@@ -103,5 +126,6 @@ public class MinioFileService {
             throw new RuntimeException("Error downloading file from Minio", e);
         }
     }
-    
+
+
 }

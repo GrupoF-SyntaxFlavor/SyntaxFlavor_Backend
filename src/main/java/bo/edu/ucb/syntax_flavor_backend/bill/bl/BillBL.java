@@ -1,6 +1,9 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.bl;
 
 import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,31 +56,36 @@ public class BillBL {
         
     }
 
+    public String generateBillPdf(Bill bill) {
+        LOGGER.info("Generating and uploading bill PDF for bill id: {}", bill.getId());
+        try {
+            // Create a PDF document
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
 
-    public byte[] generateBillPdf(Integer billId, Bill bill) {
-        try (ByteArrayOutputStream pdfStream = new ByteArrayOutputStream()) {
-            // Implementación de la lógica de generación de PDF
+            // Add content to the PDF using bill information
+            document.add(new Paragraph("Bill ID: " + bill.getId()));
+            document.add(new Paragraph("Customer: " + bill.getBillName()));
+            document.add(new Paragraph("Total Amount: " + bill.getTotalCost()));
+            // Add more bill details as needed
 
-            // Create a MultipartFile from the ByteArrayOutputStream
-            MultipartFile multipartFile = new ByteArrayMultipartFile(
-                    pdfStream.toByteArray(),
-                    "bill.pdf", // filename
-                    "application/pdf" // content type
-            );
+            document.close();
 
-            // Now you can upload the MultipartFile to Minio
-            String pdfUrl = minioFileService.uploadFile(multipartFile);
+            // Now upload the PDF to Minio
+            String fileName = "bills/pdf/" + bill.getId() + "/" + System.currentTimeMillis() + "_bill.pdf";
+            String pdfUrl = minioFileService.uploadPdf(fileName, outputStream.toByteArray());
 
-            return pdfStream.toByteArray();
+            LOGGER.info("Bill PDF uploaded successfully for bill id: {}", bill.getId());
+            return pdfUrl;  // Return the URL of the uploaded PDF
         } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF: " + e.getMessage(), e);
+            LOGGER.error("Error generating and uploading bill PDF: {}", e.getMessage());
+            throw new RuntimeException("Error generating and uploading bill PDF: " + e.getMessage(), e);
         }
     }
 
-    // Método auxiliar para validar si el tipo de contenido es un PDF
-    private boolean isPdf(String contentType) {
-        return contentType.equals("application/pdf");
-    }
+
 
 
 }

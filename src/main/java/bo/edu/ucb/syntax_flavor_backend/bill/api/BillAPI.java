@@ -1,6 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.api;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
+import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class BillAPI {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private MinioFileService minioFileService;
+
     public BillAPI(BillBL billBL) {
         this.billBL = billBL;
     }
@@ -41,7 +45,7 @@ public class BillAPI {
         LOGGER.info("Endpoint POST /api/v1/bill with billRequest: {}", billRequest);
         SyntaxFlavorResponse<BillResponseDTO> sfr = new SyntaxFlavorResponse<>();
         try {
-            // Create the bill from order
+            // Create the bill from the order
             Bill createdBill = billBL.createBillFromOrder(billRequest);
 
             // Create the BillResponseDTO from the created Bill entity
@@ -51,19 +55,21 @@ public class BillAPI {
             String emailSubject = "Bill for order " + billRequest.getOrderId();
             String emailBody = "Dear customer, please find attached the bill for your order " + billRequest.getOrderId();
 
+            // Generate and upload the PDF of the bill
+            String fileName = "bills/pdf/" + createdBill.getId() + "/" + System.currentTimeMillis() + "_bill.pdf";
+            String pdfUrl = billBL.generateBillPdf(createdBill);
 
-            // Generate the PDF of the bill using the created Bill object and save it to Minio
-            byte[] pdfData = billBL.generateBillPdf( createdBill.getId(), createdBill);
+            // Fetch the PDF data from Minio for attachment
+            byte[] pdfData = minioFileService.getFile(fileName);  // Retrieve PDF data from Minio
 
-            // Enviar el correo con el archivo adjunto
+            // Send the email with the attached PDF
             emailService.sendEmailWithAttachment(
                     billRequest.getCustomerEmail(),
                     emailSubject,
                     emailBody,
-                    pdfData,  // Pasar el archivo generado como byte array
+                    pdfData,  // Pass the PDF byte array as the attachment
                     "bill.pdf"
             );
-
 
             // Respond with success
             sfr.setResponseCode("BIL-001");
