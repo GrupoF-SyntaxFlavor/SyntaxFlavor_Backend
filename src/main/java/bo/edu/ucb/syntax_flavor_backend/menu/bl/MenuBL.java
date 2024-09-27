@@ -52,16 +52,44 @@ public class MenuBL {
     public String updateMenuItemImage(Integer id, MultipartFile file) {
         LOGGER.info("Updating menu item image for id: {}", id);
         try {
-            MenuItem menuItem = menuItemRepository.findById(id).orElseThrow(() -> new RuntimeException("Menu item not found"));
-            String imageUrl = minioFileService.uploadFile(file);
+            // Verificar que el archivo no esté vacío
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("File is empty. Please provide a valid file.");
+            }
+
+            // Validar que el archivo sea una imagen
+            String contentType = file.getContentType();
+            if (!isImage(contentType)) {
+                throw new IllegalArgumentException("Invalid file type. Please upload an image.");
+            }
+
+            // Obtener el elemento del menú por ID
+            MenuItem menuItem = menuItemRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
+
+            // Generar un nombre de archivo único
+            String fileName = "menu_items/images/" + id + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+            // Subir la imagen a Minio y obtener la URL
+            String imageUrl = minioFileService.uploadFile(fileName, file.getBytes(), contentType);
+
+            // Actualizar la URL de la imagen en el objeto MenuItem
             menuItem.setImageUrl(imageUrl);
             menuItemRepository.save(menuItem);
+
+            LOGGER.info("Menu item image updated successfully for id: {}", id);
             return imageUrl;
         } catch (Exception e) {
             LOGGER.error("Error updating menu item image: {}", e.getMessage());
-            throw new RuntimeException("Error updating menu item image: " + e.getMessage());
+            throw new RuntimeException("Error updating menu item image: " + e.getMessage(), e);
         }
     }
+
+    // Método auxiliar para validar si el tipo de contenido es una imagen
+    private boolean isImage(String contentType) {
+        return contentType.equals("image/jpeg") || contentType.equals("image/png");
+    }
+
 
     public byte[] getMenuItemImage(Integer id) {
         LOGGER.info("Getting menu item image for id: {}", id);

@@ -4,10 +4,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "orderId":26,
-    "billName": "Montero",
-    "nit":"12334135",
-    "totalCost":123.3
+  "orderId": 26,
+  "billName": "Montero",
+  "nit": "12334135",
+  "totalCost": 123.3,
+  "customerName": "John Doe",
+  "customerEmail": "john.doe@example.com"
 }
 
 ####

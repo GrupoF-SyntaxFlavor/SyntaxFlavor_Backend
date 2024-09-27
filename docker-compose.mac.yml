@@ -29,3 +29,14 @@ services:
     ports:
       - '1025:1025'
       - '8025:8025'
+
+  minio:
+    image: minio/minio:latest
+    container_name: syntaxflavor_minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: always
+    env_file:
+      - ./env/minio.env
+    command: server /data --console-address ":9001"

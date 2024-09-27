@@ -47,19 +47,23 @@ public class BillAPI {
             // Create the BillResponseDTO from the created Bill entity
             BillResponseDTO billResponse = new BillResponseDTO(createdBill);
 
-            // Generate the PDF of the bill using the created Bill object
-            ByteArrayOutputStream pdfStream = billBL.generateBillPdf(createdBill);
+            // Prepare the email to send
+            String emailSubject = "Bill for order " + billRequest.getOrderId();
+            String emailBody = "Dear customer, please find attached the bill for your order " + billRequest.getOrderId();
 
-            // Send the email with the bill attached
-            String emailSubject = "Your Bill from Syntax Flavor";
-            String emailBody = "Dear " + billRequest.getCustomerName() + ",\n\nAttached is your bill. Thank you for your purchase.";
+
+            // Generate the PDF of the bill using the created Bill object and save it to Minio
+            byte[] pdfData = billBL.generateBillPdf( createdBill.getId(), createdBill);
+
+            // Enviar el correo con el archivo adjunto
             emailService.sendEmailWithAttachment(
                     billRequest.getCustomerEmail(),
                     emailSubject,
                     emailBody,
-                    pdfStream.toByteArray(),
+                    pdfData,  // Pasar el archivo generado como byte array
                     "bill.pdf"
             );
+
 
             // Respond with success
             sfr.setResponseCode("BIL-001");
