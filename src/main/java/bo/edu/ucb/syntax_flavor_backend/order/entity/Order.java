@@ -62,7 +62,7 @@ public class Order implements Serializable {
     private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")
     private Collection<Bill> billsCollection;
-    @JoinColumn(name = "custom", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @ManyToOne
     private Customer custom;
 
@@ -129,11 +129,11 @@ public class Order implements Serializable {
         this.billsCollection = billsCollection;
     }
 
-    public Customer getCustom() {
+    public Customer getCustomerId() {
         return custom;
     }
 
-    public void setCustom(Customer custom) {
+    public void setCustomerId(Customer custom) {
         this.custom = custom;
     }
 
