@@ -54,12 +54,12 @@ public class OrderBL {
         return orderPage.map(order -> OrderDTO.fromEntity(order));
     }
 
-    //Añadir un query param para filtrar las ordenes por estado, y definir los estados como constantes en español
     public Page<OrderDTO> listOrdersByStatus(int pageNumber, String status) {
         LOGGER.info("Listing orders by status");
         Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+        LOGGER.info("Querying with startOfDay: {}, endOfDay: {}, status: {}", startOfDay, endOfDay, status);
         Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenAndStatusOrderByOrderTimestampAsc(startOfDay, endOfDay, status, pageable);
         if (orderPage == null) {
             LOGGER.error("Error listing orders by status");

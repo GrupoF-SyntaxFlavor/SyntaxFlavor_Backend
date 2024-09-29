@@ -48,7 +48,6 @@ public class OrderAPI {
         }
     }
 
-    //Añadir un query param para filtrar las ordenes por estado, y definir los estados como constantes en español
     @Operation(summary = "List orders by status", description = "Can page through orders by status, the displayed orders are the most recent ones. No filters are applied at this moment.")
     @GetMapping("/status")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber, @RequestParam String status) {
