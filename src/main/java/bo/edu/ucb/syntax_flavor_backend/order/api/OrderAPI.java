@@ -48,6 +48,24 @@ public class OrderAPI {
         }
     }
 
+    //Añadir un query param para filtrar las ordenes por estado, y definir los estados como constantes en español
+    @Operation(summary = "List orders by status", description = "Can page through orders by status, the displayed orders are the most recent ones. No filters are applied at this moment.")
+    @GetMapping("/status")
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber, @RequestParam String status) {
+        LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
+        SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        try {
+            Page<OrderDTO> orders = orderBL.listOrdersByStatus(pageNumber, status);
+            sfr.setResponseCode("ORD-000");
+            sfr.setPayload(orders);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-600");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
     @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The cart must have a customer ID and a map of menu item IDs to quantities ordered. Returns the same object plus an ID of insertion")
     @PostMapping
     public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(@RequestBody CartDTO cart) {
