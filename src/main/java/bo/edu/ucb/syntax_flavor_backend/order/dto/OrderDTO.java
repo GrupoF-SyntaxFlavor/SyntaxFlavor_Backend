@@ -22,7 +22,7 @@ public class OrderDTO {
     public static OrderDTO fromEntity(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setOrderId(order.getId());
-        orderDTO.setCustomerName(order.getCustom().getUsersId().getName());
+        orderDTO.setCustomerName(order.getCustomerId().getUsersId().getName());
         orderDTO.setCutomerTable("0"); // TODO: this will be set later from the request
         orderDTO.setOrderStatus(order.getStatus());
         orderDTO.setOrderTimestamp(order.getOrderTimestamp().toString());
