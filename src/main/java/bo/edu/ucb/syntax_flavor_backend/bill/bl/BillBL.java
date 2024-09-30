@@ -20,6 +20,7 @@ import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 
 @Component
@@ -36,17 +37,21 @@ public class BillBL {
         this.orderRepository = orderRepository;
         this.minioFileService = minioFileService;
     }
-    
+
     public Bill createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException {
         LOGGER.info("Creating bill from order: {}", billRequest);
         try{
-            Order order = orderRepository.findById(billRequest.getOrderId()).get();
+            Optional<Order> optionalOrder = orderRepository.findById(billRequest.getOrderId());
+            if (optionalOrder.isEmpty()) {
+                throw new RuntimeException("Order with id " + billRequest.getOrderId() + " not found");
+            }
+            Order order = optionalOrder.get();
             Bill createdBill = new Bill();
             createdBill.setOrdersId(order);
             createdBill.setBillName(billRequest.getBillName());
             createdBill.setNit(billRequest.getNit());
             createdBill.setTotalCost(billRequest.getTotalCost());
-            
+
             billRepository.save(createdBill);
             return createdBill;
         }
@@ -54,7 +59,6 @@ public class BillBL {
             LOGGER.error("Error creating bill from order: {}", e.getMessage());
             throw new RuntimeException("Error creating bill from order: " + e.getMessage());
         }
-        
     }
 
     public byte[] generateBillPdfBytes(Bill bill) {
