@@ -1,8 +1,11 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.bl;
 
+import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.slf4j.Logger;
@@ -15,25 +18,23 @@ import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
 import bo.edu.ucb.syntax_flavor_backend.bill.repository.BillRepository;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
 
 
 @Component
 public class BillBL {
     Logger LOGGER = LoggerFactory.getLogger(BillBL.class);
 
-    @Autowired
-    private BillRepository billRepository;
+    private final BillRepository billRepository;
+    private final OrderRepository orderRepository;
+    private final MinioFileService minioFileService;
 
     @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private MinioFileService minioFileService;
-
-    public BillBL(BillRepository billRepository, OrderRepository orderRepository) {
+    public BillBL(BillRepository billRepository, OrderRepository orderRepository, MinioFileService minioFileService) {
         this.billRepository = billRepository;
         this.orderRepository = orderRepository;
+        this.minioFileService = minioFileService;
     }
     
     public Bill createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException {
@@ -62,14 +63,40 @@ public class BillBL {
             // Create a PDF document
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
 
+            // Add a custom title
+            Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+            Paragraph title = new Paragraph("Bill Details", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            // Add a line
+            PdfContentByte cb = writer.getDirectContent();
+            cb.setLineWidth(1f);
+            cb.moveTo(20, writer.getVerticalPosition(false) - 10);
+            cb.lineTo(document.right() - 20, writer.getVerticalPosition(false) - 10);
+            cb.stroke();
+
             // Add content to the PDF using bill information
-            document.add(new Paragraph("Bill ID: " + bill.getId()));
-            document.add(new Paragraph("Customer: " + bill.getBillName()));
-            document.add(new Paragraph("Total Amount: " + bill.getTotalCost()));
-            // Add more bill details as needed
+            PdfPTable table = new PdfPTable(2); // 2 columns
+            PdfPCell cell1 = new PdfPCell(new Phrase("Bill ID:"));
+            PdfPCell cell2 = new PdfPCell(new Phrase(String.valueOf(bill.getId())));
+            table.addCell(cell1);
+            table.addCell(cell2);
+            document.add(table);
+
+            // Calculate total amount
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (OrderItem item : bill.getOrdersId().getOrderItemsCollection()) {
+                totalAmount = totalAmount.add(item.getPrice().multiply(new BigDecimal(item.getQuantity())));
+            }
+
+            // Add total amount to the PDF
+            Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + totalAmount);
+            totalAmountParagraph.setAlignment(Element.ALIGN_RIGHT);
+            document.add(totalAmountParagraph);
 
             document.close();
 

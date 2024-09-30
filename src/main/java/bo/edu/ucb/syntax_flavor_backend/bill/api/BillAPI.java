@@ -1,7 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.api;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
-import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +25,13 @@ import java.io.ByteArrayOutputStream;
 public class BillAPI {
     Logger LOGGER = LoggerFactory.getLogger(BillAPI.class);
 
-    @Autowired
-    private BillBL billBL;
+    private final BillBL billBL;
+    private final EmailService emailService;
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private MinioFileService minioFileService;
-
-    public BillAPI(BillBL billBL) {
+    public BillAPI(BillBL billBL, EmailService emailService) {
         this.billBL = billBL;
+        this.emailService = emailService;
     }
 
     @Operation(summary = "Create bill for an Order", description = "Creates a bill for an order and sends the bill to the provided email.")
