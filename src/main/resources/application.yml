@@ -40,7 +40,7 @@ spring:
         ssl-required: external
         bearer-only: false
         credentials:
-            secret: mTMVsdGKRd0mlPACla18ZMvrYbKMfY5y # Agrega el client secret aquí, si tu cliente es confidencial
+            secret: CL2DgaYoMQ81hsyw1FqbG6wrf6Mw9m60 # Agrega el client secret aquí, si tu cliente es confidencial
         admin:
             username: admin # Usuario administrador de Keycloak
             password: admin # Contraseña del administrador

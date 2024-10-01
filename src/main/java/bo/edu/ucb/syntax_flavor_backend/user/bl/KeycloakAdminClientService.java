@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.UserRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import bo.edu.ucb.syntax_flavor_backend.user.repository.UserRepository;
 
@@ -36,7 +37,7 @@ public class KeycloakAdminClientService {
         this.userRepository = userRepository;
     }
 
-    public UserDTO createKeycloakUser(UserDTO user) {
+    public UserDTO createKeycloakUser(UserRequestDTO user) {
         LOGGER.info("Creating user in Keycloak Realm {}", REALM);
         
         // Verifica que el nombre no sea nulo antes de crear el usuario
@@ -48,7 +49,7 @@ public class KeycloakAdminClientService {
     
         // Generamos las credenciales de contraseña para el usuario
         LOGGER.info("Generating password credentials for user {}", user.getEmail());
-        CredentialRepresentation credential = createPasswCredentials("123456");
+        CredentialRepresentation credential = createPasswCredentials(user.getPassword());
     
         // Creamos la representación del usuario en Keycloak
         UserRepresentation kcUser = new UserRepresentation();
@@ -69,6 +70,7 @@ public class KeycloakAdminClientService {
             User localUser = new User();
             localUser.setName(user.getName());
             localUser.setEmail(user.getEmail());
+            localUser.setPassword(user.getPassword());
             Timestamp currentlyDate = new Timestamp(System.currentTimeMillis());
             localUser.setCreatedAt(currentlyDate);
             localUser.setUpdatedAt(currentlyDate);

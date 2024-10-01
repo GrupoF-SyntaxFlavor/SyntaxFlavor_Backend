@@ -51,6 +51,9 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "email", unique = true)
     private String email;
+    @Basic(optional = false)
+    @Column(name = "password", unique = true)
+    private String password;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -103,6 +106,14 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Date getCreatedAt() {

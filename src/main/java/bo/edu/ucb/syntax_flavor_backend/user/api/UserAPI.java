@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakAdminClientService;
 // import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakProvider;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.UserRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,11 +32,11 @@ public class UserAPI {
 
     @Operation(summary = "Create user", description = "Creates an user and saves data in keycloack realm. Data: id, name, email, number phone, date created at and date updated at.")
     @PostMapping("/public/user")//public endpoint to create user
-    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserDTO user) {
+    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserRequestDTO user) {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
         
         // Depuración para validar que los valores no sean nulos
-        LOGGER.debug("UserDTO received - userId: {}, name: {}, email: {}, phone: {}", user.getUserId(), user.getName(), user.getEmail());
+        LOGGER.debug("UserDTO received -  name: {}, email: {}, password: {}", user.getName(), user.getEmail(), user.getPassword());//TODO que no se vea el password
 
         SyntaxFlavorResponse<UserDTO> sfr = new SyntaxFlavorResponse<>();
         try {

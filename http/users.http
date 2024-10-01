@@ -5,10 +5,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "userId": 1,
-    "name": "example",
-    "email": "example@example.com",
-    "phone": "123456"
+    "name": "example1234",
+    "email": "example1234@example.com",
+    "password": "123456789"
 }
 
 ####

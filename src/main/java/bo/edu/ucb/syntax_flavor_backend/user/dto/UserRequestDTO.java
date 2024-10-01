@@ -13,7 +13,7 @@ public class UserRequestDTO {
     private String email;
     @NotNull
     private String password;
-    
+
     public UserRequestDTO() {
 
     }
@@ -27,7 +27,7 @@ public class UserRequestDTO {
     public UserRequestDTO(User user) {
         this.name = user.getName();
         this.email = user.getEmail();
-        // this.password = user.getPassword();
+        this.password = user.getPassword();
     }
 
     public String getName() {
@@ -46,4 +46,11 @@ public class UserRequestDTO {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
