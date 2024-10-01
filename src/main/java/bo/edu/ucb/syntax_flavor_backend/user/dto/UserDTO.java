@@ -13,7 +13,6 @@ public class UserDTO {
     private String name;
     @NotNull
     private String email;
-    private String phone;
 
     public UserDTO() {
 
@@ -30,7 +29,6 @@ public class UserDTO {
         this.userId = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.phone = user.getPhone();
     }
 
     public Integer getUserId() {

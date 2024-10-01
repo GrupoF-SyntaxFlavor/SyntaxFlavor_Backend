@@ -22,3 +22,21 @@ services:
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+  minio:
+    image: minio/minio:latest
+    container_name: syntaxflavor_minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: always
+    env_file:
+      - ./env/minio.env
+    command: server /data --console-address ":9001"

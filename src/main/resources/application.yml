@@ -13,6 +13,24 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: true
+    minio:
+        url: http://localhost:9000
+        access-key: minioadmin
+        secret-key: minioadmin
+        bucket-name: syntaxflavorbucket
+            
+
+    mail:
+        host: localhost
+        port: 1025
+        default-encoding: UTF-8
+        protocol: smtp
+        properties:
+            mail:
+                smtp:
+                    auth: false
+                    starttls:
+                        enable: false
 
     keycloak:
         auth-server-url: http://localhost:8082
@@ -29,6 +47,8 @@ spring:
 
 server:
     port: 8080
+
+
 
 ---
 
@@ -68,6 +88,12 @@ logging:
         org.keycloak: DEBUG
         org.springframework.web: TRACE
         bo.edu.ucb: TRACE
+    minio:
+        endpoint: http://minio:9000
+        access-key: minioadmin
+        secret-key: minioadmin
+        bucket: syntaxflavor_bucket
+        
 server:
     port: 8080
 

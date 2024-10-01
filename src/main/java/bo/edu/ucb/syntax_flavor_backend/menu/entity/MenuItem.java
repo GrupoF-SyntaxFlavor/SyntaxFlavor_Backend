@@ -56,10 +56,13 @@ public class MenuItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
-    @Column(name = "created_at")
+    @Basic(optional = true)
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "menuItemId")
@@ -108,6 +111,14 @@ public class MenuItem implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Date getCreatedAt() {

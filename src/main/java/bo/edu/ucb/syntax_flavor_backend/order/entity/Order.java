@@ -52,17 +52,17 @@ public class Order implements Serializable {
     private Date orderTimestamp = new Date();
     @Column(name = "status")
     private String status;
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "orderId")
     private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")
     private Collection<Bill> billsCollection;
-    @JoinColumn(name = "custom", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @ManyToOne
     private Customer custom;
 
@@ -129,11 +129,11 @@ public class Order implements Serializable {
         this.billsCollection = billsCollection;
     }
 
-    public Customer getCustom() {
+    public Customer getCustomerId() {
         return custom;
     }
 
-    public void setCustom(Customer custom) {
+    public void setCustomerId(Customer custom) {
         this.custom = custom;
     }
 
