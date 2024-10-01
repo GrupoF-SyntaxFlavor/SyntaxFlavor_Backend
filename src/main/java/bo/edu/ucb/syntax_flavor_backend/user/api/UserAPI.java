@@ -35,7 +35,7 @@ public class UserAPI {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
         
         // Depuración para validar que los valores no sean nulos
-        LOGGER.debug("UserDTO received - userId: {}, name: {}, email: {}, phone: {}", user.getUserId(), user.getName(), user.getEmail(), user.getPhone());
+        LOGGER.debug("UserDTO received - userId: {}, name: {}, email: {}, phone: {}", user.getUserId(), user.getName(), user.getEmail());
 
         SyntaxFlavorResponse<UserDTO> sfr = new SyntaxFlavorResponse<>();
         try {

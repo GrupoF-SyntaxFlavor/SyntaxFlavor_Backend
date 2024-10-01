@@ -58,7 +58,7 @@ public class KeycloakAdminClientService {
         kcUser.setFirstName(user.getName());
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
-        kcUser.setAttributes(Collections.singletonMap("phone", Collections.singletonList(user.getPhone())));
+        // kcUser.setAttributes(Collections.singletonMap("phone", Collections.singletonList(user.getPhone())));
     
         LOGGER.info("Creating user");
         Response response = usersResource.create(kcUser);
@@ -69,7 +69,6 @@ public class KeycloakAdminClientService {
             User localUser = new User();
             localUser.setName(user.getName());
             localUser.setEmail(user.getEmail());
-            localUser.setPhone(user.getPhone());
             Timestamp currentlyDate = new Timestamp(System.currentTimeMillis());
             localUser.setCreatedAt(currentlyDate);
             localUser.setUpdatedAt(currentlyDate);

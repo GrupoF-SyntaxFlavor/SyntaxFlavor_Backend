@@ -6,8 +6,8 @@ Accept: application/json
 
 {
     "userId": 1,
-    "name": "example3",
-    "email": "example3@example.com",
+    "name": "example",
+    "email": "example@example.com",
     "phone": "123456"
 }
 
