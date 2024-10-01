@@ -92,6 +92,11 @@ public class OrderAPI {
             sfr.setResponseCode("ORD-002");
             sfr.setPayload(order);
             return ResponseEntity.ok(sfr);
+        } catch (IllegalStateException e) {
+            LOGGER.error("Failed to cancel order: {}", e.getMessage());
+            sfr.setResponseCode("ORD-602");
+            sfr.setErrorMessage("Failed to cancel order: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-602");
             sfr.setErrorMessage(e.getMessage());
