@@ -14,9 +14,21 @@ spring:
             ddl-auto: update
         show-sql: true
 
+    keycloak:
+        auth-server-url: http://localhost:8082
+        realm: syntaxflavor_users
+        resource: syntaxflavor
+        public-client: false
+        ssl-required: external
+        bearer-only: false
+        credentials:
+            secret: I4IRfT26OhjlJAiTbVtSApIHvf4zXl0G # Agrega el client secret aquí, si tu cliente es confidencial
+        admin:
+            username: admin # Usuario administrador de Keycloak
+            password: admin # Contraseña del administrador
+
 server:
     port: 8080
-
 
 ---
 
@@ -35,24 +47,37 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: false
-        
+
+    keycloak:
+        auth-server-url: http://localhost:8082
+        realm: syntaxflavor_users
+        resource: syntaxflavor
+        public-client: false
+        ssl-required: external
+        bearer-only: false
+        credentials:
+            secret: I4IRfT26OhjlJAiTbVtSApIHvf4zXl0G # Agrega el client secret aquí, si tu cliente es confidencial
+        admin:
+            username: admin # Usuario administrador de Keycloak
+            password: admin # Contraseña del administrador
+
+logging:
+    level:
+        org.springframework: DEBUG
+        org.hibernate: DEBUG
+        org.keycloak: DEBUG
+        org.springframework.web: TRACE
+        bo.edu.ucb: TRACE
 server:
     port: 8080
 
 ---
-keycloak:
-  auth-server-url: http://localhost:8082/realms/syntaxflavor_users
-  realm: syntaxflavor_users
-  resource: syntaxflavor # El nombre del cliente que creaste en Keycloak
-  public-client: true
-  ssl-required: external
-  bearer-only: false
 
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8082/realms/syntaxflavor_users
-
-
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8082/realms/syntaxflavor_users
+server:
+    port: 8080

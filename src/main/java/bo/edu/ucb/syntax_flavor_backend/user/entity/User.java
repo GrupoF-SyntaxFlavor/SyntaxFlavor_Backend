@@ -44,8 +44,10 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "kc_user_id", nullable = false, unique = true)
+    private String kcUserId;
     @Basic(optional = false)
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true) // El name será único, usándolo como username
     private String name;
     @Basic(optional = false)
     @Column(name = "email")
@@ -80,6 +82,14 @@ public class User implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getKcUserId() {
+        return kcUserId;
+    }
+
+    public void setKcUserId(String kcUserId) {
+        this.kcUserId = kcUserId;
     }
 
     public String getName() {
