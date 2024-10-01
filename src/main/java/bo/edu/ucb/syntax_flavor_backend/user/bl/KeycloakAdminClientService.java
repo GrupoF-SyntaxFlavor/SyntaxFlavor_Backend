@@ -4,9 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -141,6 +147,33 @@ public class KeycloakAdminClientService {
             return true; // Si no se lanza excepción, el usuario existe
         } catch (Exception e) {
             return false; // El usuario no existe
+        }
+    }
+
+    public AccessTokenResponse login(String username, String password) {
+        Client client = ClientBuilder.newClient();
+
+        // Construimos el formulario con los datos del usuario
+        Form form = new Form();
+        form.param("client_id", "syntaxflavor"); // Tu client_id
+        form.param("grant_type", "password");
+        form.param("username", username);
+        form.param("password", password);
+        form.param("client_secret", "NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr");
+
+        // Realizamos la solicitud POST para obtener el token
+        Response response = client
+                .target("http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/token")
+                .request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
+                .post(Entity.form(form));
+
+        if (response.getStatus() == 200) {
+            // Convertimos la respuesta en un AccessTokenResponse
+            AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
+            return tokenResponse;
+        } else {
+            String errorMessage = response.readEntity(String.class);
+            throw new RuntimeException("Failed to login with Keycloak: " + errorMessage);
         }
     }
 }

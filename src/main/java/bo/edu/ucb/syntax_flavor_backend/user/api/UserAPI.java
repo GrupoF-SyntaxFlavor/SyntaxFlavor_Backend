@@ -1,5 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.user.api;
 
+import org.keycloak.representations.AccessTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakAdminClientService;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
 // import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakProvider;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserRequestDTO;
@@ -49,6 +51,34 @@ public class UserAPI {
             UserDTO userResponse = kcAdminClient.createKeycloakUser(user, true);
             sfr.setResponseCode("USR-001");
             sfr.setPayload(userResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("USR-601");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "Login user", description = "Login an user and compare data in keycloack realm. Data: username(email in keycloak), password.")
+    @PostMapping("/public/login")//public endpoint to create user
+    public ResponseEntity<SyntaxFlavorResponse<AccessTokenResponse>> login(@RequestBody LoginDTO login) {
+
+        LOGGER.info("Endpoint POST /api/v1/public/login with login: {}", login);
+        
+        // Depuración para validar que los valores no sean nulos
+        LOGGER.debug("LoginDTO received -  email: {}, password: {}", login.getEmail(), login.getPassword());//TODO que no se vea el password
+
+        SyntaxFlavorResponse<AccessTokenResponse> sfr = new SyntaxFlavorResponse<>();
+        try {
+            if (login.getEmail() == null || login.getPassword() == null) {
+                sfr.setResponseCode("USR-601");
+                sfr.setErrorMessage("Email and Password are required to login in Keycloak.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
+            }
+
+            AccessTokenResponse accessTokenResponse = kcAdminClient.login(login.getEmail(), login.getPassword());
+            sfr.setResponseCode("USR-001");
+            sfr.setPayload(accessTokenResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("USR-601");
