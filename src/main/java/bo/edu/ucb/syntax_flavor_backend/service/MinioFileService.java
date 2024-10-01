@@ -1,7 +1,9 @@
 package bo.edu.ucb.syntax_flavor_backend.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,31 +64,58 @@ public class MinioFileService {
         }
 }
 
-    public String uploadFile(MultipartFile file){
-        try {
-            String fileName = file.getOriginalFilename();
+    public String uploadFile(String fileName, byte[] fileData, String contentType) {
+        try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileData)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
                     .object(fileName)
-                    .stream(file.getInputStream(), file.getSize(), -1)
-                    .contentType(file.getContentType())
+                    .stream(fileStream, fileData.length, -1)
+                    .contentType(contentType)
                     .build());
-            return fileName; // TODO: return the URL of the uploaded image
-        } catch (MinioException | IOException e) {
-            throw new RuntimeException("Error during Minio upload", e);
+
+            // Construct the URL manually
+            String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001)
+            return minioBaseUrl + "/" + bucketName + "/" + fileName; // Constructed URL for the uploaded file
+        } catch (MinioException e) {
+            throw new RuntimeException("MinIO error during upload: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("IO error during upload: " + e.getMessage(), e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("No such algorithm error: " + e.getMessage(), e);
         } catch (InvalidKeyException e) {
-            throw new RuntimeException("Invalid Minio credentials", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error uploading file to Minio", e);
+            throw new RuntimeException("Invalid key error: " + e.getMessage(), e);
+        }
+    }
+
+    public String uploadPdf(String fileName, byte[] pdfData) {
+        try (ByteArrayInputStream pdfStream = new ByteArrayInputStream(pdfData)) {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .stream(pdfStream, pdfData.length, -1)
+                    .contentType("application/pdf") // Set content type to PDF
+                    .build());
+
+            // Construct the URL manually
+            String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001)
+            return minioBaseUrl + "/" + bucketName + "/" + fileName; // Constructed URL for the uploaded file
+        } catch (MinioException e) {
+            throw new RuntimeException("MinIO error during upload: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("IO error during upload: " + e.getMessage(), e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("No such algorithm error: " + e.getMessage(), e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException("Invalid key error: " + e.getMessage(), e);
         }
     }
 
     // Function to get s single file from Minio
-    public byte[] getFile(String fileName) {
+    public byte[] getFile(String objectName) {
         try {
             GetObjectResponse response = minioClient.getObject(GetObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fileName)
+                    .object(objectName) // Use just the object name here
                     .build());
             return response.readAllBytes();
         } catch (MinioException e) {
@@ -97,5 +126,6 @@ public class MinioFileService {
             throw new RuntimeException("Error downloading file from Minio", e);
         }
     }
-    
+
+
 }
