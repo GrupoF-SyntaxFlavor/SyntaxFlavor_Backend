@@ -12,5 +12,10 @@ curl -X POST "http://localhost:8082/realms/syntaxflavor_users/protocol/openid-co
 -H "Content-Type: application/x-www-form-urlencoded" \
 -d "grant_type=password" \
 -d "client_id=syntaxflavor" \
--d "username=diana" \
--d "password=123456" \
+-d "client_secret=NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr" \
+-d "username=example1234@example.com" \
+-d "password=123456789"
+
+
+#### funciona :D
+

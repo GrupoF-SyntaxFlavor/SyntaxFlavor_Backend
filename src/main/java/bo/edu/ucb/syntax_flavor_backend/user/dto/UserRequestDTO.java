@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 // import lombok.NoArgsConstructor;
 
 public class UserRequestDTO {
+
+    private Integer id;
+
     @NotNull
     private String name;
     @NotNull
@@ -18,6 +21,14 @@ public class UserRequestDTO {
 
     }
 
+    public UserRequestDTO(Integer id, String name, String email, String password ) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+
     public UserRequestDTO( String name, String email, String password ) {
         this.name = name;
         this.email = email;
@@ -28,6 +39,14 @@ public class UserRequestDTO {
         this.name = user.getName();
         this.email = user.getEmail();
         this.password = user.getPassword();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

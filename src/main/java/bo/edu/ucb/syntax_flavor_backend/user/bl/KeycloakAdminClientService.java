@@ -2,7 +2,6 @@ package bo.edu.ucb.syntax_flavor_backend.user.bl;
 
 import java.util.Collections;
 import java.util.List;
-import java.sql.Timestamp;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.core.Response;
@@ -31,6 +30,9 @@ public class KeycloakAdminClientService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private UserBL userBL;
 
     private final KeycloakProvider kcProvider;
 
@@ -83,23 +85,11 @@ public class KeycloakAdminClientService {
         if (response.getStatus() == 201) {
             LOGGER.info("User created in Keycloak, saving to local database");
             if(!inDB){
-                return new UserDTO();
+                UserDTO userUpdated = userBL.setKeyCloakID(user.getId(), response);
+                return userUpdated;
             }
-            User localUser = new User();
-            localUser.setName(user.getName());
-            localUser.setEmail(user.getEmail());
-            localUser.setPassword(user.getPassword());
-            Timestamp currentlyDate = new Timestamp(System.currentTimeMillis());
-            localUser.setCreatedAt(currentlyDate);
-            localUser.setUpdatedAt(currentlyDate);
-    
-            // Extraemos el ID de usuario de Keycloak a partir de la respuesta
-            String kcUserId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-            localUser.setKcUserId(kcUserId);
-    
-            // Guardamos el usuario en la base de datos local
-            User userCreated = userRepository.save(localUser);
-            return new UserDTO(userCreated);
+            UserDTO userCreated = userBL.createUser(user, response);
+            return userCreated;
         } else {
             String errorMessage = response.readEntity(String.class);
             LOGGER.error("Failed to create user in Keycloak with status {} \n{}", response.getStatusInfo(), errorMessage);
@@ -129,12 +119,13 @@ public class KeycloakAdminClientService {
             if (localUser.getKcUserId() == null || !userExistsInKeycloak(usersResource, localUser.getKcUserId())) {
                 // Crear el usuario en Keycloak
                 UserRequestDTO userRequest = new UserRequestDTO();
+                userRequest.setId(localUser.getId());
                 userRequest.setEmail(localUser.getEmail());
                 userRequest.setName(localUser.getName());
-                userRequest.setPassword(localUser.getPassword()); // Asegúrate de que el manejo de contraseñas sea seguro
+                userRequest.setPassword(localUser.getPassword()); //TODO que no se vea el password
                 
                 try {
-                    createKeycloakUser(userRequest, false);//TODO cambiar la funcion
+                    createKeycloakUser(userRequest, false);
                     LOGGER.info("User {} created in Keycloak", localUser.getEmail());
                 } catch (RuntimeException e) {
                     LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage());
