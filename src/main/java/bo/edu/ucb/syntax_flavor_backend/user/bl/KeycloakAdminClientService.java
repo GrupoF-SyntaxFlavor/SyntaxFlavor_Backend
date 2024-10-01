@@ -1,8 +1,10 @@
 package bo.edu.ucb.syntax_flavor_backend.user.bl;
 
 import java.util.Collections;
+import java.util.List;
 import java.sql.Timestamp;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.core.Response;
 
 import org.keycloak.admin.client.resource.UsersResource;
@@ -32,12 +34,25 @@ public class KeycloakAdminClientService {
 
     private final KeycloakProvider kcProvider;
 
+    @PostConstruct
+    public void init() {
+        try {
+            LOGGER.info("Synchronizing users with Keycloak...");
+            synchronizeUsersWithKeycloak();
+            LOGGER.info("User synchronization completed.");
+        } catch (Exception e) {
+            LOGGER.error("Error during user synchronization with Keycloak: {}", e.getMessage());
+            // Manejo adicional de errores si es necesario
+        }
+    }
+
     public KeycloakAdminClientService(KeycloakProvider keycloakProvider, UserRepository userRepository) {
         this.kcProvider = keycloakProvider;
         this.userRepository = userRepository;
+        
     }
 
-    public UserDTO createKeycloakUser(UserRequestDTO user) {
+    public UserDTO createKeycloakUser(UserRequestDTO user, Boolean inDB) {
         LOGGER.info("Creating user in Keycloak Realm {}", REALM);
         
         // Verifica que el nombre no sea nulo antes de crear el usuario
@@ -53,7 +68,7 @@ public class KeycloakAdminClientService {
     
         // Creamos la representación del usuario en Keycloak
         UserRepresentation kcUser = new UserRepresentation();
-        kcUser.setUsername(user.getName()); // Usamos 'name' como 'username' en Keycloak
+        kcUser.setUsername(user.getEmail());
         kcUser.setCredentials(Collections.singletonList(credential));
         kcUser.setEmail(user.getEmail());
         kcUser.setFirstName(user.getName());
@@ -67,6 +82,9 @@ public class KeycloakAdminClientService {
     
         if (response.getStatus() == 201) {
             LOGGER.info("User created in Keycloak, saving to local database");
+            if(!inDB){
+                return new UserDTO();
+            }
             User localUser = new User();
             localUser.setName(user.getName());
             localUser.setEmail(user.getEmail());
@@ -95,5 +113,43 @@ public class KeycloakAdminClientService {
         credential.setValue(password);
         credential.setTemporary(false);
         return credential;
+    }
+    //copiar los 1000 usuarios en keycloak
+
+    
+
+    public void synchronizeUsersWithKeycloak() {
+        LOGGER.info("Synchronizing users with Keycloak...");
+        
+        List<User> localUsers = userRepository.findAll(); // Obtener todos los usuarios de la base de datos local
+        UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
+        
+        for (User localUser : localUsers) {
+            // Verificar si el usuario ya existe en Keycloak
+            if (localUser.getKcUserId() == null || !userExistsInKeycloak(usersResource, localUser.getKcUserId())) {
+                // Crear el usuario en Keycloak
+                UserRequestDTO userRequest = new UserRequestDTO();
+                userRequest.setEmail(localUser.getEmail());
+                userRequest.setName(localUser.getName());
+                userRequest.setPassword(localUser.getPassword()); // Asegúrate de que el manejo de contraseñas sea seguro
+                
+                try {
+                    createKeycloakUser(userRequest, false);//TODO cambiar la funcion
+                    LOGGER.info("User {} created in Keycloak", localUser.getEmail());
+                } catch (RuntimeException e) {
+                    LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage());
+                }
+            }
+        }
+    }
+
+    private boolean userExistsInKeycloak(UsersResource usersResource, String kcUserId) {
+        try {
+            // Intentar obtener el usuario de Keycloak
+            usersResource.get(kcUserId);
+            return true; // Si no se lanza excepción, el usuario existe
+        } catch (Exception e) {
+            return false; // El usuario no existe
+        }
     }
 }

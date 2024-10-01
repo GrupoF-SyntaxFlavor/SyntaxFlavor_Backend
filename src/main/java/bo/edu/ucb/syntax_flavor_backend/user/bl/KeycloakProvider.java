@@ -45,7 +45,7 @@ public class KeycloakProvider {
         if (keycloak == null) {
             initializeKeycloak();
         }
-        LOGGER.info("Access Token: " + keycloak.tokenManager().getAccessTokenString());
+        // LOGGER.info("Access Token: " + keycloak.tokenManager().getAccessTokenString());
         return keycloak;
     }
 

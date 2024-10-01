@@ -43,7 +43,7 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "kc_user_id", nullable = false, unique = true)
+    @Column(name = "kc_user_id", nullable = true, unique = true)
     private String kcUserId;
     @Basic(optional = false)
     @Column(name = "name", nullable = false, unique = true) // El name será único, usándolo como username
@@ -52,7 +52,7 @@ public class User implements Serializable {
     @Column(name = "email", unique = true)
     private String email;
     @Basic(optional = false)
-    @Column(name = "password", unique = true)
+    @Column(name = "password")
     private String password;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)

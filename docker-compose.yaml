@@ -9,6 +9,8 @@ services:
     restart: always
     env_file:
       - ./env/postgres.env
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d # Crea la base de datos con el script en db/init.sql
 
   syntaxflavor_backend:
     build: .

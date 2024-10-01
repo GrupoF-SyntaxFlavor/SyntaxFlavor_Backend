@@ -46,7 +46,7 @@ public class UserAPI {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
             }
 
-            UserDTO userResponse = kcAdminClient.createKeycloakUser(user);
+            UserDTO userResponse = kcAdminClient.createKeycloakUser(user, true);
             sfr.setResponseCode("USR-001");
             sfr.setPayload(userResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
