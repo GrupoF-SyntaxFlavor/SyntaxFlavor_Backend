@@ -96,8 +96,12 @@ public class MenuBL {
         try {
             MenuItem menuItem = menuItemRepository.findById(id).orElseThrow(() -> new RuntimeException("Menu item not found"));
             if(menuItem.getImageUrl() == null) throw new RuntimeException("Menu item does not have an image");
-            return minioFileService.getFile(menuItem.getImageUrl());
+            // The object key is menu_items/images + the last two parts of the image URL
+            String objectKey = "menu_items/images/" + menuItem.getId() + "/" + menuItem.getImageUrl().substring(menuItem.getImageUrl().lastIndexOf("/"));
+            LOGGER.info("Getting image from Minio with object key: {}", objectKey);
+            return minioFileService.getFile(objectKey);
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("Error getting menu item image: {}", e.getMessage());
             throw new RuntimeException("Error getting menu item image: " + e.getMessage());
         }

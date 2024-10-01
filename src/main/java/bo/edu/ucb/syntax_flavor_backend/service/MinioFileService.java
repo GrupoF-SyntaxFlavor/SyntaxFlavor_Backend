@@ -9,15 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.BucketExistsArgs;
+import io.minio.GetBucketPolicyArgs;
 import io.minio.GetObjectArgs;
 import io.minio.GetObjectResponse;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveBucketArgs;
+import io.minio.SetBucketPolicyArgs;
 import io.minio.errors.MinioException;
 import jakarta.annotation.PostConstruct;
 
@@ -57,6 +58,31 @@ public class MinioFileService {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             } else {
                 LOGGER.info("Bucket already exists: {}", bucketName);
+            }
+
+            // Check if bucket policy is set
+            String policy = minioClient.getBucketPolicy(GetBucketPolicyArgs.builder().bucket(bucketName).build());
+            if (policy != null && !policy.isEmpty()) {
+                LOGGER.info("Bucket policy already set for bucket: {}", bucketName);
+            } else {
+                LOGGER.info("Bucket policy not set for bucket: {}. Setting policy...", bucketName);
+                // Set bucket policy for public read access
+                policy = "{\n" +
+                        "  \"Version\": \"2012-10-17\",\n" +
+                        "  \"Statement\": [\n" +
+                        "    {\n" +
+                        "      \"Effect\": \"Allow\",\n" +
+                        "      \"Principal\": \"*\",\n" +
+                        "      \"Action\": \"s3:GetObject\",\n" +
+                        "      \"Resource\": \"arn:aws:s3:::" + bucketName + "/*\"\n" +
+                        "    }\n" +
+                        "  ]\n" +
+                        "}";
+                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder()
+                        .bucket(bucketName)
+                        .config(policy)
+                        .build());
+                LOGGER.info("Bucket policy set for public read access.");
             }
         } catch (Exception e) {
             LOGGER.error("Error initializing Minio bucket", e);
