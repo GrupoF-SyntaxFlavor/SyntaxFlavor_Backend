@@ -1,7 +1,10 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.bl;
 
 import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
+import bo.edu.ucb.syntax_flavor_backend.service.EmailService;
 import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
+import bo.edu.ucb.syntax_flavor_backend.util.BillGenerationException;
+
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -14,54 +17,119 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.dto.BillRequestDTO;
+import bo.edu.ucb.syntax_flavor_backend.bill.dto.BillResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
+import bo.edu.ucb.syntax_flavor_backend.bill.entity.BillPdf;
+import bo.edu.ucb.syntax_flavor_backend.bill.repository.BillPdfRepository;
 import bo.edu.ucb.syntax_flavor_backend.bill.repository.BillRepository;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
 
 import java.math.BigDecimal;
-import java.util.Optional;
-
 
 @Component
 public class BillBL {
     Logger LOGGER = LoggerFactory.getLogger(BillBL.class);
 
-    private final BillRepository billRepository;
-    private final OrderRepository orderRepository;
-    private final MinioFileService minioFileService;
+    @Autowired
+    private BillPdfRepository billPdfRepository;
 
     @Autowired
-    public BillBL(BillRepository billRepository, OrderRepository orderRepository, MinioFileService minioFileService) {
-        this.billRepository = billRepository;
-        this.orderRepository = orderRepository;
-        this.minioFileService = minioFileService;
-    }
+    private BillRepository billRepository;
 
-    public Bill createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException {
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private MinioFileService minioFileService;
+
+    @Autowired
+    private EmailService emailService;
+
+    public BillResponseDTO createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException, BillGenerationException {
         LOGGER.info("Creating bill from order: {}", billRequest);
-        try{
-            Optional<Order> optionalOrder = orderRepository.findById(billRequest.getOrderId());
-            if (optionalOrder.isEmpty()) {
-                throw new RuntimeException("Order with id " + billRequest.getOrderId() + " not found");
-            }
-            Order order = optionalOrder.get();
-            Bill createdBill = new Bill();
+        Bill createdBill = new Bill();
+        BillPdf billPdf = new BillPdf();
+        try {
+            // Attempt to retireve the order
+            Order order = orderRepository.findById(billRequest.getOrderId()).orElseThrow(() -> new RuntimeException("Order not found"));
+
+            // Attempt to create the bill
             createdBill.setOrdersId(order);
             createdBill.setBillName(billRequest.getBillName());
             createdBill.setNit(billRequest.getNit());
             createdBill.setTotalCost(billRequest.getTotalCost());
 
             billRepository.save(createdBill);
-            return createdBill;
+            LOGGER.info("Succesfully created bill for order: {}", order.getId());
+
+            //
+            byte[] pdfBytes = generateBillPdf(createdBill);
+            LOGGER.info("Succesfully generated pdf for bill, attempting to upload to minIO");
+            String fileUrl = minioFileService.uploadPdf("Bill"+createdBill.getId()+".pdf", pdfBytes); 
+            LOGGER.info("Succesfully uploaded to minio as {} saving to Database", fileUrl);
+            billPdf.setPdfUrl(fileUrl);
+            billPdf.setSentTo(createdBill.getOrdersId().getCustomerId().getUsersId().getEmail());
+            billPdfRepository.save(billPdf);
+
+            // Attempt to send the bill email
+            BillResponseDTO billResponse = new BillResponseDTO(createdBill);
+            sendBillEmail(billPdf);
+            billPdf.setSentAt(new java.util.Date());
+            billPdfRepository.save(billPdf);
+            return billResponse;
+        }  catch (BillGenerationException billException) {
+            switch (billException.getGenerationProcessErrorCode()) {
+                case 0:
+                    LOGGER.error("Error saving bill from order", billException.getMessage());
+                    throw new RuntimeException("Error saving bill from order " + billException.getMessage()); 
+                case 1:
+                    LOGGER.error("Error generating PDF for bill", billException.getMessage());
+                    throw new RuntimeException("Error generating PDF for bill, Bill still created " + billException.getMessage());   
+                case 2:
+                    LOGGER.error("Error saving PDF to minio", billException.getMessage());
+                    throw new RuntimeException("Error saving PDF to minio, Bill still created " + billException.getMessage());   
+                case 3:
+                    LOGGER.error("Error generating email {}", billException.getMessage());
+                    throw new RuntimeException("Error generating bill PDF. Bill still created: " + billException.getMessage());
+                case 4:
+                    LOGGER.error("Error sending email {}", billException.getMessage());
+                    throw new RuntimeException("Error sending mail to user. Bill still created and stored in minio: " + billException.getMessage());
+                default:
+                    LOGGER.error("Error during createBillFromOrder: {}", billException.getMessage());
+                    throw new RuntimeException("Unidentified error during creation of bill from Order " + billException.getMessage());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error during createBillFromOrder: {}", e.getMessage());
+            throw new RuntimeException("Unidentified error during creation of bill from Order " + e.getMessage());
         }
-        catch(Exception e) {
-            LOGGER.error("Error creating bill from order: {}", e.getMessage());
-            throw new RuntimeException("Error creating bill from order: " + e.getMessage());
+
+        
+    }
+
+    public void sendBillEmail(BillPdf billPdf) throws BillGenerationException {
+        Integer orderNumber = billPdf.getBillId().getOrdersId().getId();
+        if (billPdf.getPdfUrl().isBlank()) throw new BillGenerationException("PDF URL is blank", 3);
+        if (billPdf.getSentTo().isBlank()) throw new BillGenerationException("Sent to email is blank", 3);
+        // Prepare the email to send
+        String emailSubject = "Bill for order ORD-" + orderNumber;
+        String emailBody = "Dear customer, please find attached the bill for your order: ORD-" + orderNumber;
+        byte[] attachment = minioFileService.getFile(billPdf.getPdfUrl());
+        try {
+            // Send the email with the attached PDF
+            emailService.sendEmailWithAttachment(
+                    billPdf.getSentTo(),
+                    emailSubject,
+                    emailBody,
+                    attachment, // Use the PDF byte array as the attachment
+                    "bill" + orderNumber + ".pdf");
+        } catch (Exception e) {
+            LOGGER.error("Error sending bill email: {}", e.getMessage());
+            throw new BillGenerationException("Error sending bill email: " + e.getMessage(), 4);
         }
     }
 
-    public byte[] generateBillPdfBytes(Bill bill) {
+    public byte[] generateBillPdf(Bill bill) throws BillGenerationException {
         LOGGER.info("Generating PDF for bill id: {}", bill.getId());
         try {
             // Create a PDF document
@@ -108,11 +176,10 @@ public class BillBL {
             return outputStream.toByteArray();
         } catch (Exception e) {
             LOGGER.error("Error generating bill PDF: {}", e.getMessage());
-            throw new RuntimeException("Error generating bill PDF: " + e.getMessage(), e);
+            throw new BillGenerationException("Error generating bill PDF: " + e.getMessage(), 1);
         }
     }
-
-
+/* 
     public String generateBillPdf(Bill bill) {
         LOGGER.info("Generating and uploading bill PDF for bill id: {}", bill.getId());
         try {
@@ -124,10 +191,10 @@ public class BillBL {
             String pdfUrl = minioFileService.uploadFile(fileName, pdfBytes, "application/pdf");
 
             LOGGER.info("Bill PDF uploaded successfully for bill id: {}", bill.getId());
-            return pdfUrl;  // Return the URL of the uploaded PDF
+            return pdfUrl; // Return the URL of the uploaded PDF
         } catch (Exception e) {
             LOGGER.error("Error generating and uploading bill PDF: {}", e.getMessage());
             throw new RuntimeException("Error generating and uploading bill PDF: " + e.getMessage(), e);
         }
-    }
+    } */
 }
