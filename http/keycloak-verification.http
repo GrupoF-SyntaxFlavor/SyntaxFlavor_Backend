@@ -1,0 +1,21 @@
+
+################################
+GET http://localhost:8080/api/v1/user/customer/profile
+Accept: application/json
+customerId: 1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVZlhDR3drc1JhRHh0eXZwbUdVM0RfZFRYeS1VZDY3N0hzN0NaSmJ4aTlzIn0.eyJleHAiOjE3Mjc0MjY5MDMsImlhdCI6MTcyNzM5MDkwMywianRpIjoiMTlhOTEwN2YtMjYyYy00YjBhLTlhMGUtMzNmYzhiOTk3ODdlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgyL3JlYWxtcy9zeW50YXhmbGF2b3JfdXNlcnMiLCJzdWIiOiIzNDUyYTM4YS1iYzk5LTQyNTUtOTE1Yy1jMjBlMjJhYTQwNTUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzeW50YXhmbGF2b3IiLCJzaWQiOiIyNjIwZmYzNC1hYTQ3LTQ2YmYtODQyYS1lYWI1NDkzNWMzOGMiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1zeW50YXhmbGF2b3JfdXNlcnMiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJEaWFuYSBNb250ZXJvIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGlhbmEiLCJnaXZlbl9uYW1lIjoiRGlhbmEiLCJmYW1pbHlfbmFtZSI6Ik1vbnRlcm8iLCJlbWFpbCI6ImRpYW5hLm1vbnRlcm8uZ0B1Y2IuZWR1LmJvIn0.PjFvYZ5PPJFSHP-cTuzt_bfyLLVQvIFpLxyrmEwDgMyAyDTL4mxBH1Nq7hZK4Z4fPXXDvGDqCII11U9CTzK8AisCy5fC3ZNPOxQzyH_-xiritLMNKQPZ0eDYpk6XfV3eoQ02mLCthbnEanV9nEf27s2aW8XeGV4o7_hOMMvHdiE9j0H9cAIRmVzqFKRqOzwhTa5mujrDyYLs1_lnqLvw6J1cWNL5od4p5jgGWlHjcV3litHWyuSUfSCUfvfwEXLLGOF0lYpw_d4U3MdtdM2UFH4maqftu3WnuONbHGQw1Pa285qTaNp5Jg6ZLerp7iWS5fISUCOjFpUPLGThMgB-Ng
+
+
+#############
+
+curl -X POST "http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/token" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "grant_type=password" \
+-d "client_id=syntaxflavor" \
+-d "client_secret=NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr" \
+-d "username=shoston0@imgur.com" \
+-d "password=iK1@ASV!@e<"
+
+
+#### funciona :D
+

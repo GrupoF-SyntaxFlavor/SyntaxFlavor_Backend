@@ -9,6 +9,8 @@ services:
     restart: always
     env_file:
       - ./env/postgres.env
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d # Crea la base de datos con el script en db/init.sql
 
   syntaxflavor_backend:
     build: .
@@ -21,6 +23,20 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
+  syntaxflavor_keycloak:
+    image: quay.io/keycloak/keycloak
+    container_name: syntaxflavor_keycloak
+    ports:
+      - '8082:8080'
+    env_file:
+      - ./env/keycloak.env
+    volumes:
+      - ./src/main/resources/imports/keycloak-realm:/opt/keycloak/data/import
+    depends_on:
+      - syntaxflavor_db
+    command: ["start-dev", "--import-realm"]
+    restart: always
+    
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
