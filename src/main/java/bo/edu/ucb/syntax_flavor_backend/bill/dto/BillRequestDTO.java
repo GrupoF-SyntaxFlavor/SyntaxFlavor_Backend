@@ -15,5 +15,7 @@ public class BillRequestDTO {
     private String billName;
     private String nit;
     private BigDecimal totalCost;
-
+    private String customerName;
+    private String customerEmail;
 }
+

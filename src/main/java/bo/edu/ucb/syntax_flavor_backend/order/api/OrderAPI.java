@@ -20,6 +20,8 @@ import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/v1/order")
 public class OrderAPI {
@@ -36,6 +38,23 @@ public class OrderAPI {
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             Page<OrderDTO> orders = orderBL.listOrdersByDatetime(pageNumber);
+            sfr.setResponseCode("ORD-000");
+            sfr.setPayload(orders);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-600");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "List orders by status", description = "Can page through orders by status, the displayed orders are the most recent ones. No filters are applied at this moment.")
+    @GetMapping("/status")
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber, @RequestParam String status) {
+        LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
+        SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        try {
+            Page<OrderDTO> orders = orderBL.listOrdersByStatus(pageNumber, status);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
@@ -73,6 +92,11 @@ public class OrderAPI {
             sfr.setResponseCode("ORD-002");
             sfr.setPayload(order);
             return ResponseEntity.ok(sfr);
+        } catch (IllegalStateException e) {
+            LOGGER.error("Failed to cancel order: {}", e.getMessage());
+            sfr.setResponseCode("ORD-602");
+            sfr.setErrorMessage("Failed to cancel order: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-602");
             sfr.setErrorMessage(e.getMessage());
@@ -92,6 +116,23 @@ public class OrderAPI {
             return ResponseEntity.ok(sfr);
         } catch (Exception e) {
             sfr.setResponseCode("ORD-603");
+            sfr.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+        }
+    }
+
+    @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer by ID")
+    @GetMapping("/customer")
+    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestParam int customerId) {
+        LOGGER.info("Endpoint GET /api/v1/order/customer with customerId: {}", customerId);
+        SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        try {
+            List<OrderDTO> orders = orderBL.listOrdersByCustomerId(customerId);
+            sfr.setResponseCode("ORD-000");
+            sfr.setPayload(orders);
+            return ResponseEntity.ok(sfr);
+        } catch (Exception e) {
+            sfr.setResponseCode("ORD-600");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
