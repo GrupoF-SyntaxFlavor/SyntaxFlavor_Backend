@@ -148,6 +148,7 @@ public class MinioFileService {
                     .build());
             return response.readAllBytes();
         } catch (MinioException e) {
+            e.printStackTrace();
             throw new RuntimeException("Error during Minio download", e);
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Invalid Minio credentials", e);

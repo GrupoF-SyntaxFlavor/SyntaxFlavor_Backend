@@ -1,6 +1,5 @@
 package bo.edu.ucb.syntax_flavor_backend.bill.api;
 
-import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class BillAPI {
             sfr.setResponseCode("BIL-001");
             sfr.setPayload(billResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
-        } catch (Exception e) {
+        } catch (Exception e) { //TODO: Handle different exceptions based on BillGenerationException generationProcessErrorCode
             LOGGER.error("Error creating bill: {}", e.getMessage());
             sfr.setResponseCode("BIL-600");
             sfr.setErrorMessage(e.getMessage());

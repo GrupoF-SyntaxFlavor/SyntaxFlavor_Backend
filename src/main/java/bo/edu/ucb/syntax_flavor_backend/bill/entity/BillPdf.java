@@ -44,8 +44,8 @@ public class BillPdf {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
-    @JoinColumn(name = "bill_id", referencedColumnName = "id")
-    @ManyToOne
+    @JoinColumn(name = "bill_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
     private Bill billId;
 
     // Required fields constructor

@@ -56,9 +56,21 @@ public class BillBL {
 
             // Attempt to create the bill
             createdBill.setOrdersId(order);
-            createdBill.setBillName(billRequest.getBillName());
-            createdBill.setNit(billRequest.getNit());
-            createdBill.setTotalCost(billRequest.getTotalCost());
+            // if both billing_name and NIT are present, then create the bill with those values
+            // alternatively, if a userId is present, then use the billing name and NIT from the user
+            // if none of the above are present, then throw an exception
+            if (billRequest.getBillName() != null && billRequest.getNit() != null) {
+                createdBill.setBillName(billRequest.getBillName());
+                createdBill.setNit(billRequest.getNit());
+            } else if (billRequest.getUserId() != null) {
+                createdBill.setBillName(order.getCustomerId().getBillName());
+                createdBill.setNit(order.getCustomerId().getNit());
+            } else {
+                throw new RuntimeException("Billing name and NIT are required");
+            }
+
+
+            createdBill.setTotalCost(getTotalCostByOrderId(order.getId()));
 
             billRepository.save(createdBill);
             LOGGER.info("Succesfully created bill for order: {}", order.getId());
@@ -66,10 +78,16 @@ public class BillBL {
             //
             byte[] pdfBytes = generateBillPdf(createdBill);
             LOGGER.info("Succesfully generated pdf for bill, attempting to upload to minIO");
-            String fileUrl = minioFileService.uploadPdf("Bill"+createdBill.getId()+".pdf", pdfBytes); 
+            // Generar un nombre de archivo único
+            String fileName = "bills/pdf/" + createdBill.getId() + "/" + System.currentTimeMillis() + "_" + "bill."+ createdBill.getId() + ".pdf";
+            LOGGER.info("Uploading PDF to minio as {}", fileName);
+            String fileUrl = minioFileService.uploadPdf(fileName, pdfBytes); 
             LOGGER.info("Succesfully uploaded to minio as {} saving to Database", fileUrl);
+            billPdf.setBillId(createdBill);
             billPdf.setPdfUrl(fileUrl);
-            billPdf.setSentTo(createdBill.getOrdersId().getCustomerId().getUsersId().getEmail());
+            String recipientEmail = order.getCustomerId().getUsersId().getEmail();
+            LOGGER.info("Sending bill to email: {}", recipientEmail);
+            billPdf.setSentTo(recipientEmail);
             billPdfRepository.save(billPdf);
 
             // Attempt to send the bill email
@@ -107,14 +125,18 @@ public class BillBL {
         
     }
 
-    public void sendBillEmail(BillPdf billPdf) throws BillGenerationException {
+    private void sendBillEmail(BillPdf billPdf) throws BillGenerationException {
         Integer orderNumber = billPdf.getBillId().getOrdersId().getId();
         if (billPdf.getPdfUrl().isBlank()) throw new BillGenerationException("PDF URL is blank", 3);
         if (billPdf.getSentTo().isBlank()) throw new BillGenerationException("Sent to email is blank", 3);
         // Prepare the email to send
         String emailSubject = "Bill for order ORD-" + orderNumber;
         String emailBody = "Dear customer, please find attached the bill for your order: ORD-" + orderNumber;
-        byte[] attachment = minioFileService.getFile(billPdf.getPdfUrl());
+        // The object key is bills/pdf/ + the last two parts of the PDF URL
+        String objectKey = "bills/pdf/" + billPdf.getBillId().getId() + "/" + billPdf.getPdfUrl().substring(billPdf.getPdfUrl().lastIndexOf("/"));
+        byte[] attachment = minioFileService.getFile(objectKey);
+        
+
         try {
             // Send the email with the attached PDF
             emailService.sendEmailWithAttachment(
@@ -129,7 +151,7 @@ public class BillBL {
         }
     }
 
-    public byte[] generateBillPdf(Bill bill) throws BillGenerationException {
+    private byte[] generateBillPdf(Bill bill) throws BillGenerationException {
         LOGGER.info("Generating PDF for bill id: {}", bill.getId());
         try {
             // Create a PDF document
@@ -160,10 +182,7 @@ public class BillBL {
             document.add(table);
 
             // Calculate total amount
-            BigDecimal totalAmount = BigDecimal.ZERO;
-            for (OrderItem item : bill.getOrdersId().getOrderItemsCollection()) {
-                totalAmount = totalAmount.add(item.getPrice().multiply(new BigDecimal(item.getQuantity())));
-            }
+            BigDecimal totalAmount = getTotalCostByOrderId(bill.getOrdersId().getId());
 
             // Add total amount to the PDF
             Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + totalAmount);
@@ -197,4 +216,19 @@ public class BillBL {
             throw new RuntimeException("Error generating and uploading bill PDF: " + e.getMessage(), e);
         }
     } */
+
+    private BigDecimal getTotalCostByOrderId(Integer orderId) {
+        LOGGER.info("Getting total cost by order ID: {}", orderId);
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            LOGGER.error("Order not found");
+            throw new RuntimeException("Order not found");
+        }
+        
+        BigDecimal totalCost = BigDecimal.ZERO;
+        for (OrderItem item : order.getOrderItemsCollection()) {
+            totalCost = totalCost.add(item.getPrice().multiply(new BigDecimal(item.getQuantity())));
+        }
+        return totalCost;
+    }
 }
