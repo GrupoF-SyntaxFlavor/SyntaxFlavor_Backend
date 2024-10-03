@@ -22,10 +22,6 @@ import jakarta.ws.rs.core.Response;
 public class UserBL {
     Logger LOGGER = LoggerFactory.getLogger(UserBL.class);
 
-    // @Autowired
-    // private final KeycloakAdminClientService kcAdminClient;
-    // private final KeycloakProvider kcProvider;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -73,5 +69,11 @@ public class UserBL {
             LOGGER.error("Error updating user in local DB: {}", e.getMessage());
             throw new RuntimeException("Error updating user in local DB: " + e.getMessage());
         }
+    }
+
+    public UserDTO getUserByEmail(String email) {
+        LOGGER.warn("Person email: {}", email);
+        User user = userRepository.findByEmail(email).orElse(null);
+        return user != null ? new UserDTO(user) : null;
     }
 }

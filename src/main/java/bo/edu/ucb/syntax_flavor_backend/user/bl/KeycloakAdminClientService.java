@@ -36,7 +36,7 @@ public class KeycloakAdminClientService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private UserBL userBL;
 
@@ -57,23 +57,23 @@ public class KeycloakAdminClientService {
     public KeycloakAdminClientService(KeycloakProvider keycloakProvider, UserRepository userRepository) {
         this.kcProvider = keycloakProvider;
         this.userRepository = userRepository;
-        
+
     }
 
     public UserDTO createKeycloakUser(UserRequestDTO user, Boolean inDB) {
         LOGGER.info("Creating user in Keycloak Realm {}", REALM);
-        
+
         // Verifica que el nombre no sea nulo antes de crear el usuario
         if (user.getEmail() == null || user.getName() == null) {
             throw new IllegalArgumentException("Email and Name are required to create a user in Keycloak.");
-        }        
-        
+        }
+
         UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
-    
+
         // Generamos las credenciales de contraseña para el usuario
         LOGGER.info("Generating password credentials for user {}", user.getEmail());
         CredentialRepresentation credential = createPasswCredentials(user.getPassword());
-    
+
         // Creamos la representación del usuario en Keycloak
         UserRepresentation kcUser = new UserRepresentation();
         kcUser.setUsername(user.getEmail());
@@ -82,27 +82,42 @@ public class KeycloakAdminClientService {
         kcUser.setFirstName(user.getName());
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
-        // kcUser.setAttributes(Collections.singletonMap("phone", Collections.singletonList(user.getPhone())));
-    
+
         LOGGER.info("Creating user");
         Response response = usersResource.create(kcUser);
         LOGGER.info("Received response from Keycloak with status {}", response.getStatus());
-    
+
         if (response.getStatus() == 201) {
+            // Extract the user ID from the response
+            String kcUserId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+
+            // Send the verification email
+            sendVerificationEmail(kcUserId);
+
             LOGGER.info("User created in Keycloak, saving to local database");
-            if(!inDB){
-                UserDTO userUpdated = userBL.setKeyCloakID(user.getId(), response);
-                return userUpdated;
+            if (!inDB) {
+                return userBL.setKeyCloakID(user.getId(), response);
             }
-            UserDTO userCreated = userBL.createUser(user, response);
-            return userCreated;
+            return userBL.createUser(user, response);
         } else {
             String errorMessage = response.readEntity(String.class);
-            LOGGER.error("Failed to create user in Keycloak with status {} \n{}", response.getStatusInfo(), errorMessage);
+            LOGGER.error("Failed to create user in Keycloak with status {} \n{}", response.getStatusInfo(),
+                    errorMessage);
             throw new RuntimeException("Failed to create user in Keycloak. Error: " + errorMessage);
         }
     }
-    
+
+    public void sendVerificationEmail(String userId) {
+        try {
+            UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
+            usersResource.get(userId).sendVerifyEmail(); // Envía el correo de verificación directamente
+        } catch (Exception e) {
+            LOGGER.error("Failed to send verification email to user {}: {}", userId, e.getMessage());
+            throw new RuntimeException("Failed to send verification email to user: " + userId);
+        }
+    }
+
+
     private static CredentialRepresentation createPasswCredentials(String password) {
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
@@ -110,16 +125,13 @@ public class KeycloakAdminClientService {
         credential.setTemporary(false);
         return credential;
     }
-    //copiar los 1000 usuarios en keycloak
-
-    
 
     public void synchronizeUsersWithKeycloak() {
         LOGGER.info("Synchronizing users with Keycloak...");
-        
+
         List<User> localUsers = userRepository.findAll(); // Obtener todos los usuarios de la base de datos local
         UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
-        
+
         for (User localUser : localUsers) {
             // Verificar si el usuario ya existe en Keycloak
             if (localUser.getKcUserId() == null || !userExistsInKeycloak(usersResource, localUser.getKcUserId())) {
@@ -128,13 +140,14 @@ public class KeycloakAdminClientService {
                 userRequest.setId(localUser.getId());
                 userRequest.setEmail(localUser.getEmail());
                 userRequest.setName(localUser.getName());
-                userRequest.setPassword(localUser.getPassword()); //TODO que no se vea el password
-                
+                userRequest.setPassword(localUser.getPassword());
+
                 try {
                     createKeycloakUser(userRequest, false);
                     LOGGER.info("User {} created in Keycloak", localUser.getEmail());
                 } catch (RuntimeException e) {
-                    LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage());
+                    LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(),
+                            e.getMessage());
                 }
             }
         }
@@ -170,10 +183,25 @@ public class KeycloakAdminClientService {
         if (response.getStatus() == 200) {
             // Convertimos la respuesta en un AccessTokenResponse
             AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
+
+            // Revisar si el correo del usuario está verificado
+            if (!isEmailVerified(tokenResponse.getSessionState())) {
+                throw new RuntimeException("Email not verified");
+            }
             return tokenResponse;
         } else {
             String errorMessage = response.readEntity(String.class);
             throw new RuntimeException("Failed to login with Keycloak: " + errorMessage);
+        }
+    }
+
+    public boolean isEmailVerified(String kcUserId) {
+        try {
+            UserRepresentation user = kcProvider.getInstance().realm(REALM).users().get(kcUserId).toRepresentation();
+            return user.isEmailVerified();
+        } catch (Exception e) {
+            LOGGER.error("Failed to check email verification status for user {}: {}", kcUserId, e.getMessage());
+            throw new RuntimeException("Failed to check email verification status for user: " + kcUserId);
         }
     }
 }

@@ -1,10 +1,9 @@
 package bo.edu.ucb.syntax_flavor_backend.user.dto;
 
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
+import bo.edu.ucb.syntax_flavor_backend.validator.account.ValidCreateEmail;
 import jakarta.validation.constraints.NotNull;
-// import lombok.AllArgsConstructor;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
+
 
 public class UserRequestDTO {
 
@@ -13,6 +12,7 @@ public class UserRequestDTO {
     @NotNull
     private String name;
     @NotNull
+    @ValidCreateEmail
     private String email;
     @NotNull
     private String password;

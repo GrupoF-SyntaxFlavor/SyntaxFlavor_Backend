@@ -1,109 +1,104 @@
 spring:
-    application:
-        name: syntax_flavor_backend
-    config:
-        activate:
-            on-profile: default
-    datasource:
-        url: jdbc:postgresql://localhost:5432/syntaxflavor
-        username: postgres
-        password: 123456 # TODO: Change this password set from .env file
-        driver-class-name: org.postgresql.Driver
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-    minio:
-        url: http://localhost:9000
-        access-key: minioadmin
-        secret-key: minioadmin
-        bucket-name: syntaxflavorbucket
-            
+  application:
+    name: syntax_flavor_backend
+  config:
+    activate:
+      on-profile: default
+  datasource:
+    url: jdbc:postgresql://localhost:5432/syntaxflavor
+    username: postgres
+    password: 123456 # TODO: Change this password set from .env file
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  minio:
+    url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: syntaxflavorbucket
 
-    mail:
-        host: localhost
-        port: 1025
-        default-encoding: UTF-8
-        protocol: smtp
-        properties:
-            mail:
-                smtp:
-                    auth: false
-                    starttls:
-                        enable: false
+  mail:
+    host: localhost
+    port: 1025
+    default-encoding: UTF-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
-    keycloak:
-        auth-server-url: http://localhost:8082
-        realm: syntaxflavor_users
-        resource: syntaxflavor
-        public-client: false
-        ssl-required: external
-        bearer-only: false
-        credentials:
-            secret: NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr # Agrega el client secret aquí, si tu cliente es confidencial
-        admin:
-            username: admin # Usuario administrador de Keycloak
-            password: admin # Contraseña del administrador
+  keycloak:
+    auth-server-url: http://localhost:8082
+    realm: syntaxflavor_users
+    resource: syntaxflavor
+    public-client: false
+    ssl-required: external
+    bearer-only: false
+    credentials:
+      secret: NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr # Agrega el client secret aquí, si tu cliente es confidencial
+    admin:
+      username: admin # Usuario administrador de Keycloak
+      password: admin # Contraseña del administrador
 
 server:
-    port: 8080
-
-
+  port: 8080
 
 ---
-
 spring:
-    application:
-        name: syntax_flavor_backend
-    config:
-        activate:
-            on-profile: docker
-    datasource:
-        url: jdbc:postgresql://syntaxflavor_db:5432/syntaxflavor
-        username: postgres
-        password: 123456 # TODO: Change this password set from .env file
-        driver-class-name: org.postgresql.Driver
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: false
+  application:
+    name: syntax_flavor_backend
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://syntaxflavor_db:5432/syntaxflavor
+    username: postgres
+    password: 123456 # TODO: Change this password set from .env file
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
 
-    keycloak:
-        auth-server-url: http://localhost:8082
-        realm: syntaxflavor_users
-        resource: syntaxflavor
-        public-client: false
-        ssl-required: external
-        bearer-only: false
-        credentials:
-            secret: I4IRfT26OhjlJAiTbVtSApIHvf4zXl0G # Agrega el client secret aquí, si tu cliente es confidencial
-        admin:
-            username: admin # Usuario administrador de Keycloak
-            password: admin # Contraseña del administrador
+  keycloak:
+    auth-server-url: http://localhost:8082
+    realm: syntaxflavor_users
+    resource: syntaxflavor
+    public-client: false
+    ssl-required: external
+    bearer-only: false
+    credentials:
+      secret: I4IRfT26OhjlJAiTbVtSApIHvf4zXl0G # Agrega el client secret aquí, si tu cliente es confidencial
+    admin:
+      username: admin # Usuario administrador de Keycloak
+      password: admin # Contraseña del administrador
 
 logging:
-    level:
-        org.springframework: DEBUG
-        org.hibernate: DEBUG
-        org.keycloak: DEBUG
-        org.springframework.web: TRACE
-        bo.edu.ucb: TRACE
-    minio:
-        endpoint: http://minio:9000
-        access-key: minioadmin
-        secret-key: minioadmin
-        bucket: syntaxflavor_bucket
-        
+  level:
+    org.springframework: DEBUG
+    org.hibernate: DEBUG
+    org.keycloak: DEBUG
+    org.springframework.web: TRACE
+    bo.edu.ucb: TRACE
+  minio:
+    endpoint: http://minio:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: syntaxflavor_bucket
+
 server:
-    port: 8080
+  port: 8080
 
 ---
-
 spring:
-    security:
-        oauth2:
-            resourceserver:
-                jwt:
-                    issuer-uri: http://localhost:8082/realms/syntaxflavor_users
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/syntaxflavor_users
 server:
-    port: 8080
+  port: 8080

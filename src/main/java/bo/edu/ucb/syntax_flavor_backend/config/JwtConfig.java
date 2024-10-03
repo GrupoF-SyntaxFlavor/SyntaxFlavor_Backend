@@ -10,6 +10,9 @@ public class JwtConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri("http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/certs").build();
+        return NimbusJwtDecoder
+                .withJwkSetUri(
+                        "http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/certs")
+                .build();
     }
 }
