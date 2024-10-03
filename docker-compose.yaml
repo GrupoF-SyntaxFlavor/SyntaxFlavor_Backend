@@ -11,6 +11,8 @@ services:
       - ./env/postgres.env
     volumes:
       - ./db:/docker-entrypoint-initdb.d # Crea la base de datos con el script en db/init.sql
+    networks:
+        - syntaxflavor_network
 
   syntaxflavor_backend:
     build: .
@@ -22,6 +24,8 @@ services:
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    networks:
+        - syntaxflavor_network
 
   syntaxflavor_keycloak:
     image: quay.io/keycloak/keycloak
@@ -32,17 +36,23 @@ services:
       - ./env/keycloak.env
     volumes:
       - ./src/main/resources/imports/keycloak-realm:/opt/keycloak/data/import
+      - ./src/main/resources/themes:/opt/keycloak/themes
     depends_on:
       - syntaxflavor_db
-    command: ["start-dev", "--import-realm"]
+    command: [ "start-dev", "--import-realm" ]
     restart: always
-    
+    networks:
+      - syntaxflavor_network
+
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
     ports:
       - '1025:1025'
       - '8025:8025'
+    networks:
+        - syntaxflavor_network
+
   minio:
     image: minio/minio:latest
     container_name: syntaxflavor_minio
@@ -53,3 +63,9 @@ services:
     env_file:
       - ./env/minio.env
     command: server /data --console-address ":9001"
+    networks:
+        - syntaxflavor_network
+
+networks:
+  syntaxflavor_network:
+    driver: bridge

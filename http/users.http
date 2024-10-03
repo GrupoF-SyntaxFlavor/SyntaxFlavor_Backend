@@ -4,11 +4,11 @@
 # Content-Type: application/json
 # Accept: application/json
 
-# {
-#     "name": "example1234",
-#     "email": "example1234@example.com",
-#     "password": "123456789"
-# }
+{
+    "name": "example1234",
+    "email": "test9@gmail.com",
+    "password": "123456789"
+}
 
 #### login user
 POST http://localhost:8080/api/v1/public/login
@@ -16,6 +16,6 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "example1234@example.com",
+    "email": "test9@gmail.com",
     "password": "123456789"
 }
