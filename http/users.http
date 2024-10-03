@@ -1,14 +1,14 @@
 
-##### sign up user
-POST http://localhost:8080/api/v1/public/user
-Content-Type: application/json
-Accept: application/json
+##### sign up user, este solo crea el usuario, no lo relaciona con un comensal o cocina
+# POST http://localhost:8080/api/v1/public/user?type=other
+# Content-Type: application/json
+# Accept: application/json
 
-{
-    "name": "example1234",
-    "email": "example1234@example.com",
-    "password": "123456789"
-}
+# {
+#     "name": "example1234",
+#     "email": "example1234@example.com",
+#     "password": "123456789"
+# }
 
 #### login user
 POST http://localhost:8080/api/v1/public/login
