@@ -3,6 +3,7 @@ package bo.edu.ucb.syntax_flavor_backend.bill.bl;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import bo.edu.ucb.syntax_flavor_backend.service.EmailService;
 import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
+import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.util.BillGenerationException;
 
 import com.itextpdf.text.*;
@@ -30,6 +31,9 @@ import java.math.BigDecimal;
 @Component
 public class BillBL {
     Logger LOGGER = LoggerFactory.getLogger(BillBL.class);
+
+    @Autowired
+    private CustomerBL customerBL;
 
     @Autowired
     private BillPdfRepository billPdfRepository;
@@ -63,8 +67,10 @@ public class BillBL {
                 createdBill.setBillName(billRequest.getBillName());
                 createdBill.setNit(billRequest.getNit());
             } else if (billRequest.getUserId() != null) {
-                createdBill.setBillName(order.getCustomerId().getBillName());
-                createdBill.setNit(order.getCustomerId().getNit());
+                // This is assuming that the person who placed the order is the same as the person who will receive the bill
+                // Maybe there's a better way to check this
+                createdBill.setBillName(customerBL.getBillingInfo(billRequest.getUserId()).getBillName());
+                createdBill.setNit(customerBL.getBillingInfo(billRequest.getUserId()).getNit());
             } else {
                 throw new RuntimeException("Billing name and NIT are required");
             }
@@ -79,7 +85,7 @@ public class BillBL {
             byte[] pdfBytes = generateBillPdf(createdBill);
             LOGGER.info("Succesfully generated pdf for bill, attempting to upload to minIO");
             // Generar un nombre de archivo único
-            String fileName = "bills/pdf/" + createdBill.getId() + "/" + System.currentTimeMillis() + "_" + "bill."+ createdBill.getId() + ".pdf";
+            String fileName = "bills/pdf/" + createdBill.getId() + "/" + System.currentTimeMillis() + "_" + "bill-"+ createdBill.getId() + ".pdf";
             LOGGER.info("Uploading PDF to minio as {}", fileName);
             String fileUrl = minioFileService.uploadPdf(fileName, pdfBytes); 
             LOGGER.info("Succesfully uploaded to minio as {} saving to Database", fileUrl);
@@ -144,7 +150,7 @@ public class BillBL {
                     emailSubject,
                     emailBody,
                     attachment, // Use the PDF byte array as the attachment
-                    "bill" + orderNumber + ".pdf");
+                    "bill-" + orderNumber + ".pdf");
         } catch (Exception e) {
             LOGGER.error("Error sending bill email: {}", e.getMessage());
             throw new BillGenerationException("Error sending bill email: " + e.getMessage(), 4);
@@ -162,7 +168,8 @@ public class BillBL {
 
             // Add a custom title
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
-            Paragraph title = new Paragraph("Bill Details", titleFont);
+            Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+            Paragraph title = new Paragraph("Proforma de factura", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
@@ -170,24 +177,113 @@ public class BillBL {
             PdfContentByte cb = writer.getDirectContent();
             cb.setLineWidth(1f);
             cb.moveTo(20, writer.getVerticalPosition(false) - 10);
-            cb.lineTo(document.right() - 20, writer.getVerticalPosition(false) - 10);
+            cb.lineTo(document.right() - 10, writer.getVerticalPosition(false) - 10);
             cb.stroke();
+
+            // add some space
+            document.add(new Paragraph(" "));
 
             // Add content to the PDF using bill information
             PdfPTable table = new PdfPTable(2); // 2 columns
-            PdfPCell cell1 = new PdfPCell(new Phrase("Bill ID:"));
+            table.setWidthPercentage(100); // Set table width to 100% of the page width
+            float[] columnWidths1 = {3f, 1f}; // Set column widths (1/5, 4/5)
+            table.setWidths(columnWidths1);
+            PdfPCell cell1 = new PdfPCell(new Phrase("Código de Factura:", headerFont));
             PdfPCell cell2 = new PdfPCell(new Phrase(String.valueOf(bill.getId())));
             table.addCell(cell1);
             table.addCell(cell2);
             document.add(table);
 
+            // Add some space
+            document.add(new Paragraph(" "));
+
+            // Add the billing name and NIT
+            PdfPTable billingTable = new PdfPTable(2); // 2 columns
+            billingTable.setWidthPercentage(100); // Set table width to 100% of the page width
+            float[] columnWidths2 = {1f, 1f}; // Set column widths (1/5, 4/5)
+            billingTable.setWidths(columnWidths2); // Set column widths (2/5, 3/5)
+            PdfPCell dateCell1 = new PdfPCell(new Phrase("Fecha de Facturación:"));
+            PdfPCell dateCell2 = new PdfPCell(new Phrase(bill.getCreatedAt().toString()));
+            PdfPCell billingCell1 = new PdfPCell(new Phrase("Nombre de Facturación:"));
+            PdfPCell billingCell2 = new PdfPCell(new Phrase(bill.getBillName()));
+            PdfPCell nitCell1 = new PdfPCell(new Phrase("NIT:"));
+            PdfPCell nitCell2 = new PdfPCell(new Phrase(bill.getNit()));
+
+            billingTable.addCell(dateCell1);
+            billingTable.addCell(dateCell2);
+            billingTable.addCell(billingCell1);
+            billingTable.addCell(billingCell2);
+            billingTable.addCell(nitCell1);
+            billingTable.addCell(nitCell2);
+
+            document.add(billingTable);
+
+            // Add some space
+            document.add(new Paragraph(" "));
+
+            // For each element in the order, add a row to the PDF with its quantity and unit price
+            Order order = bill.getOrdersId();
+            PdfPTable orderTable = new PdfPTable(3); // 3 columns
+            orderTable.setWidthPercentage(100); // Set table width to 100% of the page width
+            float[] columnWidths3 = {3f, 1f, 1f}; // Set column widths (3/5, 1/5, 1/5)
+            orderTable.setWidths(columnWidths3);
+            
+            PdfPCell orderCell1 = new PdfPCell(new Phrase("Producto", headerFont));
+            PdfPCell orderCell2 = new PdfPCell(new Phrase("Cantidad", headerFont));
+            PdfPCell orderCell3 = new PdfPCell(new Phrase("Precio", headerFont));
+            orderTable.addCell(orderCell1);
+            orderTable.addCell(orderCell2);
+            orderTable.addCell(orderCell3);
+
+            for (OrderItem item : order.getOrderItemsCollection()) {
+                LOGGER.info("Adding item to PDF: {}", item.getMenuItemId().getName());
+                PdfPCell itemCell1 = new PdfPCell(new Phrase(item.getMenuItemId().getName()));
+                PdfPCell itemCell2 = new PdfPCell(new Phrase(String.valueOf(item.getQuantity())));
+                PdfPCell itemCell3 = new PdfPCell(new Phrase(String.valueOf(item.getPrice())));
+                
+                // Align the quantity and price cells to the right
+                itemCell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                itemCell3.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                
+                orderTable.addCell(itemCell1);
+                orderTable.addCell(itemCell2);
+                orderTable.addCell(itemCell3);
+            }
+
+            document.add(orderTable);
+
             // Calculate total amount
             BigDecimal totalAmount = getTotalCostByOrderId(bill.getOrdersId().getId());
 
-            // Add total amount to the PDF
-            Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + totalAmount);
-            totalAmountParagraph.setAlignment(Element.ALIGN_RIGHT);
-            document.add(totalAmountParagraph);
+            // Add total amount to the PDF in a table aligned with the unitPrice column
+            PdfPTable totalTable = new PdfPTable(3); // 3 columns to match the orderTable
+            totalTable.setWidthPercentage(100); // Set table width to 100% of the page width
+            float[] totalColumnWidths = {3f, 1f, 1f}; // Set column widths (3/5, 1/5, 1/5)
+            totalTable.setWidths(totalColumnWidths);
+
+            PdfPCell emptyCell1 = new PdfPCell(new Phrase("")); // Empty cell for the first column
+            PdfPCell emptyCell2 = new PdfPCell(new Phrase("Monto Total: ", headerFont)); // Empty cell for the second column
+            PdfPCell totalAmountCell = new PdfPCell(new Phrase(totalAmount.toString(), headerFont));
+            totalAmountCell.setHorizontalAlignment(Element.ALIGN_RIGHT); // Align text to the right
+
+            totalTable.addCell(emptyCell1);
+            totalTable.addCell(emptyCell2);
+            totalTable.addCell(totalAmountCell);
+
+            document.add(totalTable);
+
+            // Add some more space
+            document.add(new Paragraph(" "));
+
+            // Add a disclosure at the end
+            Paragraph disclosureParagraph = new Paragraph(
+                "La presente es una proforma de factura, no cuenta con valor fiscal.\n\n"+
+                "Todos los derechos reservados de SyntaxFlavor"
+            );
+            // Align at the bottom center set with small font
+            disclosureParagraph.setAlignment(Element.ALIGN_CENTER);
+            disclosureParagraph.setFont(new Font(Font.FontFamily.COURIER, 4, Font.ITALIC));
+            document.add(disclosureParagraph);
 
             document.close();
 
@@ -198,24 +294,6 @@ public class BillBL {
             throw new BillGenerationException("Error generating bill PDF: " + e.getMessage(), 1);
         }
     }
-/* 
-    public String generateBillPdf(Bill bill) {
-        LOGGER.info("Generating and uploading bill PDF for bill id: {}", bill.getId());
-        try {
-            // Generate PDF bytes
-            byte[] pdfBytes = generateBillPdfBytes(bill);
-
-            // Now upload the PDF to Minio
-            String fileName = "bills/pdf/" + bill.getId() + "/" + System.currentTimeMillis() + "_bill.pdf";
-            String pdfUrl = minioFileService.uploadFile(fileName, pdfBytes, "application/pdf");
-
-            LOGGER.info("Bill PDF uploaded successfully for bill id: {}", bill.getId());
-            return pdfUrl; // Return the URL of the uploaded PDF
-        } catch (Exception e) {
-            LOGGER.error("Error generating and uploading bill PDF: {}", e.getMessage());
-            throw new RuntimeException("Error generating and uploading bill PDF: " + e.getMessage(), e);
-        }
-    } */
 
     private BigDecimal getTotalCostByOrderId(Integer orderId) {
         LOGGER.info("Getting total cost by order ID: {}", orderId);
