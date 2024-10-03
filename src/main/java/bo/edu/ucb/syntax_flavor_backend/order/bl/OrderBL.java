@@ -102,6 +102,10 @@ public class OrderBL {
             LOGGER.error("Order not found");
             throw new RuntimeException("Order not found");
         }
+        if (status.equals(STATUS_CANCELLED) && order.getStatus().equals(STATUS_DELIVERED)) {
+            LOGGER.error("Attempted to cancel an order that was already delivered");
+            throw new IllegalStateException("Cannot cancel an order that has been delivered");
+        }
         switch (status) {
             case STATUS_PENDING:
                 order.setStatus(STATUS_PENDING);
@@ -116,6 +120,7 @@ public class OrderBL {
                 LOGGER.error("Invalid status");
                 throw new RuntimeException("Invalid status");
         }
+
         order = orderRepository.save(order);
         return OrderDTO.fromEntity(order);
     }
