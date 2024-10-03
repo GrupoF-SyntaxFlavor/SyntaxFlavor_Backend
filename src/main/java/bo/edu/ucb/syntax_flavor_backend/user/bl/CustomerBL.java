@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bo.edu.ucb.syntax_flavor_backend.user.dto.BillingInfoDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.user.repository.CustomerRepository;
@@ -44,6 +45,18 @@ public class CustomerBL {
             LOGGER.error("Error updating customer data: {}", e.getMessage());
             throw new RuntimeException("Error updating customer data: " + e.getMessage());
         }
-        
+    }
+
+    public BillingInfoDTO getBillingInfo(Integer customerId) throws RuntimeException {
+        LOGGER.info("Getting billing info for customer with ID: {}", customerId);
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if(customer == null) {
+            LOGGER.error("No customer with provided ID was found");
+            throw new RuntimeException("No customer with provided ID was found");
+        }
+        BillingInfoDTO billingInfo = new BillingInfoDTO();
+        billingInfo.setBillName(customer.getBillName());
+        billingInfo.setNit(customer.getNit());
+        return billingInfo;
     }
 }
