@@ -999,5 +999,3 @@ INSERT INTO orders (customer_id, order_timestamp, status) VALUES (49, '2024-09-2
 INSERT INTO orders (customer_id, order_timestamp, status) VALUES (27, '2024-09-29 02:33:32', 'Cancelado');
 INSERT INTO orders (customer_id, order_timestamp, status) VALUES (20, '2024-09-29 19:15:10', 'Cancelado');
 select count(*) from orders;
--- UPDATE orders
--- SET order_timestamp = TO_TIMESTAMP('2024-09-30 ' || TO_CHAR(order_timestamp, 'HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS'); 
