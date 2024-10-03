@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import bo.edu.ucb.syntax_flavor_backend.util.BillGenerationException;
 import io.minio.BucketExistsArgs;
 import io.minio.GetBucketPolicyArgs;
 import io.minio.GetObjectArgs;
@@ -91,6 +92,7 @@ public class MinioFileService {
 }
 
     public String uploadFile(String fileName, byte[] fileData, String contentType) {
+        // FIXME this method should be dynamic
         try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileData)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
@@ -113,7 +115,8 @@ public class MinioFileService {
         }
     }
 
-    public String uploadPdf(String fileName, byte[] pdfData) {
+    public String uploadPdf(String fileName, byte[] pdfData) throws BillGenerationException {
+        // FIXME this method should be dynamic
         try (ByteArrayInputStream pdfStream = new ByteArrayInputStream(pdfData)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
@@ -126,13 +129,13 @@ public class MinioFileService {
             String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001)
             return minioBaseUrl + "/" + bucketName + "/" + fileName; // Constructed URL for the uploaded file
         } catch (MinioException e) {
-            throw new RuntimeException("MinIO error during upload: " + e.getMessage(), e);
+            throw new BillGenerationException("MinIO error during upload: " + e.getMessage(), 2);
         } catch (IOException e) {
-            throw new RuntimeException("IO error during upload: " + e.getMessage(), e);
+            throw new BillGenerationException("IO error during upload: " + e.getMessage(), 2);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("No such algorithm error: " + e.getMessage(), e);
+            throw new BillGenerationException("No such algorithm error: " + e.getMessage(), 2);
         } catch (InvalidKeyException e) {
-            throw new RuntimeException("Invalid key error: " + e.getMessage(), e);
+            throw new BillGenerationException("Invalid key error: " + e.getMessage(), 2);
         }
     }
 
@@ -145,6 +148,7 @@ public class MinioFileService {
                     .build());
             return response.readAllBytes();
         } catch (MinioException e) {
+            e.printStackTrace();
             throw new RuntimeException("Error during Minio download", e);
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Invalid Minio credentials", e);

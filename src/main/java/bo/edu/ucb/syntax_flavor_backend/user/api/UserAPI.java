@@ -8,13 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakAdminClientService;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerSignUpDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
 // import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakProvider;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.UserRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,19 +29,23 @@ public class UserAPI {
 
     @Autowired
     private final KeycloakAdminClientService kcAdminClient;
-    // private final KeycloakProvider kcProvider;
+    
+    @Autowired
+    private final CustomerBL customerBL;
 
-    public UserAPI(KeycloakAdminClientService kcAdminClient) {
+    public UserAPI(KeycloakAdminClientService kcAdminClient, CustomerBL customerBL) {
         this.kcAdminClient = kcAdminClient;
+        this.customerBL = customerBL;
     }
 
     @Operation(summary = "Create user", description = "Creates an user and saves data in keycloack realm. Data: id, name, email, number phone, date created at and date updated at.")
-    @PostMapping("/public/user")//public endpoint to create user
-    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserRequestDTO user) {
+    @PostMapping("/public/signup")//public endpoint to create user
+    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody CustomerSignUpDTO user,
+                                                                    @RequestParam(value = "type", required = true) String type) {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
         
         // Depuración para validar que los valores no sean nulos
-        LOGGER.debug("UserDTO received -  name: {}, email: {}, password: {}", user.getName(), user.getEmail(), user.getPassword());//TODO que no se vea el password
+        LOGGER.debug("UserDTO received -  name: {}, email: {}", user.getName(), user.getEmail());
 
         SyntaxFlavorResponse<UserDTO> sfr = new SyntaxFlavorResponse<>();
         try {
@@ -48,7 +55,12 @@ public class UserAPI {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
             }
 
-            UserDTO userResponse = kcAdminClient.createKeycloakUser(user, true);
+            UserDTO userResponse = kcAdminClient.createKeycloakUser(user.getName(), user.getEmail(), user.getPassword(), true);
+            if(type.equals("customer")){
+                CustomerDTO newCustomer = customerBL.createCustomer(userResponse, user.getNit(), user.getBillName());
+                if(newCustomer == null)
+                    throw new RuntimeException("Error creating customer");
+            }
             sfr.setResponseCode("USR-001");
             sfr.setPayload(userResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);

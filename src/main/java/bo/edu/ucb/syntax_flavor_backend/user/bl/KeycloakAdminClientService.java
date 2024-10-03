@@ -60,9 +60,12 @@ public class KeycloakAdminClientService {
 
     }
 
-    public UserDTO createKeycloakUser(UserRequestDTO user, Boolean inDB) {
+    public UserDTO createKeycloakUser(String name, String email,String password, Boolean inDB) {
         LOGGER.info("Creating user in Keycloak Realm {}", REALM);
-
+        UserRequestDTO user = new UserRequestDTO();
+        user.setEmail(email);
+        user.setName(name);
+        user.setPassword(password);
         // Verifica que el nombre no sea nulo antes de crear el usuario
         if (user.getEmail() == null || user.getName() == null) {
             throw new IllegalArgumentException("Email and Name are required to create a user in Keycloak.");
@@ -143,7 +146,7 @@ public class KeycloakAdminClientService {
                 userRequest.setPassword(localUser.getPassword());
 
                 try {
-                    createKeycloakUser(userRequest, false);
+                    createKeycloakUser(userRequest.getName(), userRequest.getEmail(), userRequest.getPassword(),false);
                     LOGGER.info("User {} created in Keycloak", localUser.getEmail());
                 } catch (RuntimeException e) {
                     LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(),

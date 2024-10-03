@@ -12,3 +12,16 @@ Content-Type: application/json
   "billName": "MonteroUpdated",
   "nit":"12334135"
 }
+
+### crear comensal #####
+POST http://localhost:8080/api/v1/public/signup?type=customer
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "customer111",
+    "email": "customer111@example.com",
+    "password": "123456789",
+    "nit": "987654321",
+    "billName": "ExampleBillName"
+}
