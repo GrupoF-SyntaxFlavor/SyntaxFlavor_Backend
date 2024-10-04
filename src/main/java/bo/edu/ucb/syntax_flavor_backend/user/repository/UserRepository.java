@@ -8,4 +8,7 @@ import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String personalMail);
     Optional<User> findById(Integer id);
+
+    Optional<User> findByKcUserId(String kcUserId);
+
 }

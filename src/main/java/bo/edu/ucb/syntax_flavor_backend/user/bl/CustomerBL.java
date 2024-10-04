@@ -92,4 +92,20 @@ public class CustomerBL {
         }
         
     }
+
+    public Customer findCustomerByUserId(Integer userId) throws RuntimeException {
+        LOGGER.info("Finding customer by userId: {}", userId);
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            LOGGER.error("No user with provided ID was found");
+            throw new RuntimeException("No user with provided ID was found");
+        }
+        Customer customer = customerRepository.findByUsersId(user);
+        if (customer == null) {
+            LOGGER.error("No customer with provided user ID was found");
+            throw new RuntimeException("No customer with provided user ID was found");
+        }
+        return customer;
+    }
+
 }

@@ -1,5 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.order.api;
 
+import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,13 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import bo.edu.ucb.syntax_flavor_backend.order.bl.OrderBL;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
@@ -34,6 +30,9 @@ public class OrderAPI {
 
     @Autowired
     private OrderBL orderBL;
+
+    @Autowired
+    private UserBL userBL;
 
     @Operation(summary = "List orders by datetime", description = "Can page through orders by datetime, the displayed orders are the most recent ones. No filters are applied at this moment.")
     @GetMapping
@@ -142,17 +141,25 @@ public class OrderAPI {
         }
     }
 
-    @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer by ID")
+    @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer extracted from the JWT token")
     @GetMapping("/customer")
-    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestParam int customerId) {
-        LOGGER.info("Endpoint GET /api/v1/order/customer with customerId: {}", customerId);
+    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestHeader("Authorization") String token) {
         SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            List<OrderDTO> orders = orderBL.listOrdersByCustomerId(customerId);
+            // Extraer el kc_user_id del token JWT
+            String kcUserId = JWT.decode(token.substring(7)).getSubject();
+            LOGGER.info("Decoded kcUserId from JWT: {}", kcUserId);
+
+            // Buscar el usuario por kc_user_id
+            User user = userBL.findUserByKcUserId(kcUserId);
+
+            // Obtener las órdenes del cliente usando el userId
+            List<OrderDTO> orders = orderBL.listOrdersByCustomerId(user.getId());
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
         } catch (Exception e) {
+            LOGGER.error("Error listing orders: {}", e.getMessage());
             sfr.setResponseCode("ORD-600");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
