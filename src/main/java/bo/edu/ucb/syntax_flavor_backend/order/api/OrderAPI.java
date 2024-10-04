@@ -1,6 +1,8 @@
 package bo.edu.ucb.syntax_flavor_backend.order.api;
 
+import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -33,6 +35,9 @@ public class OrderAPI {
 
     @Autowired
     private UserBL userBL;
+
+    @Autowired
+    private CustomerBL customerBL;
 
     @Operation(summary = "List orders by datetime", description = "Can page through orders by datetime, the displayed orders are the most recent ones. No filters are applied at this moment.")
     @GetMapping
@@ -68,37 +73,61 @@ public class OrderAPI {
         }
     }
 
-    @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The cart must have a customer ID and a map of menu item IDs to quantities ordered. Returns the same object plus an ID of insertion")
+    @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The customer ID is extracted from the JWT token, and a map of menu item IDs to quantities is passed.")
     @PostMapping
     public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(
             @RequestBody CartDTO cart, HttpServletRequest request) {
-        LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
+
         SyntaxFlavorResponse<CartDTO> sfr = new SyntaxFlavorResponse<>();
+        LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
 
         try {
             // Extract JWT from Authorization header
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);  // Remove "Bearer " prefix from the token
             String kcUserId;
+
             try {
-                kcUserId = JWT.decode(token).getSubject(); // Decode JWT to get userId
+                kcUserId = JWT.decode(token).getSubject();  // Decode JWT to get the kcUserId
                 LOGGER.info("Decoded kcUserId from JWT: {}", kcUserId);
             } catch (JWTDecodeException ex) {
                 LOGGER.error("Invalid JWT token: {}", ex.getMessage());
                 sfr.setResponseCode("ORD-602");
                 sfr.setErrorMessage("Invalid JWT token");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfr);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfr);  // Return 401 if the token is invalid
             }
 
+            // Fetch the user by kcUserId
+            User user = userBL.findUserByKcUserId(kcUserId);
+            if (user == null) {
+                LOGGER.error("User with kcUserId {} not found", kcUserId);
+                sfr.setResponseCode("ORD-601");
+                sfr.setErrorMessage("User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr);  // Return 404 if user is not found
+            }
+
+            // Fetch the customer associated with the user
+            Customer customer = customerBL.findCustomerByUserId(user.getId());
+            if (customer == null) {
+                LOGGER.error("Customer for userId {} not found", user.getId());
+                sfr.setResponseCode("ORD-602");
+                sfr.setErrorMessage("Customer not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr);  // Return 404 if customer is not found
+            }
+
+            // Set the customerId in the CartDTO (we no longer take it from the request body)
+            cart.setCustomerId(customer.getId());
+
+            // Create the order using the updated CartDTO (with customerId set)
             CartDTO cartResponse = orderBL.createOrderFromCart(cart);
             sfr.setResponseCode("ORD-001");
             sfr.setPayload(cartResponse);
-            return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfr);  // Return 201 Created if successful
 
         } catch (Exception e) {
             LOGGER.error("Error creating order: {}", e.getMessage());
             sfr.setResponseCode("ORD-601");
             sfr.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);  // Return 500 for any other errors
         }
     }
 
