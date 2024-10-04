@@ -998,4 +998,3 @@ INSERT INTO bills (orders_id, nit, bill_name, total_cost) VALUES (997, 40137659,
 INSERT INTO bills (orders_id, nit, bill_name, total_cost) VALUES (998, 80839889, 'Keepe', 1667);
 INSERT INTO bills (orders_id, nit, bill_name, total_cost) VALUES (999, 80779294, 'Saiger', 4609);
 INSERT INTO bills (orders_id, nit, bill_name, total_cost) VALUES (1000, 33179867, 'Francello', 3289);
-select count(*) from bills;

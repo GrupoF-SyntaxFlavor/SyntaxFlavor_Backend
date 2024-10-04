@@ -1,4 +1,4 @@
--- Created by Vertabelo (http://vertabelo.com)
+/* -- Created by Vertabelo (http://vertabelo.com)
 -- Last modification date: 2024-10-01 20:56:41.953
 
 -- tables
@@ -74,3 +74,4 @@ CREATE TABLE users (
 );
 
 -- End of file.
+*/

@@ -998,4 +998,3 @@ insert into customers (bill_name, nit, users_id) values ('Daniells', 94763823, 9
 insert into customers (bill_name, nit, users_id) values ('Massingham', 39697863, 998);
 insert into customers (bill_name, nit, users_id) values ('Soggee', 45974877, 999);
 insert into customers (bill_name, nit, users_id) values ('Cloonan', 31298860, 1000);
-select count(*) from customers;

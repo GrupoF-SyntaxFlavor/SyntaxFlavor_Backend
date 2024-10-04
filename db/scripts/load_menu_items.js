@@ -11,7 +11,8 @@ const DB_USER = process.env.DB_USER || "postgres";
 const DB_PASSWORD = process.env.DB_PASSWORD || "123456";
 
 // Configuración del MinIO y el API
-const BASE_URL = "http://localhost:8080/api/v1/menu/item";
+const BASE_URL = "http://localhost:8080/api/v1/public/menu/item";
+
 const IMG_FOLDER = "../img_menu_items";
 
 // Función para ejecutar los inserts desde el archivo SQL

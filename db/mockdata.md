@@ -1,24 +1,35 @@
 # Introducción
 
-Orden en que se deben cargar los datos simulados (mockdata) en la base de datos. Seguir este orden garantiza la integridad y consistencia de los datos durante el proceso de pruebas y desarrollo.
+Se realizaron dos scripts para el cargado de datos a la BDD llamados `load_menu_items.js` y `load_mockdata.js`. Estos cargan los datos en el siguiente orden
 
-1. **Users**: Cargar primero los datos de usuarios para establecer las relaciones básicas.
-2. **Customers**: A continuación, cargar los datos de clientes que los usuarios pueden interactuar.
-3. **Orders**: Luego, cargar los datos de pedidos que relacionan usuarios y clientes.
-4. **Bills**: Luego, cargar los datos de facturas que están asociados con los pedidos.
-5. **MenuItems**: Luego, cargar los datos de facturas que están asociados con los pedidos, utilizando el `script` correspondiente.
-6. **OrderItems**: Luego, cargar los datos de items que están asociados con los pedidos y los items de menú.
+1. **MenuItems**
+2. **Users**
+3. **Customers**
+4. **Orders**
+5. **Bills**
+6. **OrderItems**
 
-Asegúrese de seguir este orden para evitar problemas de referencia y asegurar que todas las relaciones entre los datos se mantengan correctamente.
+Por lo que el orden de ejecución de los archivos es el siguiente:
+
+1. **load_menu_items.js**
+2. **load_mockdata.js**
+
+De no ejecutarse en este orden ocurrira un error en la tabla `order_items`.
+
+**Consideraciones:**
+
+1. Se recomienda recontruir el contenedor antes de ejecutar los scripts, de otra forma podrían ocurrir conflictos a causa de los ids.
+2. El sistema debe estar corriendo a la hora de ejecutar `load_menu_items.js` de otra forma no sé podrá realizar el cargado de imágenes ya que se hace mediante un **endpoint**.
+3. En el caso de fallar el cargado de imágenes, no vuelva a correr el archivo `load_menu_items.js` por que se crearan registros repetidos. Se recomienda borrar la base de datos antes de correrlo nuevamente.
 
 ---
 
-# Procedimiento para ejecutar el script de carga de datos del menu y subida de imágenes
+# Procedimiento para ejecutar los scripts de carga de datos
 
 Para poder cargar los datos de `menu_items` y subir las imágenes correspondientes al sistema MinIO, realizamos los siguientes pasos:
 
 1. **Dirigete a la carpeta scripts**:  
-   Usa la teminal para entrar en la carpeta sripts utilizando el siguiente comando:
+   Usa la terminal para entrar en la carpeta sripts utilizando el siguiente comando:
 
    ```bash
     cd .\db\scripts
@@ -32,17 +43,22 @@ Para poder cargar los datos de `menu_items` y subir las imágenes correspondient
    npm install pg axios form-data
    ```
 
-3. **Ajustes en el script:**:
-   - Conexión a la base de datos: En el archivo load_menu_items.js, se configuró la conexión a la base de datos utilizando pg para ejecutar los inserts del archivo SQL.
-   - Subida de imágenes: Utilizando axios y form-data, se programó la carga de imágenes en el endpoint especificado.
-4. **Ejecución del script**:
+3. **Ejecución del script `load_menu_items.js`**:
+
+   Ejecutamos el script para cargar los datos y subir las imágenes
+
+   ```bash
+   node load_menu_items.js
+   ```
+
+   Este carga los datos desde el archivo SQL y luego sube las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.
+
+4. **Ejecución del script `load_mockdata.js`**:
 
    - Ejecutamos el script para cargar los datos y subir las imágenes
 
    ```bash
-   node load_menu_items.js
-   Esto cargó los datos desde el archivo SQL y luego subió las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.
-
-
-
+   node load_mockdata.js
    ```
+
+   Este carga los datos desde el archivo SQL y luego sube las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.

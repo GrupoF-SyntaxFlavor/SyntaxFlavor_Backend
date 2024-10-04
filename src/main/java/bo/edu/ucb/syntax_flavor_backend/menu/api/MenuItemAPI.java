@@ -21,9 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
-@RequestMapping("/api/v1/menu")
+@RequestMapping("/api/v1")
 public class MenuItemAPI {
 
     Logger LOGGER = LoggerFactory.getLogger(MenuItemAPI.class);
@@ -37,8 +36,9 @@ public class MenuItemAPI {
 
     // Endpoint para obtener todos los platillos disponibles
     @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
-    @GetMapping("/item")
+    @GetMapping("/menu/item")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
+
         LOGGER.info("Endpoint GET /api/v1/menu/item");
 
         // Extract JWT from Authorization header
@@ -78,8 +78,9 @@ public class MenuItemAPI {
         }
     }
 
-    @PatchMapping("/item/{id}/image")
-    public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id, @RequestPart("file") MultipartFile file) {
+    @PatchMapping("/public/menu/item/{id}/image")
+    public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id,
+            @RequestPart("file") MultipartFile file) {
         LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<String> sfrResponse = new SyntaxFlavorResponse<>();
         try {
@@ -96,7 +97,7 @@ public class MenuItemAPI {
         }
     }
 
-    @GetMapping("/item/{id}/image")
+    @GetMapping("/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<Object>> getMenuItemImage(@PathVariable Integer id) {
         LOGGER.info("Endpoint GET /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<Object> sfrResponse = new SyntaxFlavorResponse<>();
