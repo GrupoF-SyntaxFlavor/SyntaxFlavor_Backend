@@ -1,4 +1,4 @@
--- Created by Vertabelo (http://vertabelo.com)
+/* -- Created by Vertabelo (http://vertabelo.com)
 -- Last modification date: 2024-10-01 20:56:41.953
 
 -- tables
@@ -29,7 +29,7 @@ CREATE TABLE Customers (
 CREATE TABLE MenuItems (
     id serial  NOT NULL,
     name varchar(255)  NOT NULL,
-    image_url varchar(255)  NOT NULL,
+    image_url varchar(255),
     description text  NULL,
     price decimal(10,2)  NOT NULL,
     created_at timestamp  NULL DEFAULT current_timestamp,
@@ -75,3 +75,4 @@ CREATE TABLE Users (
 
 -- End of file.
 
+ */
