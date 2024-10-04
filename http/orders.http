@@ -4,10 +4,11 @@ Accept: application/json
 ###
 GET http://localhost:8080/api/v1/order/status?status=Cancelado&pageNumber=0
 
-###
-
+### Post para crear una ORDEN trata de dejar este test con <JWT_TOKEN> debes copiar el access_token
 POST http://localhost:8080/api/v1/order
+Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
+Accept: application/json
 
 {
   "customerId": 1,

@@ -36,7 +36,7 @@ public class MinioFileService {
         this.bucketName = bucketName;
     }
     
-    //@PostConstruct
+    @PostConstruct
     public void initBucket() {
         try {
             // Check connection by listing buckets
