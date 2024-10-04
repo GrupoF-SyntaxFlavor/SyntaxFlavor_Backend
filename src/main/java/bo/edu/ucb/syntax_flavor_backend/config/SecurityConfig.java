@@ -16,6 +16,8 @@ class SecurityConfig {
         @Bean
         SecurityFilterChain configure(HttpSecurity http) throws Exception {
                 http
+                .cors() // Habilitar CORS
+                .and()
                 .authorizeHttpRequests(c ->
                         c
                         .requestMatchers("/api/v1/public/**").permitAll()  // Rutas públicas
