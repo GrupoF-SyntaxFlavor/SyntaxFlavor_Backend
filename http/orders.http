@@ -5,7 +5,7 @@ Accept: application/json
 GET http://localhost:8080/api/v1/public/order/status?status=Cancelado&pageNumber=0
 
 ### Post para crear una ORDEN con JWT token (requiere autenticación)
-POST http://localhost:8080/api/v1/order
+POST http://localhost:8080/api/v1/public/order
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 Accept: application/json
@@ -20,18 +20,18 @@ Accept: application/json
 
 ###
 
-### Post para crear una ORDEN pública (sin autenticación)
-POST http://localhost:8080/api/v1/public/order
-Content-Type: application/json
-Accept: application/json
-
-{
-  "customerId": 1,
-  "itemIdQuantityMap": {
-    "1": 2,
-    "2": 1
-  }
-}
+#### Post para crear una ORDEN pública (sin autenticación)
+#POST http://localhost:8080/api/v1/public/order
+#Content-Type: application/json
+#Accept: application/json
+#
+#{
+#  "customerId": 1,
+#  "itemIdQuantityMap": {
+#    "1": 2,
+#    "2": 1
+#  }
+#}
 
 
 ###
@@ -44,6 +44,8 @@ Accept: application/json
 PUT http://localhost:8080/api/v1/public/order/deliver?orderId=2
 Accept: application/json
 
+### Listar órdenes del cliente (extraído del token JWT)
 ###
-GET http://localhost:8080/api/v1/public/order/customer?customerId=1
+GET http://localhost:8080/api/v1/public/order/customer
+Authorization: Bearer <JWT_TOKEN>
 Accept: application/json

@@ -71,6 +71,15 @@ public class UserBL {
         }
     }
 
+    public User findUserByKcUserId(String kcUserId) throws RuntimeException {
+        LOGGER.info("Finding user by kcUserId: {}", kcUserId);
+        User user = userRepository.findByKcUserId(kcUserId).orElse(null);
+        if (user == null) {
+            LOGGER.error("No user with provided Keycloak user ID was found");
+            throw new RuntimeException("No user with provided Keycloak user ID was found");
+        }
+        return user;
+    }
     public UserDTO getUserByEmail(String email) {
         LOGGER.warn("Person email: {}", email);
         User user = userRepository.findByEmail(email).orElse(null);
