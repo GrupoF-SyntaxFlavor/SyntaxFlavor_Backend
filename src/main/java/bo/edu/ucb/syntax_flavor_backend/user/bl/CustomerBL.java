@@ -1,17 +1,12 @@
 package bo.edu.ucb.syntax_flavor_backend.user.bl;
 
+import bo.edu.ucb.syntax_flavor_backend.user.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
-import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
-
-import bo.edu.ucb.syntax_flavor_backend.user.dto.BillingInfoDTO;
-
-import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerRequestDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import bo.edu.ucb.syntax_flavor_backend.user.repository.CustomerRepository;
@@ -43,20 +38,18 @@ public class CustomerBL {
         return customer;
     }
 
-    public Customer updateCustomerData(CustomerRequestDTO customer) throws RuntimeException {
-        LOGGER.info("Updating customer data: {}", customer);
-        try{
-            Customer customerFound = customerRepository.findById(customer.getCustomerId()).orElse(null);
-            if(customerFound == null) {
-                LOGGER.error("No customer with provided ID was found");
-                throw new RuntimeException("No customer with provided ID was found");
-            }
-            customerFound.setBillName(customer.getBillName());
-            customerFound.setNit(customer.getNit());
-            Customer updatedCustomer = customerRepository.save(customerFound);
+    public Customer updateCustomerData(Customer customer, CustomerUpdateDTO customerUpdateDTO) throws RuntimeException {
+        LOGGER.info("Updating customer data for customerId: {}", customer.getId());
+        try {
+            // Update fields with the new data from DTO
+            customer.setBillName(customerUpdateDTO.getBillName());
+            customer.setNit(customerUpdateDTO.getNit());
+
+            // Save updated customer to repository
+            Customer updatedCustomer = customerRepository.save(customer);
+            LOGGER.info("Customer data updated successfully for customerId: {}", customer.getId());
             return updatedCustomer;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error updating customer data: {}", e.getMessage());
             throw new RuntimeException("Error updating customer data: " + e.getMessage());
         }
