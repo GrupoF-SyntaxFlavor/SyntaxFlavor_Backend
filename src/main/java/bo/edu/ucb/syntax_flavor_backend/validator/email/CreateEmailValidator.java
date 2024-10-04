@@ -1,9 +1,8 @@
-package bo.edu.ucb.syntax_flavor_backend.validator.account;
+package bo.edu.ucb.syntax_flavor_backend.validator.email;
 
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ValidationException;

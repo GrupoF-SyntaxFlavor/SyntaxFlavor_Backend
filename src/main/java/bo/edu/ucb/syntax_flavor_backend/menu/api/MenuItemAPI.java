@@ -2,7 +2,11 @@ package bo.edu.ucb.syntax_flavor_backend.menu.api;
 
 import java.util.List;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,15 +37,39 @@ public class MenuItemAPI {
     // Endpoint para obtener todos los platillos disponibles
     @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
     @GetMapping("/menu/item")
-    public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems() {
+    public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
+
         LOGGER.info("Endpoint GET /api/v1/menu/item");
+
+        // Extract JWT from Authorization header
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            sfrResponse.setResponseCode("MEN-401");
+            sfrResponse.setErrorMessage("Unauthorized: No token provided");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfrResponse);
+        }
+
         try {
+            token = token.substring(7); // Remove "Bearer " prefix
+            String userId = JWT.decode(token).getSubject(); // Decode JWT and get subject (user ID)
+
+            LOGGER.info("Token verified, userId: {}", userId);
+
+            // Fetch menu items after JWT verification
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
             sfrResponse.setResponseCode("MEN-000");
             sfrResponse.setPayload(menuItems);
-            LOGGER.info("Endpoint successfully, returning menu items: {}", menuItems);
+
+            LOGGER.info("Returning menu items: {}", menuItems);
             return ResponseEntity.ok(sfrResponse);
+
+        } catch (JWTDecodeException e) {
+            LOGGER.error("Invalid token: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-401");
+            sfrResponse.setErrorMessage("Unauthorized: Invalid token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfrResponse);
         } catch (Exception e) {
             LOGGER.error("Error retrieving menu items: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-600");

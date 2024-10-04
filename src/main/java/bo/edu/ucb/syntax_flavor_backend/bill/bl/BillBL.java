@@ -57,7 +57,7 @@ public class BillBL {
         try {
             // Attempt to retireve the order
             Order order = orderRepository.findById(billRequest.getOrderId()).orElseThrow(() -> new RuntimeException("Order not found"));
-
+            LOGGER.info("Order found: {}", order.getId());
             // Attempt to create the bill
             createdBill.setOrdersId(order);
             // if both billing_name and NIT are present, then create the bill with those values

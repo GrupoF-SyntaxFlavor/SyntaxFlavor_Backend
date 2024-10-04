@@ -2243,14 +2243,12 @@
     "parRequestUriLifespan": "60",
     "clientSessionMaxLifespan": "0",
     "frontendUrl": "",
-    "organizationsEnabled": "false",
     "acr.loa.map": "{}",
     "shortVerificationUri": "",
     "actionTokenGeneratedByUserLifespan.reset-credentials": ""
   },
   "keycloakVersion": "25.0.6",
   "userManagedAccessAllowed": false,
-  "organizationsEnabled": false,
   "clientProfiles": {
     "profiles": []
   },

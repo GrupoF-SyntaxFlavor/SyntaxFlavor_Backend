@@ -35,7 +35,6 @@ public class MinioFileService {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
     }
-
     @PostConstruct
     public void initBucket() {
         try {
