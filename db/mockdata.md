@@ -43,7 +43,17 @@ Para poder cargar los datos de `menu_items` y subir las imágenes correspondient
    npm install pg axios form-data
    ```
 
-3. **Ejecución del script `load_menu_items.js`**:
+3. **Ejecución del script `load_users_keycloak.js`**:
+
+   Ejecutamos el script para cargar los datos y subir las imágenes
+
+   ```bash
+   node load_users_keycloak.js
+   ```
+
+   Este carga los datos desde el archivo TXT de users y customers para cargarlos en keycloak y luego en la DB.
+
+4. **Ejecución del script `load_menu_items.js`**:
 
    Ejecutamos el script para cargar los datos y subir las imágenes
 
@@ -53,7 +63,9 @@ Para poder cargar los datos de `menu_items` y subir las imágenes correspondient
 
    Este carga los datos desde el archivo SQL y luego sube las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.
 
-4. **Ejecución del script `load_mockdata.js`**:
+
+
+5. **Ejecución del script `load_mockdata.js`**:
 
    - Ejecutamos el script para cargar los datos y subir las imágenes
 
