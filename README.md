@@ -100,3 +100,8 @@ Accept: application/json
   }
 }
 ```
+### Pasos a seguir para levantar el backend
+
+#### Cambia a tu ip en los siguientes archivos:
+1. WebConfig.java: en allowedOrigins, cambiar en localhost:8081 la ip.
+Ej: *.allowedOrigins("http://172.18.6.210:8081","http://localhost:3000")*
