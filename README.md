@@ -105,3 +105,49 @@ Accept: application/json
 #### Cambia a tu ip en los siguientes archivos:
 1. WebConfig.java: en allowedOrigins, cambiar en localhost:8081 la ip.
 Ej: *.allowedOrigins("http://172.18.6.210:8081","http://localhost:3000")*
+
+2. Json de creación de keycloak:
+- Encuentra el archivo: **src\main\resources\imports\keycloak-realm\realm-export.json**
+- Busca "localhost" y reemplaza por tu ip, deberían cambiarse las siguientes 7 lineas:
+      "rootUrl": "http://localhost:8080",
+      "adminUrl": "http://localhost:8080",
+      "baseUrl": "http://localhost:8080",
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"],
+      "post.logout.redirect.uris": "http://localhost:8080",
+      "jwks.url": "http://localhost:8082/realms/myrealm/protocol/openid-connect/token",
+
+#### Crear el contenedor docker:
+- Haz click derecho en el archivo "docker-compose.yaml"
+- Selecciona la opción "Compose Up - Select Services"
+- Marca todas las opciones **menos syntaxflavor_backend**
+- Espera a que se creen todos los contenedores
+
+#### Haz correr los scripts js:
+1. **Dirigete a la carpeta scripts**:  
+   ```bash
+    cd .\db\scripts
+
+   ```
+2. **Instalación de dependencias**:  
+   ```bash
+   npm install pg axios form-data
+   ```
+  NOTA: tambien puede utilizarse el comando "npm i"
+3. **Ejecución del script `load_users_keycloak.js`**:
+
+   ```bash
+   node load_users_keycloak.js
+   ```
+4. **Ejecución del script `load_menu_items.js`**:
+
+   ```bash
+   node load_menu_items.js
+   ```
+
+5. **Ejecución del script `load_mockdata.js`**:
+   ```bash
+   node load_mockdata.js
+   ```
+#### Notas importantes:
+- Recuerda que cuando creas un usuario debes verificar el correo mediante MailHog antes de hacer login.
