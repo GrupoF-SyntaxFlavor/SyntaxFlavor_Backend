@@ -35,8 +35,8 @@ public class MinioFileService {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
     }
-    
-    //@PostConstruct
+
+    @PostConstruct
     public void initBucket() {
         try {
             // Check connection by listing buckets
@@ -89,7 +89,7 @@ public class MinioFileService {
             LOGGER.error("Error initializing Minio bucket", e);
             throw new RuntimeException("Error initializing Minio bucket", e);
         }
-}
+    }
 
     public String uploadFile(String fileName, byte[] fileData, String contentType) {
         // FIXME this method should be dynamic
@@ -156,6 +156,5 @@ public class MinioFileService {
             throw new RuntimeException("Error downloading file from Minio", e);
         }
     }
-
 
 }
