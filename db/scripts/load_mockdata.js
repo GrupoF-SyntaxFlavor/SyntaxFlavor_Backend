@@ -48,8 +48,8 @@ async function executeSqlFile(filename) {
 // Función principal para ejecutar los archivos SQL en orden
 async function loadSqlFilesInOrder() {
   const sqlFiles = [
-    "../sql/users.sql",
-    "../sql/customers.sql",
+    // "../sql/users.sql",
+    // "../sql/customers.sql",
     "../sql/orders.sql",
     "../sql/bills.sql",
     "../sql/order_items.sql",
@@ -67,6 +67,8 @@ async function loadSqlFilesInOrder() {
 }
 
 (async function () {
+  
+  //llamar a endpoint de usuarios
   // Ejecutar los archivos SQL en orden
   await loadSqlFilesInOrder();
 })();

@@ -25,8 +25,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "name": "customer111",
-    "email": "customer114@example.com",
+    "name": "customer1",
+    "email": "customer1@example.com",
     "password": "123456789",
     "nit": "987654321",
     "billName": "ExampleBillName"
