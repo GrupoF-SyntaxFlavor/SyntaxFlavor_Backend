@@ -11,12 +11,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "customerId": 1,
   "itemIdQuantityMap": {
     "1": 2,
     "2": 1
   }
 }
+
 
 ###
 
