@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/v1/order")
+@RequestMapping(value = "/api/v1/public/order")
 public class OrderAPI {
     
     Logger LOGGER = LoggerFactory.getLogger(OrderAPI.class);
