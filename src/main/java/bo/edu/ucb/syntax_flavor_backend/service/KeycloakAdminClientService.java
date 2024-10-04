@@ -44,14 +44,15 @@ public class KeycloakAdminClientService {
 
     private final KeycloakProvider kcProvider;
 
-    @PostConstruct
-    public void init() {
+    public String syncUsersToKeycloak() {
         try {
             LOGGER.info("Synchronizing users with Keycloak...");
-            synchronizeUsersWithKeycloak();
+            Integer syncedUserCount = synchronizeUsersWithKeycloak();
             LOGGER.info("User synchronization completed.");
+            return "Synchronized " + syncedUserCount + " users with Keycloak.";
         } catch (Exception e) {
             LOGGER.error("Error during user synchronization with Keycloak: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to synchronize users with Keycloak.", e);
         }
     }
 
@@ -135,8 +136,9 @@ public class KeycloakAdminClientService {
         return credential;
     }
 
-    public void synchronizeUsersWithKeycloak() {
+    public int synchronizeUsersWithKeycloak() {
         LOGGER.info("Synchronizing users with Keycloak...");
+        int createdUserCount = 0;
 
         List<User> localUsers = userRepository.findAll(); // Obtener todos los usuarios de la base de datos local
         UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
@@ -154,11 +156,14 @@ public class KeycloakAdminClientService {
 
                     createKeycloakUser(userRequest.getName(), userRequest.getEmail(), userRequest.getPassword(), false);
                     LOGGER.info("User {} created in Keycloak", localUser.getEmail());
+                    createdUserCount++;
                 }
             } catch (Exception e) {
                 LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage(), e);
             }
         }
+
+        return createdUserCount;
     }
 
     private boolean userExistsInKeycloak(UsersResource usersResource, String kcUserId) {

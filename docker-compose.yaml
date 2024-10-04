@@ -9,8 +9,8 @@ services:
     restart: always
     env_file:
       - ./env/postgres.env
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d # Crea la base de datos con el script en db/init.sql
+    #volumes:
+    #  - ./db:/docker-entrypoint-initdb.d # Crea la base de datos con el script en db/init.sql
     networks:
         - syntaxflavor_network
 
@@ -28,7 +28,7 @@ services:
         - syntaxflavor_network
 
   syntaxflavor_keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:25.0.6
     container_name: syntaxflavor_keycloak
     ports:
       - '8082:8080'
