@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
-import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakAdminClientService;
+import bo.edu.ucb.syntax_flavor_backend.service.KeycloakAdminClientService;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerSignUpDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
-// import bo.edu.ucb.syntax_flavor_backend.user.bl.KeycloakProvider;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.user.bl;
+package bo.edu.ucb.syntax_flavor_backend.provider;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;

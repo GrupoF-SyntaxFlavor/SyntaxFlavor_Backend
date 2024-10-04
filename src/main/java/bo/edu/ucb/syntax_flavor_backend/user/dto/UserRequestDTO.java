@@ -1,7 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.user.dto;
 
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
-import bo.edu.ucb.syntax_flavor_backend.validator.account.ValidCreateEmail;
+import bo.edu.ucb.syntax_flavor_backend.validator.email.ValidCreateEmail;
 import jakarta.validation.constraints.NotNull;
 
 

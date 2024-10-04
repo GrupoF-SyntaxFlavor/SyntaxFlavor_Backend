@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.validator.account;
+package bo.edu.ucb.syntax_flavor_backend.validator.email;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

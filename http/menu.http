@@ -1,7 +1,9 @@
 # GET /api/v1/menu/item
-### 
+### trata de dejar este test con <JWT_TOKEN> debes copiar el access_token
 GET http://localhost:8080/api/v1/menu/item
+Authorization: Bearer <JWT_TOKEN>
 Accept: application/json
+
 
 ###
 GET http://localhost:8080/api/v1/menu/item/1/image
