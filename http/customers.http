@@ -14,7 +14,6 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "customerId": 1,
   "billName": "MonteroUpdated",
   "nit": "12334135"
 }

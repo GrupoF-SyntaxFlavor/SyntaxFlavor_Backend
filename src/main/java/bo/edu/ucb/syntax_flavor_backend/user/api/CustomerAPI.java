@@ -1,6 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.user.api;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerUpdateDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -85,14 +86,14 @@ public class CustomerAPI {
     }
 
 
-    @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerRequestDTO. All of the information in the body will override the data for the user.")
+    @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerUpdateDTO. All of the information in the body will override the data for the user.")
     @PatchMapping("/customer")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> updateCustomerData(
-            @RequestBody CustomerRequestDTO customerRequestDTO,
+            @RequestBody CustomerUpdateDTO customerUpdateDTO,
             HttpServletRequest request) {
 
         SyntaxFlavorResponse<CustomerDTO> response = new SyntaxFlavorResponse<>();
-        LOGGER.info("Endpoint PATCH /api/v1/user/customer with customerRequestDTO: {}", customerRequestDTO);
+        LOGGER.info("Endpoint PATCH /api/v1/user/customer with customerUpdateDTO: {}", customerUpdateDTO);
 
         try {
             // Extract JWT from Authorization header
@@ -108,9 +109,29 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
-            // Process the customer data update
-            Customer customer = customerBL.updateCustomerData(customerRequestDTO);
-            CustomerDTO customerDTO = new CustomerDTO(customer);
+            // Fetch the User by kcUserId
+            User user = userBL.findUserByKcUserId(kcUserId);
+            if (user == null) {
+                LOGGER.error("User with kcUserId {} not found", kcUserId);
+                response.setResponseCode("ORD-601");
+                response.setErrorMessage("User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            // Fetch the Customer by userId
+            Customer customer = customerBL.findCustomerByUserId(user.getId());
+            if (customer == null) {
+                LOGGER.error("Customer for userId {} not found", user.getId());
+                response.setResponseCode("ORD-602");
+                response.setErrorMessage("Customer not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            // Update customer data using both Customer and CustomerUpdateDTO
+            Customer updatedCustomer = customerBL.updateCustomerData(customer, customerUpdateDTO);
+
+            // Return the updated customer information
+            CustomerDTO customerDTO = new CustomerDTO(updatedCustomer);
             response.setResponseCode("ORD-002");
             response.setPayload(customerDTO);
             return ResponseEntity.ok(response);
