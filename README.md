@@ -100,9 +100,3 @@ Accept: application/json
   }
 }
 ```
-
-## Integración con Keycloak y confirmación de correos
-
-Se utilizó Keycloak para gestionar la autenticación de los usuarios. Al crearse los 1000 usuarios en el sistema, se enviarán 1000 correos de confirmación a Keycloak, ya que todos los usuarios se crean sin verificar su correo electrónico.
-
-Además, se añadió la carpeta `/theme` en `/resources` para cambiar el contenido del correo de Keycloak al español.
