@@ -41,7 +41,8 @@ public class MenuItemAPI {
 
         LOGGER.info("Endpoint GET /api/v1/menu/item");
 
-        // Extract JWT from Authorization header
+        // FIXME: No es la mejor forma de manejar el token JWT.
+        // TODO: Debería ser modularizado utilizando un middleware o función dedicada para la autenticación JWT.
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
 
@@ -57,7 +58,8 @@ public class MenuItemAPI {
 
             LOGGER.info("Token verified, userId: {}", userId);
 
-            // Fetch menu items after JWT verification
+            // FIXME: Llamadas a lógica de negocio deberían estar en el BL.
+            // TODO: Mover esta operación al `bl`, ya que la responsabilidad de obtener los items debería delegarse.
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
             sfrResponse.setResponseCode("MEN-000");
             sfrResponse.setPayload(menuItems);
@@ -80,10 +82,11 @@ public class MenuItemAPI {
 
     @PatchMapping("/public/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id,
-            @RequestPart("file") MultipartFile file) {
+                                                                            @RequestPart("file") MultipartFile file) {
         LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<String> sfrResponse = new SyntaxFlavorResponse<>();
         try {
+            // FIXME: Sería preferible delegar esta lógica al `bl`.
             String imageUrl = menuBL.updateMenuItemImage(id, file);
             sfrResponse.setResponseCode("MEN-002");
             sfrResponse.setPayload(imageUrl);
@@ -102,6 +105,7 @@ public class MenuItemAPI {
         LOGGER.info("Endpoint GET /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<Object> sfrResponse = new SyntaxFlavorResponse<>();
         try {
+            // FIXME: La obtención de la imagen también debería delegarse al `bl`.
             byte[] image = menuBL.getMenuItemImage(id);
             sfrResponse.setResponseCode("MEN-004");
             sfrResponse.setPayload(image);

@@ -21,16 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 
-
 @RestController
 @RequestMapping("/api/v1/user")
 public class CustomerAPI {
-    
+
     Logger LOGGER = LoggerFactory.getLogger(CustomerAPI.class);
 
     @Autowired
@@ -45,7 +43,8 @@ public class CustomerAPI {
 
         SyntaxFlavorResponse<CustomerDTO> response = new SyntaxFlavorResponse<>();
         try {
-            // Extraer el kc_user_id del token JWT
+            // FIXME: No es la mejor forma de manejar tokens JWT.
+            // TODO: Modularizar el manejo del JWT utilizando un middleware o una función auxiliar.
             String kcUserId = JWT.decode(token.substring(7)).getSubject();
             LOGGER.info("Endpoint GET /api/v1/user/customer/profile with kc_user_id extracted from token: {}", kcUserId);
 
@@ -58,7 +57,8 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // TODO esto debería ser evitado
+            // FIXME: La lógica de negocio debería estar en el BL, no en la API.
+            // TODO: Mover esta lógica al CustomerBL.
             Customer customer = customerBL.findCustomerByUserId(user.getId());
 
             if (customer == null) {
@@ -85,7 +85,6 @@ public class CustomerAPI {
         }
     }
 
-
     @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerUpdateDTO. All of the information in the body will override the data for the user.")
     @PatchMapping("/customer")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> updateCustomerData(
@@ -96,7 +95,8 @@ public class CustomerAPI {
         LOGGER.info("Endpoint PATCH /api/v1/user/customer with customerUpdateDTO: {}", customerUpdateDTO);
 
         try {
-            // Extract JWT from Authorization header
+            // FIXME: No es la mejor forma de manejar tokens JWT.
+            // TODO: Modularizar el manejo del JWT utilizando un middleware o una función auxiliar.
             String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
             String kcUserId;
             try {
@@ -109,7 +109,8 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
-            // Fetch the User by kcUserId
+            // FIXME: La lógica de negocio debería estar en el BL, no en la API.
+            // TODO: Mover esta lógica al UserBL y CustomerBL.
             User user = userBL.findUserByKcUserId(kcUserId);
             if (user == null) {
                 LOGGER.error("User with kcUserId {} not found", kcUserId);
@@ -118,7 +119,6 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Fetch the Customer by userId
             Customer customer = customerBL.findCustomerByUserId(user.getId());
             if (customer == null) {
                 LOGGER.error("Customer for userId {} not found", user.getId());
@@ -127,10 +127,10 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Update customer data using both Customer and CustomerUpdateDTO
+            // FIXME: La actualización del cliente también debería estar manejada en el BL.
+            // TODO: Mover esta lógica al CustomerBL.
             Customer updatedCustomer = customerBL.updateCustomerData(customer, customerUpdateDTO);
 
-            // Return the updated customer information
             CustomerDTO customerDTO = new CustomerDTO(updatedCustomer);
             response.setResponseCode("ORD-002");
             response.setPayload(customerDTO);
@@ -143,5 +143,4 @@ public class CustomerAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
 }
