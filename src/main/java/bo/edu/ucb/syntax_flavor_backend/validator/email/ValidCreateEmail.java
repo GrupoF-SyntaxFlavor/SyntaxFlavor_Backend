@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = CreateEmailValidator.class)
 @Documented
 public @interface ValidCreateEmail {
+    // FIXME: Recomendaría mover esta carpeta o bien a util/email/validator o bien a service/email e incporar EmailService en la misma carpeta
 
     String message() default "Invalid email.";
     Class<?>[] groups() default {};

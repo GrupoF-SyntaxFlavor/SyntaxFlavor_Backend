@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class CreateEmailValidator implements ConstraintValidator<ValidCreateEmail, String> {
+    // FIXME: Recomendaría mover esta carpeta o bien a util/email/validator o bien a service/email e incporar EmailService en la misma carpeta
 
     @Autowired
     private UserBL userBL;

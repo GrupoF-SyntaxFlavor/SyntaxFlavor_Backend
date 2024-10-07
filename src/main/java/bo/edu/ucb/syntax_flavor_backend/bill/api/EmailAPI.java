@@ -10,6 +10,8 @@ import bo.edu.ucb.syntax_flavor_backend.service.EmailService;
 @RestController
 public class EmailAPI {
 
+    // TODO: Eliminar o convertir en dev endpoint
+
     @Autowired
     private EmailService emailService;
 
