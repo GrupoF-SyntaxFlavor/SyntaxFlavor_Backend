@@ -2,10 +2,13 @@ package bo.edu.ucb.syntax_flavor_backend.menu.api;
 
 import java.util.List;
 
+import java.math.BigDecimal;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -36,7 +41,7 @@ public class MenuItemAPI {
 
     // Endpoint para obtener todos los platillos disponibles
     @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
-    @GetMapping("/menu/item")
+    @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
 
         LOGGER.info("Endpoint GET /api/v1/menu/item");
@@ -79,6 +84,29 @@ public class MenuItemAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
         }
     }
+
+    @GetMapping("/menu/item")
+    public ResponseEntity<SyntaxFlavorResponse<Page<MenuItemResponseDTO>>> getMenuItemsByPrice(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize) {
+        LOGGER.info("Endpoint GET /api/v1/menu/item");
+        SyntaxFlavorResponse<Page<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            Page<MenuItemResponseDTO> menuItems = menuBL.getMenuItemsByPrice(minPrice, maxPrice, pageNumber, pageSize);
+            sfrResponse.setResponseCode("MEN-000");
+            sfrResponse.setPayload(menuItems);
+            LOGGER.info("Returning menu items: {}", menuItems.getContent());
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error getting menu items by price: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-600");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+    
 
     @PatchMapping("/public/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id,
