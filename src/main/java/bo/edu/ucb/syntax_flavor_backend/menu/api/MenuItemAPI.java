@@ -90,11 +90,12 @@ public class MenuItemAPI {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/menu/item");
         SyntaxFlavorResponse<Page<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            Page<MenuItemResponseDTO> menuItems = menuBL.getMenuItemsByPrice(minPrice, maxPrice, pageNumber, pageSize);
+            Page<MenuItemResponseDTO> menuItems = menuBL.getMenuItemsByPriceSortByName(minPrice, maxPrice, pageNumber, pageSize, sortAscending);
             sfrResponse.setResponseCode("MEN-000");
             sfrResponse.setPayload(menuItems);
             LOGGER.info("Returning menu items: {}", menuItems.getContent());

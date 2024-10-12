@@ -56,18 +56,23 @@ public class MenuBL {
         }
     }
 
-    public Page<MenuItemResponseDTO> getMenuItemsByPrice(BigDecimal minPrice, BigDecimal maxPrice, Integer pageNumber, Integer pageSize) {
+    public Page<MenuItemResponseDTO> getMenuItemsByPriceSortByName(BigDecimal minPrice, BigDecimal maxPrice, Integer pageNumber, Integer pageSize, boolean sortAScending) {
         LOGGER.info("Getting menu items by price between {} and {}", minPrice, maxPrice);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<MenuItem> menuItems;
         if (minPrice == null) {
             minPrice = BigDecimal.ZERO;
         }
         if (maxPrice == null) {
             maxPrice = MAX_MENU_ITEMS_PRICE;
         }
-        Page<MenuItem> menuItems = menuItemRepository.findByPriceBetween(minPrice, maxPrice, pageable);
+        if (!sortAScending) {
+            menuItems = menuItemRepository.findByPriceBetweenOrderByNameDesc(minPrice, maxPrice, pageable);
+        } else {
+            menuItems = menuItemRepository.findByPriceBetweenOrderByNameAsc(minPrice, maxPrice, pageable);
+        }
         LOGGER.info("Found {} menu items", menuItems.getTotalElements());
-        return menuItems.map(menuItem -> new MenuItemResponseDTO(menuItem));
+        return menuItems.map(MenuItemResponseDTO::new);
     }
 
     public String updateMenuItemImage(Integer id, MultipartFile file) {
