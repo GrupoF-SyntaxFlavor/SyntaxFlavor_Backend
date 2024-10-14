@@ -5,8 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "orderId": 1,
-  "userId": 1,
+  "orderId": 3,
   "billName": "Montero",
   "nit": "12334135"
 }
