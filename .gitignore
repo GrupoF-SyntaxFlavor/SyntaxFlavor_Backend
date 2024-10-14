@@ -37,4 +37,4 @@ node_modules/
 .vscode/
 
 ### Configuration keycloak ###
-src\main\resources\imports\keycloak-realm\realm-export.json
+src/main/resources/imports/keycloak-realm/realm-export.json
