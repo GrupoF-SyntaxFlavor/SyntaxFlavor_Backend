@@ -31,5 +31,3 @@ Accept: application/json
     "nit": "987654321",
     "billName": "ExampleBillName"
 }
-
-#FIXME: El endpoint utilizado para el sign up esta protegido o no existe, hace referencia a POST http://localhost:8080/api/v1/user/customer/profile

@@ -5,7 +5,6 @@ package bo.edu.ucb.syntax_flavor_backend.user.entity;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -29,12 +28,12 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "users")
 @NamedQueries({
-    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
-    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
-    @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
-    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
+        @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+        @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
+        @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
+        @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+        @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+        @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt") })
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,7 +45,7 @@ public class User implements Serializable {
     @Column(name = "kc_user_id", nullable = true, unique = true)
     private String kcUserId;
     @Basic(optional = false)
-    @Column(name = "name", nullable = false, unique = true) // El name será único, usándolo como username
+    @Column(name = "name", nullable = false)
     private String name;
     @Basic(optional = false)
     @Column(name = "email", unique = true)
@@ -164,5 +163,5 @@ public class User implements Serializable {
     public String toString() {
         return "com.condominio.tables_syntax_flavor.User[ id=" + id + " ]";
     }
-    
+
 }

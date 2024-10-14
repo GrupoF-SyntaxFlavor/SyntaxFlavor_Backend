@@ -14,7 +14,7 @@ Accept: application/json
 GET http://localhost:8080/api/v1/menu/item/1/image
 
 ### 
-PATCH https://localhost:8080/api/v1/menu/item/1/image
+PATCH https://localhost:8080/api/v1/public/menu/item/1/image
 Content-Type: multipart/form-data boundary="------uploadImageLimiter"
 
 ------uploadImageLimiter
