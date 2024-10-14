@@ -720,7 +720,7 @@
       "attributes": {
         "client.secret.creation.time": "1727309264",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
-        "post.logout.redirect.uris": "http:localhost:8080",
+        "post.logout.redirect.uris": "${KEYCLOAK_HOSTA}",
         "oauth2.device.authorization.grant.enabled": "true",
         "use.jwks.url": "true",
         "backchannel.logout.revoke.offline.tokens": "false",
