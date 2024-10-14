@@ -123,6 +123,13 @@ Ej: *.allowedOrigins("http://172.18.6.210:8081","http://localhost:3000")*
 - Marca todas las opciones **menos syntaxflavor_backend**
 - Espera a que se creen todos los contenedores
 
+#### Correr el backend:
+- Introduce el comando en la consola para levantar el backend:
+  ```bash
+    mvn clean install exec:java
+
+   ```
+
 #### Haz correr los scripts js:
 1. **Dirigete a la carpeta scripts**:  
    ```bash
