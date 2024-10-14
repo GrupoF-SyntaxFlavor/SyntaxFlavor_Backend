@@ -100,23 +100,26 @@ Accept: application/json
   }
 }
 ```
-### Pasos a seguir para levantar el backend
+### Pasos a seguir para levantar el backend (Provisional)
 
-#### Cambia a tu ip en los siguientes archivos:
-1. WebConfig.java: en allowedOrigins, cambiar en localhost:8081 la ip.
-Ej: *.allowedOrigins("http://172.18.6.210:8081","http://localhost:3000")*
+#### Cambia a tu ip:
 
-2. Json de creación de keycloak:
-- Encuentra el archivo: **src\main\resources\imports\keycloak-realm\realm-export.json**
-- Busca "localhost" y reemplaza por tu ip, deberían cambiarse las siguientes 7 lineas:
-      "rootUrl": "http://localhost:8080",
-      "adminUrl": "http://localhost:8080",
-      "baseUrl": "http://localhost:8080",
-      "redirectUris": ["http://localhost:8080/*"],
-      "webOrigins": ["http://localhost:8080"],
-      "post.logout.redirect.uris": "http://localhost:8080",
-      "jwks.url": "http://localhost:8082/realms/myrealm/protocol/openid-connect/token",
+1. Json de creación de keycloak:
+- En Windows abre una terminal Powershell(importante)
+- Ejecuta el comando:
+  ```bash
+    .\update-keycloak-urls.ps1
 
+   ```
+Este comando permite cambiar las urls del Json para la creación de keycloak a tu ip actual.
+
+- Para macOS/Linux (Bash): Ejecuta el script Bash para realizar el reemplazo en macOS:
+
+```bash
+    .\update-keycloak-urls.sh
+
+   ```
+   NOTA: esta solución es temporal, ya que sólo reemplaza variables en el json por la ip utilizada.
 #### Crear el contenedor docker:
 - Haz click derecho en el archivo "docker-compose.yaml"
 - Selecciona la opción "Compose Up - Select Services"
