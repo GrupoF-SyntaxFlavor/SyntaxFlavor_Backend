@@ -13,6 +13,6 @@ public class JwtConfig {
         return NimbusJwtDecoder
                 .withJwkSetUri(
                         "http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/certs")
-                .build();
+                .build(); //FIXME: Estas URL deberían ser configurables desde un archivo de propiedades o env
     }
 }

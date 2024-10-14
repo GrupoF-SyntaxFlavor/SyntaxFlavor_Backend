@@ -2,9 +2,14 @@ package bo.edu.ucb.syntax_flavor_backend.menu.api;
 
 import java.util.List;
 
+import java.math.BigDecimal;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +23,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,16 +41,20 @@ public class MenuItemAPI {
 
     // Endpoint para obtener todos los platillos disponibles
     @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
-    @GetMapping("/menu/item")
+    @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
 
         LOGGER.info("Endpoint GET /api/v1/menu/item");
+        // FIXME: No es la mejor forma de manejar el token JWT.
+        // TODO: Debería ser modularizado utilizando un middleware o función dedicada para la autenticación JWT.
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
 
         try {
 
-            // Fetch menu items after JWT verification
+            // FIXME: Llamadas a lógica de negocio deberían estar en el BL.
+            // TODO: Mover esta operación al `bl`, ya que la responsabilidad de obtener los items debería delegarse.
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
             sfrResponse.setResponseCode("MEN-000");
             sfrResponse.setPayload(menuItems);
@@ -59,12 +70,37 @@ public class MenuItemAPI {
         }
     }
 
+    @GetMapping("/menu/item")
+    public ResponseEntity<SyntaxFlavorResponse<Page<MenuItemResponseDTO>>> getMenuItemsByPrice(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "true") boolean sortAscending) {
+        LOGGER.info("Endpoint GET /api/v1/menu/item");
+        SyntaxFlavorResponse<Page<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            Page<MenuItemResponseDTO> menuItems = menuBL.getMenuItemsByPriceSortByName(minPrice, maxPrice, pageNumber, pageSize, sortAscending);
+            sfrResponse.setResponseCode("MEN-000");
+            sfrResponse.setPayload(menuItems);
+            LOGGER.info("Returning menu items: {}", menuItems.getContent());
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error getting menu items by price: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-600");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+    
+
     @PatchMapping("/public/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id,
-            @RequestPart("file") MultipartFile file) {
+                                                                            @RequestPart("file") MultipartFile file) {
         LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<String> sfrResponse = new SyntaxFlavorResponse<>();
         try {
+            // FIXME: Sería preferible delegar esta lógica al `bl`.
             String imageUrl = menuBL.updateMenuItemImage(id, file);
             sfrResponse.setResponseCode("MEN-002");
             sfrResponse.setPayload(imageUrl);
@@ -83,6 +119,7 @@ public class MenuItemAPI {
         LOGGER.info("Endpoint GET /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<Object> sfrResponse = new SyntaxFlavorResponse<>();
         try {
+            // FIXME: La obtención de la imagen también debería delegarse al `bl`.
             byte[] image = menuBL.getMenuItemImage(id);
             sfrResponse.setResponseCode("MEN-004");
             sfrResponse.setPayload(image);

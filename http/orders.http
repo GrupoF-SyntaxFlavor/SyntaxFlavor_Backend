@@ -41,11 +41,11 @@ Accept: application/json
 
 ###
 
-PUT http://localhost:8080/api/v1/public/order/deliver?orderId=2
+PUT http://localhost:8080/api/v1/public/order/deliver?orderId=1004
 Accept: application/json
 
 ### Listar órdenes del cliente (extraído del token JWT)
-###
+### FIXME: El endpoint no esta funciona solo en casos muy específicos (id=1002)
 GET http://localhost:8080/api/v1/order/customer
 Authorization: Bearer <JWT_TOKEN>
 Accept: application/json

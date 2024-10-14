@@ -37,6 +37,8 @@ public class BillAPI {
     public ResponseEntity<SyntaxFlavorResponse<BillResponseDTO>> createBillFromOrder(
             @RequestBody BillRequestDTO billRequest, HttpServletRequest request) {
         LOGGER.info("Endpoint POST /api/v1/bill with billRequest: {}", billRequest);
+        // FIXME: No es la mejor forma de manejar el token JWT.
+        // TODO: Debería ser modularizado utilizando un middleware o función dedicada para la autenticación JWT.
         SyntaxFlavorResponse<BillResponseDTO> sfr = new SyntaxFlavorResponse<>();
 
         try {

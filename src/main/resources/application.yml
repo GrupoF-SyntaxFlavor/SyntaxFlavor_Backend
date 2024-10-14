@@ -1,3 +1,4 @@
+# TODO: URLS deberían ser configuradas desde .env file
 spring:
   application:
     name: syntax_flavor_backend

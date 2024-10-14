@@ -22,11 +22,10 @@ import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 
-
 @RestController
 @RequestMapping("/api/v1/user")
 public class CustomerAPI {
-    
+
     Logger LOGGER = LoggerFactory.getLogger(CustomerAPI.class);
 
     @Autowired
@@ -54,7 +53,8 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // TODO esto debería ser evitado
+            // FIXME: La lógica de negocio debería estar en el BL, no en la API.
+            // TODO: Mover esta lógica al CustomerBL.
             Customer customer = customerBL.findCustomerByUserId(user.getId());
 
             if (customer == null) {
@@ -76,7 +76,6 @@ public class CustomerAPI {
         }
     }
 
-
     @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerUpdateDTO. All of the information in the body will override the data for the user.")
     @PatchMapping("/customer")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> updateCustomerData(
@@ -87,6 +86,7 @@ public class CustomerAPI {
         LOGGER.info("Endpoint PATCH /api/v1/user/customer with customerUpdateDTO: {}", customerUpdateDTO);
 
         try {
+
             String kcUserId = (String) request.getAttribute("kcUserId");
             User user = userBL.findUserByKcUserId(kcUserId);
             if (user == null) {
@@ -96,7 +96,6 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Fetch the Customer by userId
             Customer customer = customerBL.findCustomerByUserId(user.getId());
             if (customer == null) {
                 LOGGER.error("Customer for userId {} not found", user.getId());
@@ -105,10 +104,10 @@ public class CustomerAPI {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Update customer data using both Customer and CustomerUpdateDTO
+            // FIXME: La actualización del cliente también debería estar manejada en el BL.
+            // TODO: Mover esta lógica al CustomerBL.
             Customer updatedCustomer = customerBL.updateCustomerData(customer, customerUpdateDTO);
 
-            // Return the updated customer information
             CustomerDTO customerDTO = new CustomerDTO(updatedCustomer);
             response.setResponseCode("USR-002");
             response.setPayload(customerDTO);
@@ -121,5 +120,4 @@ public class CustomerAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
 }

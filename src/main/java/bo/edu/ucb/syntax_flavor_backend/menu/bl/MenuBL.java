@@ -4,6 +4,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import java.math.BigDecimal;
+
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import bo.edu.ucb.syntax_flavor_backend.menu.repository.MenuItemRepository;
@@ -12,6 +14,9 @@ import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuBL {
     
     Logger LOGGER = LoggerFactory.getLogger(MenuBL.class);
+
+    private static final BigDecimal MAX_MENU_ITEMS_PRICE = BigDecimal.valueOf(99999.9);
 
     @Autowired
     private MenuItemRepository menuItemRepository;
@@ -47,6 +54,25 @@ public class MenuBL {
             LOGGER.error("Error getting all menu items: {}", e.getMessage());
             throw new RuntimeException("Error getting all menu items: " + e.getMessage());
         }
+    }
+
+    public Page<MenuItemResponseDTO> getMenuItemsByPriceSortByName(BigDecimal minPrice, BigDecimal maxPrice, Integer pageNumber, Integer pageSize, boolean sortAScending) {
+        LOGGER.info("Getting menu items by price between {} and {}", minPrice, maxPrice);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<MenuItem> menuItems;
+        if (minPrice == null) {
+            minPrice = BigDecimal.ZERO;
+        }
+        if (maxPrice == null) {
+            maxPrice = MAX_MENU_ITEMS_PRICE;
+        }
+        if (!sortAScending) {
+            menuItems = menuItemRepository.findByPriceBetweenOrderByNameDesc(minPrice, maxPrice, pageable);
+        } else {
+            menuItems = menuItemRepository.findByPriceBetweenOrderByNameAsc(minPrice, maxPrice, pageable);
+        }
+        LOGGER.info("Found {} menu items", menuItems.getTotalElements());
+        return menuItems.map(MenuItemResponseDTO::new);
     }
 
     public String updateMenuItemImage(Integer id, MultipartFile file) {
