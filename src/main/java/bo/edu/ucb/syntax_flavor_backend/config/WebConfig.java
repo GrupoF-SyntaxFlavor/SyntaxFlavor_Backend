@@ -1,22 +1,34 @@
 package bo.edu.ucb.syntax_flavor_backend.config;
 
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    //Esta clase es la que se encarga de la configuracion de la conexion entre el front end y el back end
-    //Configura el CORS entre los puertos 8080 y 8081
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String localIp = getLocalIp();
+        String dynamicFrontendMobileUrl = "http://" + localIp + ":8081";
+        String dynamicFrontendWebUrl = "http://" + localIp + ":3000";
+
         registry.addMapping("/**")
-                .allowedOrigins("http://172.18.6.210:8081","http://localhost:3000") // FIXME: Estos datos se deberían conseguir de un archivo de configuración o env
+                .allowedOrigins(dynamicFrontendMobileUrl, dynamicFrontendWebUrl, "http://localhost:8081", "http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-}
 
+    private String getLocalIp() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return "localhost"; // Fallback in case the IP couldn't be determined
+        }
+    }
+}
