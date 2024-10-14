@@ -45,23 +45,13 @@ public class MenuItemAPI {
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
 
         LOGGER.info("Endpoint GET /api/v1/menu/item");
-
         // FIXME: No es la mejor forma de manejar el token JWT.
         // TODO: Debería ser modularizado utilizando un middleware o función dedicada para la autenticación JWT.
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
 
-        if (token == null || !token.startsWith("Bearer ")) {
-            sfrResponse.setResponseCode("MEN-401");
-            sfrResponse.setErrorMessage("Unauthorized: No token provided");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfrResponse);
-        }
-
         try {
-            token = token.substring(7); // Remove "Bearer " prefix
-            String userId = JWT.decode(token).getSubject(); // Decode JWT and get subject (user ID)
-
-            LOGGER.info("Token verified, userId: {}", userId);
 
             // FIXME: Llamadas a lógica de negocio deberían estar en el BL.
             // TODO: Mover esta operación al `bl`, ya que la responsabilidad de obtener los items debería delegarse.
@@ -72,11 +62,6 @@ public class MenuItemAPI {
             LOGGER.info("Returning menu items: {}", menuItems);
             return ResponseEntity.ok(sfrResponse);
 
-        } catch (JWTDecodeException e) {
-            LOGGER.error("Invalid token: {}", e.getMessage());
-            sfrResponse.setResponseCode("MEN-401");
-            sfrResponse.setErrorMessage("Unauthorized: Invalid token");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(sfrResponse);
         } catch (Exception e) {
             LOGGER.error("Error retrieving menu items: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-600");

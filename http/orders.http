@@ -5,7 +5,7 @@ Accept: application/json
 GET http://localhost:8080/api/v1/public/order/status?status=Cancelado&pageNumber=0
 
 ### Post para crear una ORDEN con JWT token (requiere autenticación)
-POST http://localhost:8080/api/v1/public/order
+POST http://localhost:8080/api/v1/order
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 Accept: application/json
@@ -46,6 +46,6 @@ Accept: application/json
 
 ### Listar órdenes del cliente (extraído del token JWT)
 ### FIXME: El endpoint no esta funciona solo en casos muy específicos (id=1002)
-GET http://localhost:8080/api/v1/public/order/customer
+GET http://localhost:8080/api/v1/order/customer
 Authorization: Bearer <JWT_TOKEN>
 Accept: application/json

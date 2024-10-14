@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -96,23 +95,6 @@ public class UserAPI {
             sfr.setResponseCode("USR-601");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
-        }
-    }
-
-    @GetMapping("/public/dev/sync/users")
-    public ResponseEntity<SyntaxFlavorResponse<String>> syncUsersToKeycloak() {
-        // Invoking this method will sync all users from the database to keycloak
-        try {
-            String responseMessage = kcAdminClient.syncUsersToKeycloak();
-            SyntaxFlavorResponse<String> response = new SyntaxFlavorResponse<>();
-            response.setResponseCode("USR-001");
-            response.setPayload(responseMessage);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            SyntaxFlavorResponse<String> response = new SyntaxFlavorResponse<>();
-            response.setResponseCode("USR-601");
-            response.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
