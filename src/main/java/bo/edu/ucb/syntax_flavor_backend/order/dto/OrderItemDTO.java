@@ -19,6 +19,7 @@ public class OrderItemDTO {
     private String menuItemName;
     private BigDecimal price;
     private Integer quantity;
+    private String image;
 
     public static OrderItemDTO fromMenuItemEntity(MenuItem menuItem) {
         OrderItemDTO orderItemDTO = new OrderItemDTO();
@@ -26,6 +27,7 @@ public class OrderItemDTO {
         orderItemDTO.setMenuItemName(menuItem.getName());
         orderItemDTO.setPrice(menuItem.getPrice());
         orderItemDTO.setQuantity(1);
+        orderItemDTO.setImage(menuItem.getImageUrl());
         return orderItemDTO;
     }
 
@@ -45,6 +47,7 @@ public class OrderItemDTO {
             orderItemDTO.setMenuItemName(orderItem.getMenuItemId().getName());
             orderItemDTO.setPrice(orderItem.getMenuItemId().getPrice());
             orderItemDTO.setQuantity(orderItem.getQuantity());
+            orderItemDTO.setImage(orderItem.getMenuItemId().getImageUrl());
             orderItemsDTOs.add(orderItemDTO);
         }
         return orderItemsDTOs;

@@ -5,7 +5,7 @@ import java.util.Date;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.entity.Bill;
 
-public class BillResponseDTO {
+public class BillResponseDTO { // FIXME: Please Use Lombok for getter and setter and generic constructor
     private Integer billId;
     private Integer orderId;
     private String billName;

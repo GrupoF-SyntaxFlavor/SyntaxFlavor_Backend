@@ -4,6 +4,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "customer114@example.com",
+    "email": "customer1@example.com",
     "password": "123456789"
 }
+
+// TODO: Documentar todos los endpoints de la API

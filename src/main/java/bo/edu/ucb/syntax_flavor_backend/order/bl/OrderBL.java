@@ -1,6 +1,5 @@
 package bo.edu.ucb.syntax_flavor_backend.order.bl;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
-import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 

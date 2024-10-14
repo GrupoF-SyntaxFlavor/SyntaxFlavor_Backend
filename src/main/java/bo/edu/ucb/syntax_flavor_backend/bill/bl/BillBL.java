@@ -51,6 +51,7 @@ public class BillBL {
     private EmailService emailService;
 
     public BillResponseDTO createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException, BillGenerationException {
+        // FIXME: At this point this workds but using the customerBL is not the best approach, maybe a saga pattern would be better
         LOGGER.info("Creating bill from order: {}", billRequest);
         Bill createdBill = new Bill();
         BillPdf billPdf = new BillPdf();
@@ -137,7 +138,7 @@ public class BillBL {
         if (billPdf.getSentTo().isBlank()) throw new BillGenerationException("Sent to email is blank", 3);
         // Prepare the email to send
         String emailSubject = "Bill for order ORD-" + orderNumber;
-        String emailBody = "Dear customer, please find attached the bill for your order: ORD-" + orderNumber;
+        String emailBody = "Dear customer, please find attached the bill for your order: ORD-" + orderNumber; // TODO: change to use a HTML in MIME
         // The object key is bills/pdf/ + the last two parts of the PDF URL
         String objectKey = "bills/pdf/" + billPdf.getBillId().getId() + "/" + billPdf.getPdfUrl().substring(billPdf.getPdfUrl().lastIndexOf("/"));
         byte[] attachment = minioFileService.getFile(objectKey);
@@ -159,6 +160,7 @@ public class BillBL {
 
     private byte[] generateBillPdf(Bill bill) throws BillGenerationException {
         LOGGER.info("Generating PDF for bill id: {}", bill.getId());
+        // FIXME: Maybe this should be a util
         try {
             // Create a PDF document
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

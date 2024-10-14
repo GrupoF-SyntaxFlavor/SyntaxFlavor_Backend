@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BillRequestDTO {
     private Integer orderId;
-    private Integer userId; // FIXME: this shoud be retrieved from the jwt 
+    private Integer userId;
     private String billName;
     private String nit;
 }

@@ -91,7 +91,7 @@ public class MinioFileService {
     }
 
     public String uploadFile(String fileName, byte[] fileData, String contentType) {
-        // FIXME this method should be dynamic
+        // FIXME envolver este método en un adaptador para que acepte un MultipartFile, byte[], InputStream, etc.
         try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileData)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
@@ -101,7 +101,7 @@ public class MinioFileService {
                     .build());
 
             // Construct the URL manually
-            String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001)
+            String minioBaseUrl = "http://localhost:9000"; // Use the appropriate port (9000 or 9001) //FIXME: Debería ser configurable
             return minioBaseUrl + "/" + bucketName + "/" + fileName; // Constructed URL for the uploaded file
         } catch (MinioException e) {
             throw new RuntimeException("MinIO error during upload: " + e.getMessage(), e);
@@ -115,7 +115,7 @@ public class MinioFileService {
     }
 
     public String uploadPdf(String fileName, byte[] pdfData) throws BillGenerationException {
-        // FIXME this method should be dynamic
+        // FIXME este método es redundante con uploadFile, si se unifican se puede eliminar
         try (ByteArrayInputStream pdfStream = new ByteArrayInputStream(pdfData)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)

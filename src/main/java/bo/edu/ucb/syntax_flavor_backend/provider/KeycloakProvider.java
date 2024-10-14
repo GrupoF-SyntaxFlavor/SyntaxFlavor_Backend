@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
 
-@Configuration
+@Configuration // FIXME mover a Config y cambiar nombre a KeycloakConfig
 public class KeycloakProvider {
 
     Logger LOGGER = LoggerFactory.getLogger(KeycloakProvider.class);
