@@ -6,23 +6,26 @@ import lombok.NoArgsConstructor;
 
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerSignUpDTO {
+public class UserSignUpDTO {
     @NotNull
     private String name;
     @NotNull
     private String email;
     @NotNull
     private String password;
-    @NotNull
+    @Null
     private String nit;
-    @NotNull
+    @Null
     private String billName;
+    @Null
+    private String location;
 
-    public CustomerSignUpDTO(User user) {
+    public UserSignUpDTO(User user) {
         this.name = user.getName();
         this.email = user.getEmail();
     }

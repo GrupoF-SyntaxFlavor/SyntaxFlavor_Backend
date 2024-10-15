@@ -1,0 +1,11 @@
+### crear kitchen este endpoint no debe usar JWT #####
+POST http://localhost:8080/api/v1/public/signup?type=kitchen
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "kitchen1",
+    "email": "kitchen@example.com",
+    "password": "123456789",
+    "location": "987654321"
+}
