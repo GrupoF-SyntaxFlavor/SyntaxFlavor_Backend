@@ -14,34 +14,37 @@ import bo.edu.ucb.syntax_flavor_backend.user.repository.UserRepository;
 
 @Component
 public class KitchenBL {
-    
-    Logger LOGGER = LoggerFactory.getLogger(CustomerBL.class);
 
-    @Autowired
-    private KitchenRepository kitchenRepository;
+    Logger LOGGER = LoggerFactory.getLogger(CustomerBL.class);
 
     @Autowired
     private UserRepository userRepository;
 
-    public KitchenBL(KitchenRepository kitchenRepository, UserRepository userRepository) {
-        this.kitchenRepository = kitchenRepository;
+    @Autowired
+    private KitchenRepository kitchenRepository;
+
+    public KitchenBL(UserRepository userRepository, KitchenRepository kitchenRepository) {
         this.userRepository = userRepository;
+        this.kitchenRepository = kitchenRepository;
     }
 
     public KitchenDTO createKitchen(UserDTO user, String location) {
-        LOGGER.info("Creating kitchen with user: {}", user);
-        try{
+        try {
+            LOGGER.info("Creating kitchen for user: {}", user.getEmail());
+            User localUser = userRepository.findById(user.getUserId())
+                    .orElseThrow(() -> new RuntimeException("No user with provided ID was found"));
+
             Kitchen newKitchen = new Kitchen();
-            User localUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("No user with provided ID was found"));
-            newKitchen.setUsersId(localUser);
             newKitchen.setLocation(location);
-            Kitchen kitchen = kitchenRepository.save(newKitchen);
-            return new KitchenDTO(kitchen);
-        }
-        catch(Exception e) {
+            newKitchen.setUsersId(localUser);
+
+            Kitchen savedKitchen = kitchenRepository.save(newKitchen);
+            LOGGER.info("Kitchen created successfully for user: {}", user.getEmail());
+
+            return new KitchenDTO();
+        } catch (Exception e) {
             LOGGER.error("Error creating kitchen: {}", e.getMessage());
             throw new RuntimeException("Error creating kitchen: " + e.getMessage());
         }
-        
     }
 }
