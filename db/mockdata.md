@@ -74,3 +74,5 @@ Para poder cargar los datos de `menu_items` y subir las imágenes correspondient
    ```
 
    Este carga los datos desde el archivo SQL y luego sube las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.
+
+6. **

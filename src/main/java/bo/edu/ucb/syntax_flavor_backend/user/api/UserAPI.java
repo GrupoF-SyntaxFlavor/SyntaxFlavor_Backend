@@ -80,6 +80,7 @@ public class UserAPI {
             sfr.setPayload(userResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
         } catch (Exception e) { //TODO: Distinguir con excepciones específicas
+            e.printStackTrace();
             sfr.setResponseCode("USR-601");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
