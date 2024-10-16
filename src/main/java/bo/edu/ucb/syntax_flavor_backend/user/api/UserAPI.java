@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
+import bo.edu.ucb.syntax_flavor_backend.user.bl.KitchenBL;
 import bo.edu.ucb.syntax_flavor_backend.service.KeycloakAdminClientService;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerSignUpDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.UserSignUpDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
@@ -32,14 +34,18 @@ public class UserAPI {
     @Autowired
     private final CustomerBL customerBL;
 
-    public UserAPI(KeycloakAdminClientService kcAdminClient, CustomerBL customerBL) {
+    @Autowired
+    private final KitchenBL kitchenBL;
+
+    public UserAPI(KeycloakAdminClientService kcAdminClient, CustomerBL customerBL, KitchenBL kitchenBL) {
         this.kcAdminClient = kcAdminClient;
         this.customerBL = customerBL;
+        this.kitchenBL = kitchenBL;
     }
 
     @Operation(summary = "Create user", description = "Creates an user and saves data in keycloack realm. Data: id, name, email, number phone, date created at and date updated at.")
     @PostMapping("/public/signup")//public endpoint to create user
-    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody CustomerSignUpDTO user,
+    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserSignUpDTO user,
                                                                     @RequestParam(value = "type", required = true) String type) {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
         
@@ -48,22 +54,32 @@ public class UserAPI {
 
         SyntaxFlavorResponse<UserDTO> sfr = new SyntaxFlavorResponse<>();
         try {
-            if (user.getName() == null || user.getEmail() == null) {
+            if (user.getName() == null || user.getEmail() == null) { //FIXME: Esta verificación debería hacerse dentro de createKeycloakUser, debe levantar un NullPointerException
                 sfr.setResponseCode("USR-601");
                 sfr.setErrorMessage("Email and Name are required to create a user in Keycloak.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfr);
             }
 
+            // TODO: esta funcionalidad debería moverse a un UserBL...
             UserDTO userResponse = kcAdminClient.createKeycloakUser(user.getName(), user.getEmail(), user.getPassword(), true);
             if(type.equals("customer")){
                 CustomerDTO newCustomer = customerBL.createCustomer(userResponse, user.getNit(), user.getBillName());
                 if(newCustomer == null)
                     throw new RuntimeException("Error creating customer");
+            } else if (type.equals("kitchen")){
+                KitchenDTO newKitchen = kitchenBL.createKitchen(userResponse, user.getLocation());
+                if(newKitchen == null)
+                    throw new RuntimeException("Error creating kitchen");
+            } else {
+                throw new RuntimeException("Invalid user type");
             }
+            // ...hasta aquí
+
+
             sfr.setResponseCode("USR-001");
             sfr.setPayload(userResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(sfr);
-        } catch (Exception e) {
+        } catch (Exception e) { //TODO: Distinguir con excepciones específicas
             sfr.setResponseCode("USR-601");
             sfr.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);

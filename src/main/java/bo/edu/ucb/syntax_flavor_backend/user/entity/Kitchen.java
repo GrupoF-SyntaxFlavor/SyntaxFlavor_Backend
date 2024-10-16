@@ -33,7 +33,8 @@ public class Kitchen implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "location")
+    @Basic(optional = false)
+    @Column(name = "location", nullable = false)
     private String location;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
