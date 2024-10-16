@@ -23,7 +23,7 @@ public class OrderDTO {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setOrderId(order.getId());
         orderDTO.setCustomerName(order.getCustomerId().getUsersId().getName());
-        orderDTO.setCustomerTable(order.getTable());//fixed
+        orderDTO.setCustomerTable(order.getTableCode());//fixed
         orderDTO.setOrderStatus(order.getStatus());
         orderDTO.setOrderTimestamp(order.getOrderTimestamp().toString());
         orderDTO.setOrderItems(OrderItemDTO.fromEntityList(order.getOrderItemsCollection()));

@@ -35,6 +35,7 @@ import jakarta.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o"),
     @NamedQuery(name = "Order.findById", query = "SELECT o FROM Order o WHERE o.id = :id"),
+    @NamedQuery(name = "Order.findByTableCode", query = "SELECT o FROM Order o WHERE o.tableCode = :tableCode"),
     @NamedQuery(name = "Order.findByOrderTimestamp", query = "SELECT o FROM Order o WHERE o.orderTimestamp = :orderTimestamp"),
     @NamedQuery(name = "Order.findByStatus", query = "SELECT o FROM Order o WHERE o.status = :status"),
     @NamedQuery(name = "Order.findByCreatedAt", query = "SELECT o FROM Order o WHERE o.createdAt = :createdAt"),
@@ -50,8 +51,9 @@ public class Order implements Serializable {
     @Column(name = "order_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderTimestamp = new Date();
-    @Column(name = "table", nullable = true)//puede ser nulo
-    private String table;
+    @Column(name = "table_code")//puede ser nulo
+    @Basic(optional = true)
+    private String tableCode;
     @Column(name = "status")
     private String status;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -91,12 +93,12 @@ public class Order implements Serializable {
         this.orderTimestamp = orderTimestamp;
     }
 
-    public String getTable() {
-        return table;
+    public String getTableCode() {
+        return tableCode;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode;
     }
 
     public String getStatus() {

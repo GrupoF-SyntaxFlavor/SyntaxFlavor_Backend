@@ -75,7 +75,7 @@ public class OrderBL {
         Order order = new Order();
         try {
             order.setCustomerId(customerBL.findCustomerById(cart.getCustomerId()));
-            order.setTable(cart.getTable());//adding table code to order
+            order.setTableCode(cart.getTableCode());//adding table code to order
             order.setStatus(STATUS_PENDING);
             order.setOrderTimestamp(new Date()); 
 
@@ -87,6 +87,7 @@ public class OrderBL {
             cartResponse.setOrderId(order.getId());
             cartResponse.setCustomerId(order.getCustomerId().getId());
             cartResponse.setItemIdQuantityMap(cart.getItemIdQuantityMap());
+            cartResponse.setTableCode(order.getTableCode());//adding table code to response
 
         } catch (Exception e) {
             LOGGER.error("Error creating order from cart: {}", e);
