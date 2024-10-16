@@ -75,6 +75,7 @@ public class OrderBL {
         Order order = new Order();
         try {
             order.setCustomerId(customerBL.findCustomerById(cart.getCustomerId()));
+            order.setTable(cart.getTable());//adding table code to order
             order.setStatus(STATUS_PENDING);
             order.setOrderTimestamp(new Date()); 
 

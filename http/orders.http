@@ -11,6 +11,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
+  "customerTable":"123-234-123",
   "itemIdQuantityMap": {
     "1": 2,
     "2": 1

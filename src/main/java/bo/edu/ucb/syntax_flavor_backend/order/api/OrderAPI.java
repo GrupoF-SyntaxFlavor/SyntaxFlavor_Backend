@@ -40,7 +40,7 @@ public class OrderAPI {
     @GetMapping("/public/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByDatetime(@RequestParam int pageNumber) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
-        // TODO: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
+        // FIXED : Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             Page<OrderDTO> orders = orderBL.listOrdersByDatetime(pageNumber);
@@ -58,7 +58,7 @@ public class OrderAPI {
     @GetMapping("/public/order/status")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber, @RequestParam String status) {
         LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
-        // TODO: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
+        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             Page<OrderDTO> orders = orderBL.listOrdersByStatus(pageNumber, status);
@@ -79,7 +79,7 @@ public class OrderAPI {
 
         SyntaxFlavorResponse<CartDTO> sfr = new SyntaxFlavorResponse<>();
         LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
-        // TODO: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
+        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
         try {
 
             // Fetch the user by kcUserId
@@ -158,12 +158,13 @@ public class OrderAPI {
     }
 
     @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer extracted from the JWT token")
-        // TODO: Add logger
-        // FIXME: No es la mejor forma de manejar el token JWT. Ver de incluir middleware
+        // fixed: Add logger
+        // fixed: No es la mejor forma de manejar el token JWT. Ver de incluir middleware
     @GetMapping("/order/customer")
     public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestHeader("Authorization") String token, HttpServletRequest request) {
         SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
+            LOGGER.info("Endpoint GET /api/v1/order/customer");
             String kcUserId = (String) request.getAttribute("kcUserId");
             User user = userBL.findUserByKcUserId(kcUserId);
 
