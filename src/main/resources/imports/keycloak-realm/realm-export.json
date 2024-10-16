@@ -661,7 +661,7 @@
       "nodeReRegistrationTimeout": 0,
       "protocolMappers": [
         {
-          "id": "947a9a4f-2fcc-430e-b6sdfa7e-4416290af5f1",
+          "id": "947a9a4f-2fcc-430e-b67e-4416290af5f1",
           "name": "locale",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
@@ -2256,6 +2256,3 @@
     "policies": []
   }
 }
-
-
-
