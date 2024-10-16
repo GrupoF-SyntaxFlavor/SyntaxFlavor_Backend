@@ -74,3 +74,13 @@ Para poder cargar los datos de `menu_items` y subir las imágenes correspondient
    ```
 
    Este carga los datos desde el archivo SQL y luego sube las imágenes desde la carpeta `img_menu_items/` a MinIO, asociándolas a cada ítem del menú.
+
+6. **Ejecución del script `load_kitchen_users.js`**:
+
+   - Ejecutamos el script para cargar los usuarios de cocina
+
+   ```bash
+   node load_kitchen_users.js
+   ```
+
+   Este carga los datos desde el archivo SQL y crea los usuarios en keycloak.
