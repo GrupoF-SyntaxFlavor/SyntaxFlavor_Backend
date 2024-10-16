@@ -50,6 +50,8 @@ public class Order implements Serializable {
     @Column(name = "order_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderTimestamp = new Date();
+    @Column(name = "table", nullable = true)//puede ser nulo
+    private String table;
     @Column(name = "status")
     private String status;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -87,6 +89,14 @@ public class Order implements Serializable {
 
     public void setOrderTimestamp(Date orderTimestamp) {
         this.orderTimestamp = orderTimestamp;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
     }
 
     public String getStatus() {
