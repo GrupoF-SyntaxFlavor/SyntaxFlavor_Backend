@@ -13,11 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KitchenBL;
-import bo.edu.ucb.syntax_flavor_backend.user.bl.KitchenBL;
 import bo.edu.ucb.syntax_flavor_backend.service.KeycloakAdminClientService;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.UserSignUpDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserSignUpDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
@@ -41,19 +38,13 @@ public class UserAPI {
     private final KitchenBL kitchenBL;
 
     public UserAPI(KeycloakAdminClientService kcAdminClient, CustomerBL customerBL, KitchenBL kitchenBL) {
-    @Autowired
-    private final KitchenBL kitchenBL;
-
-    public UserAPI(KeycloakAdminClientService kcAdminClient, CustomerBL customerBL, KitchenBL kitchenBL) {
         this.kcAdminClient = kcAdminClient;
         this.customerBL = customerBL;
-        this.kitchenBL = kitchenBL;
         this.kitchenBL = kitchenBL;
     }
 
     @Operation(summary = "Create user", description = "Creates an user and saves data in keycloack realm. Data: id, name, email, number phone, date created at and date updated at.")
     @PostMapping("/public/signup")//public endpoint to create user
-    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserSignUpDTO user,
     public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserSignUpDTO user,
                                                                     @RequestParam(value = "type", required = true) String type) {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
