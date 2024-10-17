@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class OrderDTO {
     private Integer orderId;
     private String customerName;
-    private String cutomerTable;
+    private String customerTable;
     private String orderStatus;
     private String orderTimestamp;
     private List<OrderItemDTO> orderItems;
@@ -23,7 +23,7 @@ public class OrderDTO {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setOrderId(order.getId());
         orderDTO.setCustomerName(order.getCustomerId().getUsersId().getName());
-        orderDTO.setCutomerTable("0"); // TODO: this will be set later from the request
+        orderDTO.setCustomerTable(order.getTableCode());//fixed
         orderDTO.setOrderStatus(order.getStatus());
         orderDTO.setOrderTimestamp(order.getOrderTimestamp().toString());
         orderDTO.setOrderItems(OrderItemDTO.fromEntityList(order.getOrderItemsCollection()));

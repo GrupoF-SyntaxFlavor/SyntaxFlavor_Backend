@@ -35,3 +35,6 @@ node_modules/
 
 ### VS Code ###
 .vscode/
+
+### Configuration keycloak ###
+# src/main/resources/imports/keycloak-realm/realm-export.json
