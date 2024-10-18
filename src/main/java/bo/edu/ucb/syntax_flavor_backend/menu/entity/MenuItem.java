@@ -5,7 +5,6 @@ package bo.edu.ucb.syntax_flavor_backend.menu.entity;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -32,13 +31,13 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "MenuItems")
 @NamedQueries({
-    @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
-    @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
-    @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
-    @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
-    @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
-    @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
-    @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt")})
+        @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
+        @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
+        @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
+        @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
+        @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
+        @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
+        @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt") })
 public class MenuItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,13 +51,16 @@ public class MenuItem implements Serializable {
     private String name;
     @Column(name = "description")
     private String description;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    // @Max(value=?) @Min(value=?)//if you know range of your decimal fields
+    // consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
     @Basic(optional = true)
     @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "status")
+    private Boolean status = true;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -169,5 +171,5 @@ public class MenuItem implements Serializable {
     public String toString() {
         return "com.condominio.tables_syntax_flavor.MenuItem[ id=" + id + " ]";
     }
-    
+
 }
