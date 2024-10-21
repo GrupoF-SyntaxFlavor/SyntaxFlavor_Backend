@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
@@ -41,15 +42,15 @@ public class OrderBL {
     @Autowired
     private CustomerBL customerBL;
 
-    public Page<OrderDTO> listOrdersByDatetime(int pageNumber) {
-        LOGGER.info("Listing orders by datetime");
-        Pageable pageable = PageRequest.of(pageNumber, MAX_ORDERS_PER_PAGE);
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-        Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenOrderByOrderTimestampAsc(startOfDay, endOfDay, pageable);
+    public Page<OrderDTO> listOrdersByFilters(String status, LocalDateTime minDate, LocalDateTime maxDate, Integer pageNumber, Integer pageSize, boolean sortAscending) {
+        LOGGER.info("Listing orders by filters");
+        Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        
+        Page<Order> orderPage = orderRepository.findByMinDateBetweenMaxDateAndStatusByNameAsc(status, minDate, maxDate, pageable);
         if (orderPage == null) {
-            LOGGER.error("Error listing orders by datetime");
-            throw new RuntimeException("Error listing orders by datetime");
+            LOGGER.error("Error listing orders by datetime and status");
+            throw new RuntimeException("Error listing orders by datetime and status");
         }
         return orderPage.map(order -> OrderDTO.fromEntity(order));
     }

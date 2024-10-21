@@ -20,6 +20,7 @@ import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -36,14 +37,30 @@ public class OrderAPI {
     @Autowired
     private CustomerBL customerBL;
 
-    @Operation(summary = "List orders by datetime", description = "Can page through orders by datetime, the displayed orders are the most recent ones. No filters are applied at this moment.")
+    @Operation(summary = "List orders by status and date range", 
+           description = "Retrieve a paginated list of orders filtered by status and date range. You can specify the order status, the minimum and maximum dates for the order timestamps, the page number, page size, and whether to sort by ascending or descending order based on the timestamp.")
     @GetMapping("/public/order")
-    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByDatetime(@RequestParam int pageNumber) {
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
+                                                                                        @RequestParam(defaultValue = "Pendiente") String status,
+                                                                                        @RequestParam(required = false) LocalDateTime minDate,
+                                                                                        @RequestParam(required = false) LocalDateTime maxDate,
+                                                                                        @RequestParam(defaultValue = "0") Integer pageNumber,
+                                                                                        @RequestParam(defaultValue = "10") Integer pageSize,
+                                                                                        @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
         // FIXED : Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            Page<OrderDTO> orders = orderBL.listOrdersByDatetime(pageNumber);
+            // Si minDate es nulo, asignar la fecha de ayer
+            if (minDate == null) {
+                minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            }
+            
+            // Si maxDate es nulo, asignar la fecha de hoy
+            if (maxDate == null) {
+                maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            }
+            Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize, sortAscending);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
