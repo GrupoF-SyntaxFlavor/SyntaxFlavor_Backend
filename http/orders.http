@@ -1,5 +1,8 @@
-GET http://localhost:8080/api/v1/public/order?pageNumber=0
+### Listar todas las órdenes por parametros: fecha minima, fecha maxima, estado, paginación y ordenamiento
+### status: Pendiente, Entregado, Cancelado
+GET http://localhost:8080/api/v1/public/order?status=Cancelado&minDate=2024-09-29T04:05:00&maxDate=2024-10-20T23:59:59&pageNumber=1&pageSize=20&sortAscending=true
 Accept: application/json
+
 
 ###
 GET http://localhost:8080/api/v1/public/order/status?status=Cancelado&pageNumber=0
