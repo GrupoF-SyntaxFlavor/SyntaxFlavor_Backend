@@ -18,14 +18,12 @@ import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
-
-import java.util.List;
 import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(value = "/api/v1")
 public class OrderAPI {
-    
+
     Logger LOGGER = LoggerFactory.getLogger(OrderAPI.class);
 
     @Autowired
@@ -37,30 +35,29 @@ public class OrderAPI {
     @Autowired
     private CustomerBL customerBL;
 
-    @Operation(summary = "List orders by status and date range", 
-           description = "Retrieve a paginated list of orders filtered by status and date range. You can specify the order status, the minimum and maximum dates for the order timestamps, the page number, page size, and whether to sort by ascending or descending order based on the timestamp.")
+    @Operation(summary = "List orders by status and date range", description = "Retrieve a paginated list of orders filtered by status and date range. You can specify the order status, the minimum and maximum dates for the order timestamps, the page number, page size, and whether to sort by ascending or descending order based on the timestamp.")
     @GetMapping("/public/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
-                                                                                        @RequestParam(defaultValue = "Pendiente") String status,
-                                                                                        @RequestParam(required = false) LocalDateTime minDate,
-                                                                                        @RequestParam(required = false) LocalDateTime maxDate,
-                                                                                        @RequestParam(defaultValue = "0") Integer pageNumber,
-                                                                                        @RequestParam(defaultValue = "10") Integer pageSize,
-                                                                                        @RequestParam(defaultValue = "true") boolean sortAscending) {
+            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(required = false) LocalDateTime minDate,
+            @RequestParam(required = false) LocalDateTime maxDate,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
-        // FIXED : Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             // Si minDate es nulo, asignar la fecha de ayer
             if (minDate == null) {
                 minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
             }
-            
+
             // Si maxDate es nulo, asignar la fecha de hoy
             if (maxDate == null) {
                 maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
             }
-            Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize, sortAscending);
+            Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize,
+                    sortAscending);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
@@ -73,9 +70,11 @@ public class OrderAPI {
 
     @Operation(summary = "List orders by status", description = "Can page through orders by status, the displayed orders are the most recent ones. No filters are applied at this moment.")
     @GetMapping("/public/order/status")
-    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber, @RequestParam String status) {
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber,
+            @RequestParam String status) {
         LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
-        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
+        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del
+        // token antes de llamar al endopoint
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
             Page<OrderDTO> orders = orderBL.listOrdersByStatus(pageNumber, status);
@@ -96,7 +95,8 @@ public class OrderAPI {
 
         SyntaxFlavorResponse<CartDTO> sfr = new SyntaxFlavorResponse<>();
         LOGGER.info("Endpoint POST /api/v1/order with cart: {}", cart);
-        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del token antes de llamar al endopoint
+        // FIXED: Cuando se tenga el middleware de jwt, se debe extraer el userId del
+        // token antes de llamar al endopoint
         try {
 
             // Fetch the user by kcUserId
@@ -106,7 +106,7 @@ public class OrderAPI {
                 LOGGER.error("User with kcUserId {} not found", kcUserId);
                 sfr.setResponseCode("ORD-601");
                 sfr.setErrorMessage("User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr);  // Return 404 if user is not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr); // Return 404 if user is not found
             }
 
             // Fetch the customer associated with the user
@@ -115,23 +115,24 @@ public class OrderAPI {
                 LOGGER.error("Customer for userId {} not found", user.getId());
                 sfr.setResponseCode("ORD-602");
                 sfr.setErrorMessage("Customer not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr);  // Return 404 if customer is not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr); // Return 404 if customer is not found
             }
 
-            // Set the customerId in the CartDTO (we no longer take it from the request body)
+            // Set the customerId in the CartDTO (we no longer take it from the request
+            // body)
             cart.setCustomerId(customer.getId());
 
             // Create the order using the updated CartDTO (with customerId set)
             CartDTO cartResponse = orderBL.createOrderFromCart(cart);
             sfr.setResponseCode("ORD-001");
             sfr.setPayload(cartResponse);
-            return ResponseEntity.status(HttpStatus.CREATED).body(sfr);  // Return 201 Created if successful
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfr); // Return 201 Created if successful
 
         } catch (Exception e) {
             LOGGER.error("Error creating order: {}", e.getMessage());
             sfr.setResponseCode("ORD-601");
             sfr.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);  // Return 500 for any other errors
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr); // Return 500 for any other errors
         }
     }
 
@@ -175,18 +176,23 @@ public class OrderAPI {
     }
 
     @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer extracted from the JWT token")
-        // fixed: Add logger
-        // fixed: No es la mejor forma de manejar el token JWT. Ver de incluir middleware
     @GetMapping("/order/customer")
-    public ResponseEntity<SyntaxFlavorResponse<List<OrderDTO>>> listOrdersByCustomerId(@RequestHeader("Authorization") String token, HttpServletRequest request) {
-        SyntaxFlavorResponse<List<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+    public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByCustomerId(
+            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "true") boolean sortAscending,
+            @RequestHeader("Authorization") String token, HttpServletRequest request) {
+
+        SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            LOGGER.info("Endpoint GET /api/v1/order/customer");
+            LOGGER.info("Endpoint GET /api/v1/order/customer with pageNumber: {}", pageNumber);
             String kcUserId = (String) request.getAttribute("kcUserId");
             User user = userBL.findUserByKcUserId(kcUserId);
 
             // Obtener las órdenes del cliente usando el userId
-            List<OrderDTO> orders = orderBL.listOrdersByCustomerId(user.getId());
+            Page<OrderDTO> orders = orderBL.listOrdersByCustomerId(user.getId(), status, pageNumber, pageSize,
+                    sortAscending);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);

@@ -3,14 +3,13 @@
 GET http://localhost:8080/api/v1/public/order?status=Cancelado&minDate=2024-09-29T04:05:00&maxDate=2024-10-20T23:59:59&pageNumber=1&pageSize=20&sortAscending=true
 Accept: application/json
 
-
 ###
 GET http://localhost:8080/api/v1/public/order/status?status=Cancelado&pageNumber=0
 
 ### Post para crear una ORDEN con JWT token (requiere autenticación)
 ### tambien puede enviarse el paramtro "null" sin comillas
 POST http://localhost:8080/api/v1/order
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI1QnhwUERhSWdja0dCVDNQQmZmaDRyTUMwdURQLWhPaXlneEVsVkc3SHVjIn0.eyJleHAiOjE3MjkxNDc5MDIsImlhdCI6MTcyOTExMTkwMiwianRpIjoiOTc1NTY1OGQtMmYxNC00MmE3LTk4NjgtMzQxMTg3OTRiZWM2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgyL3JlYWxtcy9zeW50YXhmbGF2b3JfdXNlcnMiLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYzE5MTVhYmEtOWIyNC00OWJiLWEwMjItYjMyODk1YmFjODg1IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ludGF4Zmxhdm9yIiwic2lkIjoiY2QyMTgzZGQtMjlhNi00NWRkLWI4NDQtZDA5OWM5YTk2ZjQ3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtc3ludGF4Zmxhdm9yX3VzZXJzIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsiY3JlYXRlLWNsaWVudCIsIm1hbmFnZS11c2VycyIsInZpZXctdXNlcnMiLCJxdWVyeS1ncm91cHMiLCJxdWVyeS11c2VycyJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiY3VzdG9tZXIxIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiY3VzdG9tZXIxQGV4YW1wbGUuY29tIiwiZ2l2ZW5fbmFtZSI6ImN1c3RvbWVyMSIsImVtYWlsIjoiY3VzdG9tZXIxQGV4YW1wbGUuY29tIn0.PA06Z6h0OH0zM_hm6lGYwF-8fcc060K5DXERjQp29Dopa24AdT7ysRU5dU1bnWKFfx8qdMe0cfzZAmedZKUDNV-Viv_ALvml8bTa_sT-4PG3g57auakedv46cHuqrQlGic4WIHCqIztUkqrWYykQwTr5WLfAOXD4uDCMcI7bLGxzBMpk3wWWKgBLccQfcW7jySstQIMA2-hpsIQRIFnBzeJrd2u0p2v22mW37ziZ7D92IuA35iFlftPRY1lZHWlI1LCi8CIOXS4C4r-X_VOFrOJgGbcXK6voTBdA8-ssb4Z-ythkLYnAfhjknng2ViDu4ALL5K1DHOo_QUD92ACkiw
+Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 Accept: application/json
 
@@ -22,6 +21,24 @@ Accept: application/json
   }
 }
 
+### Actualizar una orden (cambiar estado a Cancelado)
+PUT http://localhost:8080/api/v1/public/order/cancel?orderId=1
+Accept: application/json
+
+### Actualizar una orden (cambiar estado a Entregado)
+PUT http://localhost:8080/api/v1/public/order/deliver?orderId=1002
+Accept: application/json
+
+### Listar órdenes del cliente (extraído del token JWT)
+### FIXME: El endpoint no esta funciona solo en casos muy específicos (id=1002)
+GET http://localhost:8080/api/v1/order/customer?status=Entregado&pageNumber=0&pageSize=10&sortAscending=false
+Authorization: Bearer <JWT_TOKEN>
+Accept: application/json
+
+### Listar órdenes del cliente (extraído del token JWT)
+GET http://localhost:8080/api/v1/order/customer
+Authorization: Bearer <JWT_TOKEN>
+Accept: application/json
 
 ###
 
@@ -37,20 +54,3 @@ Accept: application/json
 #    "2": 1
 #  }
 #}
-
-
-###
-
-PUT http://localhost:8080/api/v1/public/order/cancel?orderId=1
-Accept: application/json
-
-###
-
-PUT http://localhost:8080/api/v1/public/order/deliver?orderId=1004
-Accept: application/json
-
-### Listar órdenes del cliente (extraído del token JWT)
-### FIXME: El endpoint no esta funciona solo en casos muy específicos (id=1002)
-GET http://localhost:8080/api/v1/order/customer
-Authorization: Bearer <JWT_TOKEN>
-Accept: application/json
