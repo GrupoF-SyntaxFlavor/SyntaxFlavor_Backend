@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 
 @Component
 public class OrderBL {
-    
+
     Logger LOGGER = LoggerFactory.getLogger(OrderBL.class);
 
     public static final String STATUS_PENDING = "Pendiente";
@@ -42,12 +41,14 @@ public class OrderBL {
     @Autowired
     private CustomerBL customerBL;
 
-    public Page<OrderDTO> listOrdersByFilters(String status, LocalDateTime minDate, LocalDateTime maxDate, Integer pageNumber, Integer pageSize, boolean sortAscending) {
+    public Page<OrderDTO> listOrdersByFilters(String status, LocalDateTime minDate, LocalDateTime maxDate,
+            Integer pageNumber, Integer pageSize, boolean sortAscending) {
         LOGGER.info("Listing orders by filters");
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        
-        Page<Order> orderPage = orderRepository.findByMinDateBetweenMaxDateAndStatusByNameAsc(status, minDate, maxDate, pageable);
+
+        Page<Order> orderPage = orderRepository.findByMinDateBetweenMaxDateAndStatusByNameAsc(status, minDate, maxDate,
+                pageable);
         if (orderPage == null) {
             LOGGER.error("Error listing orders by datetime and status");
             throw new RuntimeException("Error listing orders by datetime and status");
@@ -61,7 +62,8 @@ public class OrderBL {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
         LOGGER.info("Querying with startOfDay: {}, endOfDay: {}, status: {}", startOfDay, endOfDay, status);
-        Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenAndStatusOrderByOrderTimestampAsc(startOfDay, endOfDay, status, pageable);
+        Page<Order> orderPage = orderRepository.findAllByOrderTimestampBetweenAndStatusOrderByOrderTimestampAsc(
+                startOfDay, endOfDay, status, pageable);
         if (orderPage == null) {
             LOGGER.error("Error listing orders by status");
             throw new RuntimeException("Error listing orders by status");
@@ -71,14 +73,14 @@ public class OrderBL {
 
     public CartDTO createOrderFromCart(CartDTO cart) {
         LOGGER.info("Creating order from cart: {}", cart);
-        
+
         CartDTO cartResponse = new CartDTO();
         Order order = new Order();
         try {
             order.setCustomerId(customerBL.findCustomerById(cart.getCustomerId()));
-            order.setTableCode(cart.getTableCode());//adding table code to order
+            order.setTableCode(cart.getTableCode());// adding table code to order
             order.setStatus(STATUS_PENDING);
-            order.setOrderTimestamp(new Date()); 
+            order.setOrderTimestamp(new Date());
 
             // Save the order and get the insertion ID
             order = orderRepository.save(order);
@@ -88,7 +90,7 @@ public class OrderBL {
             cartResponse.setOrderId(order.getId());
             cartResponse.setCustomerId(order.getCustomerId().getId());
             cartResponse.setItemIdQuantityMap(cart.getItemIdQuantityMap());
-            cartResponse.setTableCode(order.getTableCode());//adding table code to response
+            cartResponse.setTableCode(order.getTableCode());// adding table code to response
 
         } catch (Exception e) {
             LOGGER.error("Error creating order from cart: {}", e);
@@ -128,14 +130,20 @@ public class OrderBL {
         return OrderDTO.fromEntity(order);
     }
 
-    public List<OrderDTO> listOrdersByCustomerId(int customerId) {
+    public Page<OrderDTO> listOrdersByCustomerId(int customerId, String status, Integer pageNumber, Integer pageSize,
+            boolean sortAscending) {
         LOGGER.info("Listing orders by customer ID: {}", customerId);
-        Pageable topTen = PageRequest.of(0, 10);
-        List<Order> order = orderRepository.findAllByCustomIdOrderByOrderTimestampDesc(customerId, topTen);
-        if (order == null) {
-            LOGGER.error("Error listing orders by customer ID");
-            throw new RuntimeException("Error listing orders by customer ID");
+        Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<Order> orderPage = orderRepository.findAllByCustomerIdAndStatusOrderByOrderTimestamp(customerId, status,
+                pageable);
+
+        if (orderPage == null) {
+            LOGGER.error("Error listing orders by customer ID and status and order by timestamp");
+            throw new RuntimeException("Error listing orders by customer ID and status and order by timestamp");
         }
-        return OrderDTO.fromEntityList(order);
+
+        return orderPage.map(order -> OrderDTO.fromEntity(order));
     }
 }
