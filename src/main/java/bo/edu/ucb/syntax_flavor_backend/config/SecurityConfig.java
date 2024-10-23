@@ -13,22 +13,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 class SecurityConfig {
 
-        @Bean
-        SecurityFilterChain configure(HttpSecurity http) throws Exception {
-                http
-                .cors() // Habilitar CORS
-                .and()
-                .authorizeHttpRequests(c ->
-                        c
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/v1/public/**").permitAll()// Rutas públicas
-                        .anyRequest().authenticated()  // Todas las demás rutas requieren autenticación
+    @Bean
+    SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        http
+                .cors(withDefaults())
+                .authorizeHttpRequests(c -> c
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**","/v3/api-docs**").permitAll()// Rutas públicas
+                        .requestMatchers("/api/v1/public/**").permitAll() // Rutas públicas
+                        .anyRequest().authenticated() // Todas las demás rutas requieren
+                                          // autenticación
                 )
-                .sessionManagement(c ->
-                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(CsrfConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()));
-                return http.build();
-        }
+        return http.build();
+    }
 }

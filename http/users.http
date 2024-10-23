@@ -4,8 +4,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "shoston0@imgur.com",
-    "password": "iK1@ASV!@e<"
+    "email": "customer1@example.com",
+    "password": "123456789"
 }
 // FIXME: manejar el error de cuenta no verificada
 

@@ -45,6 +45,10 @@ spring:
       username: admin # Usuario administrador de Keycloak
       password: admin # Contraseña del administrador
 
+# springdoc:
+#   swagger-ui:
+#     path: /api/v1/public/swagger-ui.html
+
 server:
   port: 8080
 
