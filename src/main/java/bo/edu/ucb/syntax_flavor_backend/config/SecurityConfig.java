@@ -20,8 +20,8 @@ class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(c ->
                         c
-                        .requestMatchers("/api/v1/public/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()  // Rutas públicas
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/v1/public/**").permitAll()// Rutas públicas
                         .anyRequest().authenticated()  // Todas las demás rutas requieren autenticación
                 )
                 .sessionManagement(c ->
