@@ -19,6 +19,8 @@ import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,12 @@ public class MenuItemAPI {
 
     // Endpoint para obtener todos los platillos disponibles
     @Operation(summary = "Get all menu items", description = "Returns a list of all menu items available")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu items retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Error retrieving menu items")
+        }
+    )
     @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
 
@@ -70,6 +78,13 @@ public class MenuItemAPI {
         }
     }
 
+    @Operation(summary = "Get menu items by price", description = "Returns a list of menu items within a price range this endpoint implements pagination, sorting and filtering")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu items retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Error retrieving menu items")
+        }
+    )
     @GetMapping("/menu/item")
     public ResponseEntity<SyntaxFlavorResponse<Page<MenuItemResponseDTO>>> getMenuItemsByPrice(
             @RequestParam(required = false) BigDecimal minPrice,
@@ -93,7 +108,13 @@ public class MenuItemAPI {
         }
     }
     
-
+    @Operation(summary = "Replace an item's image", description = "Replaces an item's image with a new one, both objects still exist in the storage")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Image updated successfully"),
+            @ApiResponse(responseCode = "500", description = "Error updating image")
+        }
+    )
     @PatchMapping("/public/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<String>> updateMenuItemImage(@PathVariable Integer id,
                                                                             @RequestPart("file") MultipartFile file) {
@@ -107,6 +128,7 @@ public class MenuItemAPI {
             LOGGER.info("Endpoint successfully, returning image URL: {}", imageUrl);
             return ResponseEntity.ok(sfrResponse);
         } catch (Exception e) {
+            // TODO: Be more detailed about the error.
             LOGGER.error("Error updating menu item image: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-602");
             sfrResponse.setErrorMessage(e.getMessage());
@@ -114,6 +136,13 @@ public class MenuItemAPI {
         }
     }
 
+    @Operation(summary = "Get an item's image", description = "Returns an item's image")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Image retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Error retrieving image")
+        }
+    )
     @GetMapping("/menu/item/{id}/image")
     public ResponseEntity<SyntaxFlavorResponse<Object>> getMenuItemImage(@PathVariable Integer id) {
         LOGGER.info("Endpoint GET /api/v1/menu/item/{}/image", id);

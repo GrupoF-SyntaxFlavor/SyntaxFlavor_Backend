@@ -45,6 +45,10 @@ spring:
       username: admin # Usuario administrador de Keycloak
       password: admin # Contraseña del administrador
 
+logging:
+  level:
+    bo.edu.ucb: DEBUG
+
 server:
   port: 8080
 
