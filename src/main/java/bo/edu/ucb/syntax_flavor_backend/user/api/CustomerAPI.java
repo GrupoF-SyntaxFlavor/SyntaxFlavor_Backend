@@ -21,6 +21,8 @@ import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -35,6 +37,13 @@ public class CustomerAPI {
     private UserBL userBL;
 
     @Operation(summary = "Get customer profile", description = "Returns the profile (name, email, NIT) of a customer using the kc_user_id from JWT token")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Customer profile retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer not found"),
+            @ApiResponse(responseCode = "500", description = "Error retrieving customer profile")
+        }
+    )
     @GetMapping("/customer/profile")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> getCustomerProfile(@RequestHeader("Authorization") String token, HttpServletRequest request) {
 
@@ -77,6 +86,13 @@ public class CustomerAPI {
     }
 
     @Operation(summary = "Update customer data", description = "Updates the data of a customer using a CustomerUpdateDTO. All of the information in the body will override the data for the user.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Customer data updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer not found"),
+            @ApiResponse(responseCode = "500", description = "Error updating customer data")
+        }
+    )
     @PatchMapping("/customer")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> updateCustomerData(
             @RequestBody CustomerUpdateDTO customerUpdateDTO,

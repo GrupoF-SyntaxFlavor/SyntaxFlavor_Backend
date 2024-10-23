@@ -20,6 +20,8 @@ import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping(value = "/api/v1/bill")
@@ -33,6 +35,13 @@ public class BillAPI {
     private UserBL userBL;
 
     @Operation(summary = "Create bill for an Order", description = "Creates a bill for an order and sends the bill to the provided email.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Bill created successfully"),
+            @ApiResponse(responseCode = "400", description = "Something failed while creating the bill, probably part of the process still got done"),
+            @ApiResponse(responseCode = "500", description = "Everything failed, the bill was not created")
+        }
+    )
     @PostMapping()
     public ResponseEntity<SyntaxFlavorResponse<BillResponseDTO>> createBillFromOrder(
             @RequestBody BillRequestDTO billRequest, HttpServletRequest request) {

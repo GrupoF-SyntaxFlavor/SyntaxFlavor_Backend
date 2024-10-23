@@ -21,6 +21,9 @@ import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -44,9 +47,18 @@ public class UserAPI {
     }
 
     @Operation(summary = "Create user", description = "Creates an user and saves data in keycloack realm. Data: id, name, email, number phone, date created at and date updated at.")
-    @PostMapping("/public/signup")//public endpoint to create user
-    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(@RequestBody UserSignUpDTO user,
-                                                                    @RequestParam(value = "type", required = true) String type) {
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "User created successfully, be sure to validate the email"),
+            @ApiResponse(responseCode = "400", description = "The request is missing a required parameter"),
+            @ApiResponse(responseCode = "500", description = "Everything failed, the user was not created")
+        }
+    )
+    @PostMapping("/public/signup")
+    public ResponseEntity<SyntaxFlavorResponse<UserDTO>> createUser(
+        @RequestBody UserSignUpDTO user,
+        @RequestParam(value = "type", required = true) String type
+    ) {
         LOGGER.info("Endpoint POST /api/v1/public/user with user: {}", user);
         
         // Depuración para validar que los valores no sean nulos
@@ -88,7 +100,14 @@ public class UserAPI {
     }
 
     @Operation(summary = "Login user", description = "Login an user and compare data in keycloack realm. Data: username(email in keycloak), password.")
-    @PostMapping("/public/login")//public endpoint to create user
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "User logged in successfully"),
+            @ApiResponse(responseCode = "400", description = "The request is missing a required parameter"),
+            @ApiResponse(responseCode = "500", description = "Everything failed, the user was not logged in")
+        }
+    )
+    @PostMapping("/public/login")
     public ResponseEntity<SyntaxFlavorResponse<AccessTokenResponse>> login(@RequestBody LoginDTO login) {
 
         LOGGER.info("Endpoint POST /api/v1/public/login with login: {}", login);

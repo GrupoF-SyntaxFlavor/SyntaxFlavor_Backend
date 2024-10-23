@@ -16,29 +16,38 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @Configuration
 public class OpenAPIConfiguration {
 
+    /* @Value("${spring.keycloak.auth-server-url}")
+    private String authServerUrl;
+
     @Value("${spring.keycloak.realm}")
-    private String realm;
+    private String realm; */
     
     @Bean
     public OpenAPI defineOpenAPI(){
 
         // Config to use with Keycloak
-
         Components components = new Components()
+            .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+            );
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+
+        /* Components components = new Components()
             .addSecuritySchemes("keycloak", new SecurityScheme()
                 .type(SecurityScheme.Type.OAUTH2)
                 .flows(new OAuthFlows()
                     .authorizationCode(new OAuthFlow()
-                        .authorizationUrl("http://localhost:8080/auth/realms/"+realm+"/protocol/openid-connect/auth")
-                        .tokenUrl("http://localhost:8080/auth/realms/"+realm+"/protocol/openid-connect/token")
+                        .authorizationUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/auth")
+                        .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
                     )
                 )   
             );
         SecurityRequirement securityRequirement = new SecurityRequirement()
-            .addList("keycloak");
+            .addList("keycloak"); */
 
         // about
-
         Contact contact = new Contact();
         contact.setName("SyntaxFlavor");
         
