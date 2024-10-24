@@ -2,6 +2,9 @@ package bo.edu.ucb.syntax_flavor_backend.menu.api;
 
 import java.util.List;
 import java.math.BigDecimal;
+
+import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,8 +30,12 @@ public class MenuItemAPI {
     @Autowired
     private final MenuBL menuBL;
 
-    public MenuItemAPI(MenuBL menuBL) {
+    @Autowired
+    private final UserBL userBL;
+
+    public MenuItemAPI(MenuBL menuBL, UserBL userBL) {
         this.menuBL = menuBL;
+        this.userBL = userBL;
     }
 
     // Endpoint para obtener todos los platillos disponibles
@@ -112,15 +119,29 @@ public class MenuItemAPI {
         }
     }
 
-    // Endpoint para deshabilitar un ítem
+    @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
     @PatchMapping("/menu/item/{id}/disable")
-    public ResponseEntity<SyntaxFlavorResponse<Void>> disableMenuItem(@PathVariable Integer id) {
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
         LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/disable", id);
-        SyntaxFlavorResponse<Void> sfrResponse = new SyntaxFlavorResponse<>();
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            menuBL.disableMenuItem(id);
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.disableMenuItem(id);
             sfrResponse.setResponseCode("MEN-005");
-            sfrResponse.setPayload(null);
+            sfrResponse.setPayload(menuItemResponseDTO);
             LOGGER.info("Menu item {} disabled successfully", id);
             return ResponseEntity.ok(sfrResponse);
         } catch (Exception e) {
@@ -130,4 +151,39 @@ public class MenuItemAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
         }
     }
+
+    @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
+    @PatchMapping("/menu/item/{id}/enable")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/enable", id);
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.enableMenuItem(id);
+            sfrResponse.setResponseCode("MEN-005");
+            sfrResponse.setPayload(menuItemResponseDTO);
+            LOGGER.info("Menu item {} enabled successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error enabling menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-605");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+
+
 }

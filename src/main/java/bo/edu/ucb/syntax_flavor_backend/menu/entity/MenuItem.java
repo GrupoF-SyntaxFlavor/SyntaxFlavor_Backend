@@ -36,6 +36,8 @@ import jakarta.persistence.TemporalType;
         @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
         @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
         @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
+        @NamedQuery(name = "MenuItem.findByImageUrl", query = "SELECT m FROM MenuItem m WHERE m.imageUrl = :imageUrl"),
+        @NamedQuery(name = "MenuItem.findByStatus", query = "SELECT m FROM MenuItem m WHERE m.status = :status"),
         @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
         @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt") })
 public class MenuItem implements Serializable {
@@ -51,8 +53,6 @@ public class MenuItem implements Serializable {
     private String name;
     @Column(name = "description")
     private String description;
-    // @Max(value=?) @Min(value=?)//if you know range of your decimal fields
-    // consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
@@ -60,7 +60,7 @@ public class MenuItem implements Serializable {
     @Column(name = "image_url")
     private String imageUrl;
     @Column(name = "status")
-    private Boolean status = true;
+    private Boolean status = true; // status field
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -83,6 +83,7 @@ public class MenuItem implements Serializable {
         this.price = price;
     }
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -123,6 +124,14 @@ public class MenuItem implements Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -156,7 +165,6 @@ public class MenuItem implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MenuItem)) {
             return false;
         }

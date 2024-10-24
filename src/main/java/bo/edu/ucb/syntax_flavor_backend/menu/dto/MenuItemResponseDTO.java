@@ -16,13 +16,15 @@ public class MenuItemResponseDTO {
     private String image;
     private BigDecimal price;
     private Integer quantity = 10000; //TODO: Currently hardcoded, should be dynamic
+    private Boolean status;
 
-    // Constructor que recibe una entidad MenuItem
+    // Constructor that receives a MenuItem entity
     public MenuItemResponseDTO(MenuItem menuItem) {
         this.id = menuItem.getId();
         this.name = menuItem.getName();
         this.description = menuItem.getDescription();
         this.image = menuItem.getImageUrl();
         this.price = menuItem.getPrice();
+        this.status = menuItem.getStatus();
     }
 }

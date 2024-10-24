@@ -111,18 +111,34 @@ public class MenuBL {
         }
     }
 
-    // New method to disable a menu item
-    public void disableMenuItem(Integer id) {
+    public MenuItemResponseDTO disableMenuItem(Integer id) {
         LOGGER.info("Disabling menu item with id: {}", id);
         try {
             MenuItem menuItem = menuItemRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
-            // menuItem.setEnabled(false);
+            menuItem.setStatus(false);
             menuItemRepository.save(menuItem);
             LOGGER.info("Menu item disabled successfully for id: {}", id);
+            return new MenuItemResponseDTO(menuItem); // Return the updated menu item details
         } catch (Exception e) {
             LOGGER.error("Error disabling menu item: {}", e.getMessage());
             throw new RuntimeException("Error disabling menu item: " + e.getMessage(), e);
         }
     }
+
+    public MenuItemResponseDTO enableMenuItem(Integer id) {
+        LOGGER.info("Enabling menu item with id: {}", id);
+        try {
+            MenuItem menuItem = menuItemRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
+            menuItem.setStatus(true);
+            menuItemRepository.save(menuItem);
+            LOGGER.info("Menu item enabled successfully for id: {}", id);
+            return new MenuItemResponseDTO(menuItem); // Return the updated menu item details
+        } catch (Exception e) {
+            LOGGER.error("Error enabling menu item: {}", e.getMessage());
+            throw new RuntimeException("Error enabling menu item: " + e.getMessage(), e);
+        }
+    }
+
 }
