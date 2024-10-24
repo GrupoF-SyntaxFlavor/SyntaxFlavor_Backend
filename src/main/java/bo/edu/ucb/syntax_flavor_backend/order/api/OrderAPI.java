@@ -45,7 +45,7 @@ public class OrderAPI {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @GetMapping("/public/order")
+    @GetMapping("/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
             @RequestParam(defaultValue = "Pendiente") String status,
             @RequestParam(required = false) LocalDateTime minDate,
@@ -84,7 +84,7 @@ public class OrderAPI {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @GetMapping("/public/order/status")
+    @GetMapping("/order/status")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber,
             @RequestParam String status) {
         LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
@@ -167,7 +167,7 @@ public class OrderAPI {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @PutMapping("/public/order/cancel")
+    @PutMapping("/order/cancel")
     public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> cancelOrder(@RequestParam int orderId) {
         LOGGER.info("Endpoint PUT /api/v1/order/cancel with orderId: {}", orderId);
         SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
@@ -195,7 +195,7 @@ public class OrderAPI {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    @PutMapping("/public/order/deliver")
+    @PutMapping("/order/deliver")
     public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> deliverOrder(@RequestParam int orderId) {
         LOGGER.info("Endpoint PUT /api/v1/order/deliver with orderId: {}", orderId);
         SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
