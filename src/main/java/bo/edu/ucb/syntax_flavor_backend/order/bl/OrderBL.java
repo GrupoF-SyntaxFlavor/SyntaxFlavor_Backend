@@ -42,8 +42,11 @@ public class OrderBL {
     private CustomerBL customerBL;
 
     public Page<OrderDTO> listOrdersByFilters(String status, LocalDateTime minDate, LocalDateTime maxDate,
-            Integer pageNumber, Integer pageSize, boolean sortAscending) {
+        Integer pageNumber, Integer pageSize, boolean sortAscending) {
         LOGGER.info("Listing orders by filters");
+        LOGGER.debug("Parameters - status: {}, minDate: {}, maxDate: {}, pageNumber: {}, pageSize: {}, sortAscending: {}",
+                status, minDate, maxDate, pageNumber, pageSize, sortAscending);
+
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
@@ -131,17 +134,17 @@ public class OrderBL {
     }
 
     public Page<OrderDTO> listOrdersByCustomerId(int customerId, String status, Integer pageNumber, Integer pageSize,
-            boolean sortAscending) {
+                                                 boolean sortAscending) {
         LOGGER.info("Listing orders by customer ID: {}", customerId);
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Order> orderPage = orderRepository.findAllByCustomerIdAndStatusOrderByOrderTimestamp(customerId, status,
-                pageable);
+        Page<Order> orderPage = orderRepository.findAllByCustomerIdAndStatusOrderByOrderTimestamp(customerId, status, pageable);
 
-        if (orderPage == null) {
-            LOGGER.error("Error listing orders by customer ID and status and order by timestamp");
-            throw new RuntimeException("Error listing orders by customer ID and status and order by timestamp");
+        if (orderPage.isEmpty()) {
+            LOGGER.info("No orders found for customer ID: {} with status: {}", customerId, status);
+        } else {
+            LOGGER.info("Found {} orders", orderPage.getTotalElements());
         }
 
         return orderPage.map(order -> OrderDTO.fromEntity(order));
