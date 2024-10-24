@@ -2,10 +2,16 @@ package bo.edu.ucb.syntax_flavor_backend.user.bl;
 
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
@@ -84,5 +90,12 @@ public class UserBL {
         LOGGER.warn("Person email: {}", email);
         User user = userRepository.findByEmail(email).orElse(null);
         return user != null ? new UserDTO(user) : null;
+    }
+
+    public List<UserDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
+        LOGGER.info("Listing users with kitchens");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy));
+        Page<User> userPage = userRepository.findUsersWithKitchen(pageable);
+        return userPage.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 }

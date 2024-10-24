@@ -158,7 +158,7 @@ public class MenuItemAPI {
 
         String kcUserId = (String) request.getAttribute("kcUserId");
         User user = userBL.findUserByKcUserId(kcUserId);
-
+        // FIXME: this is not the best way to do it :)
         if (user == null) {
             LOGGER.error("User with kcUserId {} not found", kcUserId);
             SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
@@ -191,7 +191,7 @@ public class MenuItemAPI {
 
         String kcUserId = (String) request.getAttribute("kcUserId");
         User user = userBL.findUserByKcUserId(kcUserId);
-
+        // FIXME: this is not the best way to do it :)
         if (user == null) {
             LOGGER.error("User with kcUserId {} not found", kcUserId);
             SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
