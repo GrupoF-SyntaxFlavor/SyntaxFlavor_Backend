@@ -144,10 +144,12 @@ Este comando permite cambiar las urls del Json para la creación de keycloak a t
    npm install pg axios form-data
    ```
   NOTA: tambien puede utilizarse el comando "npm i"
-3. **Ejecución del script `load_users_keycloak.js`**:
+3. **Ejecución del script `load_users_keycloak.js` y `load_kitchen_users.js`**:
 
    ```bash
    node load_users_keycloak.js
+
+   node load_kitchen_users.js
    ```
 4. **Ejecución del script `load_menu_items.js`**:
 
