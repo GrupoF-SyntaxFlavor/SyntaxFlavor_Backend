@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
@@ -88,13 +92,10 @@ public class UserBL {
         return user != null ? new UserDTO(user) : null;
     }
 
-    public List<UserDTO> getUsersWithKitchen() {
-        try {
-            List<User> users = userRepository.findUsersWithKitchen();
-            return users.stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
-        } catch (Exception e) {
-            LOGGER.error("Error retrieving users with kitchens: {}", e.getMessage());
-            throw new RuntimeException("Error retrieving users with kitchens: " + e.getMessage());
-        }
+    public List<UserDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
+        LOGGER.info("Listing users with kitchens");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy));
+        Page<User> userPage = userRepository.findUsersWithKitchen(pageable);
+        return userPage.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 }

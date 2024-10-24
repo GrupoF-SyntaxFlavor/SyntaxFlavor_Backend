@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KitchenBL;
 import bo.edu.ucb.syntax_flavor_backend.service.KeycloakAdminClientService;
@@ -24,9 +27,7 @@ import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -144,21 +145,36 @@ public class UserAPI {
         }
     }
 
-    @Operation(summary = "List users with kitchens", description = "Lists all users who have a kitchen associated with them.")
+    
+    @Operation(
+        summary = "List users with kitchens",
+        description = "Lists all users who have a kitchen associated with them.",
+        parameters = {
+            @Parameter(name = "page", description = "Page number for pagination", example = "0"),
+            @Parameter(name = "size", description = "Number of items per page", example = "10"),
+            @Parameter(name = "sortBy", description = "Field to sort by", example = "id"),
+            @Parameter(name = "sortOrder", description = "Sort order (asc or desc)", example = "asc")
+        }
+    )
     @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
-                    @ApiResponse(responseCode = "204", description = "No users found with kitchens"),
-                    @ApiResponse(responseCode = "404", description = "User not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
+        value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "204", description = "No users found with kitchens"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+        }
     )
     @GetMapping("/users-with-kitchen")
-    public ResponseEntity<SyntaxFlavorResponse<List<UserDTO>>> listUsersWithKitchen(HttpServletRequest request) {
+    public ResponseEntity<SyntaxFlavorResponse<List<UserDTO>>> listUsersWithKitchen(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortOrder) {
         LOGGER.info("Endpoint GET /api/v1/public/users-with-kitchen");
-
+    
         String kcUserId = (String) request.getAttribute("kcUserId");
-
+    
         LOGGER.info("User with kcUserId {}", kcUserId);
         User user = userBL.findUserByKcUserId(kcUserId);
         // FIXME: this is not the best way to do it :)
@@ -169,10 +185,10 @@ public class UserAPI {
             sfrResponse.setErrorMessage("User not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
         }
-
+    
         SyntaxFlavorResponse<List<UserDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            List<UserDTO> usersWithKitchen = userBL.getUsersWithKitchen();
+            List<UserDTO> usersWithKitchen = userBL.getUsersWithKitchen(page, size, sortBy, sortOrder);
             if (usersWithKitchen.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
