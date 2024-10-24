@@ -2,6 +2,8 @@ package bo.edu.ucb.syntax_flavor_backend.user.bl;
 
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,5 +86,15 @@ public class UserBL {
         LOGGER.warn("Person email: {}", email);
         User user = userRepository.findByEmail(email).orElse(null);
         return user != null ? new UserDTO(user) : null;
+    }
+
+    public List<UserDTO> getUsersWithKitchen() {
+        try {
+            List<User> users = userRepository.findUsersWithKitchen();
+            return users.stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving users with kitchens: {}", e.getMessage());
+            throw new RuntimeException("Error retrieving users with kitchens: " + e.getMessage());
+        }
     }
 }

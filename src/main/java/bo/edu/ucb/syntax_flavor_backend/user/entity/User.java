@@ -62,6 +62,9 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "usersId")
     private Collection<Customer> customersCollection;
 
+    @OneToMany(mappedBy = "usersId")
+    private Collection<Kitchen> kitchenCollection;
+
     public User() {
     }
 
