@@ -38,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
          // Define los endpoints que no requieren validación de JWT
-        if (requestURI.startsWith("/api/v1/public/")) {
+        if (requestURI.startsWith("/api/v1/public/") || requestURI.startsWith("/swagger-ui/") || requestURI.startsWith("/swagger-ui.html") || requestURI.startsWith("/v3/api-docs") || requestURI.startsWith("/v3/api-docs/")) {
              // Si la URL comienza con /api/v1/public/, pasa el request sin validar el token
             filterChain.doFilter(request, response);
             return;

@@ -697,16 +697,16 @@
       "clientId": "syntaxflavor",
       "name": "Syntax Flavor Project",
       "description": "",
-      "rootUrl": "http://192.168.0.7:8080",
-      "adminUrl": "http://192.168.0.7:8080",
-      "baseUrl": "http://192.168.0.7:8080",
+      "rootUrl": "http://172.18.11.17:8080",
+      "adminUrl": "http://172.18.11.17:8080",
+      "baseUrl": "http://172.18.11.17:8080",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr",
-      "redirectUris": ["http://192.168.0.7:8080/*"],
-      "webOrigins": ["http://192.168.0.7:8080"],
+      "redirectUris": ["http://172.18.11.17:8080/*"],
+      "webOrigins": ["http://172.18.11.17:8080"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -720,7 +720,7 @@
       "attributes": {
         "client.secret.creation.time": "1727309264",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
-        "post.logout.redirect.uris": "http://192.168.0.7:8080",
+        "post.logout.redirect.uris": "http://172.18.11.17:8080",
         "oauth2.device.authorization.grant.enabled": "true",
         "use.jwks.url": "true",
         "backchannel.logout.revoke.offline.tokens": "false",
@@ -728,7 +728,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.use.lightweight.access.token.enabled": "false",
         "backchannel.logout.session.required": "true",
-        "jwks.url": "http://192.168.0.7:8082/realms/myrealm/protocol/openid-connect/token",
+        "jwks.url": "http://172.18.11.17:8082/realms/myrealm/protocol/openid-connect/token",
         "client_credentials.use_refresh_token": "false", 
         "tls.client.certificate.bound.access.tokens": "false",
         "require.pushed.authorization.requests": "false",
@@ -2256,5 +2256,3 @@
     "policies": []
   }
 }
-
-

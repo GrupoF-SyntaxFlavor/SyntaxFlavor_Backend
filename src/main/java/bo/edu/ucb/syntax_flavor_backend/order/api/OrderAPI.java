@@ -18,6 +18,9 @@ import bo.edu.ucb.syntax_flavor_backend.order.dto.CartDTO;
 import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import java.time.LocalDateTime;
 
 @RestController
@@ -36,7 +39,13 @@ public class OrderAPI {
     private CustomerBL customerBL;
 
     @Operation(summary = "List orders by status and date range", description = "Retrieve a paginated list of orders filtered by status and date range. You can specify the order status, the minimum and maximum dates for the order timestamps, the page number, page size, and whether to sort by ascending or descending order based on the timestamp.")
-    @GetMapping("/public/order")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "List of orders returned successfully"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @GetMapping("/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
             @RequestParam(defaultValue = "Pendiente") String status,
             @RequestParam(required = false) LocalDateTime minDate,
@@ -69,7 +78,13 @@ public class OrderAPI {
     }
 
     @Operation(summary = "List orders by status", description = "Can page through orders by status, the displayed orders are the most recent ones. No filters are applied at this moment.")
-    @GetMapping("/public/order/status")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "List of orders returned successfully"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @GetMapping("/order/status")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByStatus(@RequestParam int pageNumber,
             @RequestParam String status) {
         LOGGER.info("Endpoint GET /api/v1/order/status with pageNumber: {} and status: {}", pageNumber, status);
@@ -89,6 +104,13 @@ public class OrderAPI {
     }
 
     @Operation(summary = "Create order from cart", description = "Creates an order from a cart. The customer ID is extracted from the JWT token, and a map of menu item IDs to quantities is passed.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "201", description = "Order created successfully"),
+                    @ApiResponse(responseCode = "404", description = "User or customer not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
     @PostMapping("/order")
     public ResponseEntity<SyntaxFlavorResponse<CartDTO>> createOrderFromCart(
             @RequestBody CartDTO cart, HttpServletRequest request) {
@@ -100,6 +122,7 @@ public class OrderAPI {
         try {
 
             // Fetch the user by kcUserId
+            //FIXME: This should be done elsewhere, if the user is now authenticated a special exception should be thrown
             String kcUserId = (String) request.getAttribute("kcUserId");
             User user = userBL.findUserByKcUserId(kcUserId);
             if (user == null) {
@@ -137,7 +160,14 @@ public class OrderAPI {
     }
 
     @Operation(summary = "Cancel order", description = "Cancels an order by ID. Returns the order with the new status")
-    @PutMapping("/public/order/cancel")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Order cancelled successfully"),
+                    @ApiResponse(responseCode = "400", description = "The order could not be cancelled, probably because it is already cancelled or delivered"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PutMapping("/order/cancel")
     public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> cancelOrder(@RequestParam int orderId) {
         LOGGER.info("Endpoint PUT /api/v1/order/cancel with orderId: {}", orderId);
         SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
@@ -159,7 +189,13 @@ public class OrderAPI {
     }
 
     @Operation(summary = "Deliver order", description = "Delivers an order by ID. Returns the order with the new status")
-    @PutMapping("/public/order/deliver")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Order delivered successfully"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @PutMapping("/order/deliver")
     public ResponseEntity<SyntaxFlavorResponse<OrderDTO>> deliverOrder(@RequestParam int orderId) {
         LOGGER.info("Endpoint PUT /api/v1/order/deliver with orderId: {}", orderId);
         SyntaxFlavorResponse<OrderDTO> sfr = new SyntaxFlavorResponse<>();
@@ -176,6 +212,10 @@ public class OrderAPI {
     }
 
     @Operation(summary = "List orders by customer ID", description = "Lists the last 10 orders of a customer extracted from the JWT token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of orders returned successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/order/customer")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByCustomerId(
             @RequestParam(defaultValue = "Pendiente") String status,
