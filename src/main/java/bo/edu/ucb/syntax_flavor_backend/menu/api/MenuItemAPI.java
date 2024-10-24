@@ -1,11 +1,10 @@
 package bo.edu.ucb.syntax_flavor_backend.menu.api;
 
 import java.util.List;
-
 import java.math.BigDecimal;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
+import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,31 +13,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/api/v1")
 public class MenuItemAPI {
-
     Logger LOGGER = LoggerFactory.getLogger(MenuItemAPI.class);
 
     @Autowired
     private final MenuBL menuBL;
 
-    public MenuItemAPI(MenuBL menuBL) {
+    @Autowired
+    private final UserBL userBL;
+
+    public MenuItemAPI(MenuBL menuBL, UserBL userBL) {
         this.menuBL = menuBL;
+        this.userBL = userBL;
     }
 
     // Endpoint para obtener todos los platillos disponibles
@@ -51,25 +50,15 @@ public class MenuItemAPI {
     )
     @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
-
         LOGGER.info("Endpoint GET /api/v1/menu/item");
-        // FIXME: No es la mejor forma de manejar el token JWT.
-        // TODO: Debería ser modularizado utilizando un middleware o función dedicada para la autenticación JWT.
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
-
         try {
-
-            // FIXME: Llamadas a lógica de negocio deberían estar en el BL.
-            // TODO: Mover esta operación al `bl`, ya que la responsabilidad de obtener los items debería delegarse.
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
             sfrResponse.setResponseCode("MEN-000");
             sfrResponse.setPayload(menuItems);
-
             LOGGER.info("Returning menu items: {}", menuItems);
             return ResponseEntity.ok(sfrResponse);
-
         } catch (Exception e) {
             LOGGER.error("Error retrieving menu items: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-600");
@@ -121,7 +110,6 @@ public class MenuItemAPI {
         LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<String> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            // FIXME: Sería preferible delegar esta lógica al `bl`.
             String imageUrl = menuBL.updateMenuItemImage(id, file);
             sfrResponse.setResponseCode("MEN-002");
             sfrResponse.setPayload(imageUrl);
@@ -148,7 +136,6 @@ public class MenuItemAPI {
         LOGGER.info("Endpoint GET /api/v1/menu/item/{}/image", id);
         SyntaxFlavorResponse<Object> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            // FIXME: La obtención de la imagen también debería delegarse al `bl`.
             byte[] image = menuBL.getMenuItemImage(id);
             sfrResponse.setResponseCode("MEN-004");
             sfrResponse.setPayload(image);
@@ -161,4 +148,72 @@ public class MenuItemAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
         }
     }
+
+    @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
+    @PatchMapping("/menu/item/{id}/disable")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/disable", id);
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.disableMenuItem(id);
+            sfrResponse.setResponseCode("MEN-005");
+            sfrResponse.setPayload(menuItemResponseDTO);
+            LOGGER.info("Menu item {} disabled successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error disabling menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-605");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+
+    @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
+    @PatchMapping("/menu/item/{id}/enable")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        LOGGER.info("Endpoint PATCH /api/v1/menu/item/{}/enable", id);
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.enableMenuItem(id);
+            sfrResponse.setResponseCode("MEN-005");
+            sfrResponse.setPayload(menuItemResponseDTO);
+            LOGGER.info("Menu item {} enabled successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error enabling menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-605");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+
+
 }
