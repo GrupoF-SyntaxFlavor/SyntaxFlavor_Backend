@@ -55,7 +55,10 @@ public class OrderAPI {
             @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
+        minDate = minDate != null ? minDate.withHour(0).withMinute(0).withSecond(0).withNano(0) : null;
+        maxDate = maxDate != null ? maxDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999) : null;
         try {
+
             //FIXME: mover a BL
             // Si minDate es nulo, asignar la fecha de ayer
             if (minDate == null) {
@@ -145,7 +148,7 @@ public class OrderAPI {
             // Set the customerId in the CartDTO (we no longer take it from the request
             // body)
             cart.setCustomerId(customer.getId());
-
+            LOGGER.info("Creating order from cart: {}", cart);
             // Create the order using the updated CartDTO (with customerId set)
             CartDTO cartResponse = orderBL.createOrderFromCart(cart);
             sfr.setResponseCode("ORD-001");
@@ -230,9 +233,10 @@ public class OrderAPI {
             LOGGER.info("Endpoint GET /api/v1/order/customer with pageNumber: {}", pageNumber);
             String kcUserId = (String) request.getAttribute("kcUserId");
             User user = userBL.findUserByKcUserId(kcUserId);
-
+            // Get Customer ID
+            Customer customer = customerBL.findCustomerByUserId(user.getId());
             // Obtener las órdenes del cliente usando el userId
-            Page<OrderDTO> orders = orderBL.listOrdersByCustomerId(user.getId(), status, pageNumber, pageSize,
+            Page<OrderDTO> orders = orderBL.listOrdersByCustomerId(customer.getId(), status, pageNumber, pageSize,
                     sortAscending);
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);

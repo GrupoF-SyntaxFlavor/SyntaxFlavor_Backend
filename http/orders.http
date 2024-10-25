@@ -35,8 +35,8 @@ Authorization: Bearer <JWT_TOKEN>
 Accept: application/json
 
 ### Listar órdenes del cliente (extraído del token JWT)
-### FIXME: El endpoint no esta funciona solo en casos muy específicos (id=1002)
-GET http://localhost:8080/api/v1/order/customer?status=Entregado&pageNumber=0&pageSize=10&sortAscending=false
+// FIXME: no funciona la paginación
+GET http://localhost:8080/api/v1/order/customer?status=Pendiente&pageNumber=1&pageSize=10&sortAscending=false
 Authorization: Bearer <JWT_TOKEN>
 Accept: application/json
 
