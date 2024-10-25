@@ -7,6 +7,7 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -165,7 +166,7 @@ public class UserAPI {
         }
     )
     @GetMapping("/users-with-kitchen")
-    public ResponseEntity<SyntaxFlavorResponse<List<UserDTO>>> listUsersWithKitchen(
+    public ResponseEntity<SyntaxFlavorResponse<Page<UserDTO>>> listUsersWithKitchen(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -180,15 +181,15 @@ public class UserAPI {
         // FIXME: this is not the best way to do it :)
         if (user == null) {
             LOGGER.error("User with kcUserId {} not found", kcUserId);
-            SyntaxFlavorResponse<List<UserDTO>> sfrResponse = new SyntaxFlavorResponse<>();
+            SyntaxFlavorResponse<Page<UserDTO>> sfrResponse = new SyntaxFlavorResponse<>();
             sfrResponse.setResponseCode("USR-601");
             sfrResponse.setErrorMessage("User not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
         }
     
-        SyntaxFlavorResponse<List<UserDTO>> sfr = new SyntaxFlavorResponse<>();
+        SyntaxFlavorResponse<Page<UserDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            List<UserDTO> usersWithKitchen = userBL.getUsersWithKitchen(page, size, sortBy, sortOrder);
+            Page<UserDTO> usersWithKitchen = userBL.getUsersWithKitchen(page, size, sortBy, sortOrder);
             if (usersWithKitchen.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
