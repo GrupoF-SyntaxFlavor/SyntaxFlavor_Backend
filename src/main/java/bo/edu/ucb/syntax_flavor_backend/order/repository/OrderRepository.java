@@ -28,6 +28,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "AND (:status IS NULL OR o.status = :status) ")
     Page<Order> findAllByCustomerIdAndStatusOrderByOrderTimestamp(Integer customerId, String status, Pageable pageable);
 
+    // filtrar por usuario sin importar el status, ordenar por fecha
+    @Query("SELECT o FROM Order o WHERE o.custom.id = :customerId ORDER BY o.orderTimestamp ASC")
+        Page<Order> findAllByCustomerIdOrderByOrderTimestamp(Integer customerId, Pageable pageable);
+
     // filtrar por status
     Page<Order> findAllByOrderTimestampBetweenAndStatusOrderByOrderTimestampAsc(LocalDateTime startOfDay,
             LocalDateTime endOfDay, String status, Pageable pageable);
@@ -36,6 +40,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT o FROM Order o WHERE o.orderTimestamp BETWEEN :minDate AND :maxDate AND o.status = :status")
     Page<Order> findByMinDateBetweenMaxDateAndStatusByNameAsc(String status, LocalDateTime minDate,
             LocalDateTime maxDate, Pageable pageable);
+
+        // filtrar solo por fechas y ordenar por fecha
+        @Query("SELECT o FROM Order o WHERE o.orderTimestamp BETWEEN :minDate AND :maxDate")
+        Page<Order> findByMinDateBetweenMaxDate(LocalDateTime minDate, LocalDateTime maxDate, Pageable pageable);            
 
     // @Query(value = " SELECT * FROM Orders o WHERE o.order_timestamp BETWEEN
     // :startOfDay AND :endOfDay AND o.status <> 'FINISHED';", nativeQuery = true)

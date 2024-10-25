@@ -47,7 +47,7 @@ public class OrderAPI {
     )
     @GetMapping("/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
-            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) LocalDateTime minDate,
             @RequestParam(required = false) LocalDateTime maxDate,
             @RequestParam(defaultValue = "0") Integer pageNumber,
@@ -56,6 +56,7 @@ public class OrderAPI {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
+            //FIXME: mover a BL
             // Si minDate es nulo, asignar la fecha de ayer
             if (minDate == null) {
                 minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
@@ -218,7 +219,7 @@ public class OrderAPI {
     })
     @GetMapping("/order/customer")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByCustomerId(
-            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "true") boolean sortAscending,
