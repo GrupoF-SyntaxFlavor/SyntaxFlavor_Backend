@@ -1,6 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.user.api;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.*;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.keycloak.representations.AccessTokenResponse;
@@ -22,11 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.KitchenBL;
 import bo.edu.ucb.syntax_flavor_backend.service.KeycloakAdminClientService;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.UserSignUpDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.LoginDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.dto.UserDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 
 
@@ -166,7 +162,7 @@ public class UserAPI {
         }
     )
     @GetMapping("/users-with-kitchen")
-    public ResponseEntity<SyntaxFlavorResponse<Page<UserDTO>>> listUsersWithKitchen(
+    public ResponseEntity<SyntaxFlavorResponse<Page<UserKitchenDTO>>> listUsersWithKitchen(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -181,15 +177,15 @@ public class UserAPI {
         // FIXME: this is not the best way to do it :)
         if (user == null) {
             LOGGER.error("User with kcUserId {} not found", kcUserId);
-            SyntaxFlavorResponse<Page<UserDTO>> sfrResponse = new SyntaxFlavorResponse<>();
+            SyntaxFlavorResponse<Page<UserKitchenDTO>> sfrResponse = new SyntaxFlavorResponse<>();
             sfrResponse.setResponseCode("USR-601");
             sfrResponse.setErrorMessage("User not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
         }
     
-        SyntaxFlavorResponse<Page<UserDTO>> sfr = new SyntaxFlavorResponse<>();
+        SyntaxFlavorResponse<Page<UserKitchenDTO>> sfr = new SyntaxFlavorResponse<>();
         try {
-            Page<UserDTO> usersWithKitchen = userBL.getUsersWithKitchen(page, size, sortBy, sortOrder);
+            Page<UserKitchenDTO> usersWithKitchen = userBL.getUsersWithKitchen(page, size, sortBy, sortOrder);
             if (usersWithKitchen.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
