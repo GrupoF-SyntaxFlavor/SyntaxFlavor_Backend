@@ -92,10 +92,10 @@ public class UserBL {
         return user != null ? new UserDTO(user) : null;
     }
 
-    public List<UserDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
+    public Page<UserDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
         LOGGER.info("Listing users with kitchens");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy));
         Page<User> userPage = userRepository.findUsersWithKitchen(pageable);
-        return userPage.stream().map(UserDTO::new).collect(Collectors.toList());
+        return userPage.map(UserDTO::new);
     }
 }
