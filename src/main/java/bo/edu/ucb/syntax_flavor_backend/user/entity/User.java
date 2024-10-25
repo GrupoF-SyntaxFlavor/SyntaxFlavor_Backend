@@ -142,6 +142,14 @@ public class User implements Serializable {
         this.customersCollection = customersCollection;
     }
 
+    public Collection<Kitchen> getKitchenCollection() {
+        return kitchenCollection;
+    }
+
+    public void setKitchenCollection(Collection<Kitchen> kitchenCollection) {
+        this.kitchenCollection = kitchenCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

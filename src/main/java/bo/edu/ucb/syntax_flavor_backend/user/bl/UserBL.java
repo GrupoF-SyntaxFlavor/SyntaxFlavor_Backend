@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import bo.edu.ucb.syntax_flavor_backend.user.dto.KitchenDTO;
+import bo.edu.ucb.syntax_flavor_backend.user.dto.UserKitchenDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,10 +94,18 @@ public class UserBL {
         return user != null ? new UserDTO(user) : null;
     }
 
-    public Page<UserDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
+    public Page<UserKitchenDTO> getUsersWithKitchen(int page, int size, String sortBy, String sortOrder) {
         LOGGER.info("Listing users with kitchens");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy));
         Page<User> userPage = userRepository.findUsersWithKitchen(pageable);
-        return userPage.map(UserDTO::new);
+
+        return userPage.map(user -> {
+            List<KitchenDTO> kitchenDTOs = user.getKitchenCollection().stream()
+                    .map(kitchen -> new KitchenDTO(kitchen.getId(), kitchen.getLocation(), new UserDTO(user.getId(), user.getName(), user.getEmail())))
+                    .collect(Collectors.toList());
+
+            return new UserKitchenDTO(user.getId(), user.getName(), user.getEmail(), kitchenDTOs);
+        });
     }
+
 }
