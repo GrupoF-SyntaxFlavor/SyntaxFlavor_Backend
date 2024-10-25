@@ -50,8 +50,19 @@ public class OrderBL {
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Order> orderPage = orderRepository.findByMinDateBetweenMaxDateAndStatusByNameAsc(status, minDate, maxDate,
+        Page<Order> orderPage = null;
+        if (status != null) {
+            orderPage = orderRepository.findByMinDateBetweenMaxDateAndStatusByNameAsc(
+                status, 
+                minDate, 
+                maxDate, 
                 pageable);
+        } else {
+            orderPage = orderRepository.findByMinDateBetweenMaxDate(
+                minDate, 
+                maxDate, 
+                pageable);
+        }
         if (orderPage == null) {
             LOGGER.error("Error listing orders by datetime and status");
             throw new RuntimeException("Error listing orders by datetime and status");
@@ -133,13 +144,21 @@ public class OrderBL {
         return OrderDTO.fromEntity(order);
     }
 
-    public Page<OrderDTO> listOrdersByCustomerId(int customerId, String status, Integer pageNumber, Integer pageSize,
-                                                 boolean sortAscending) {
+    public Page<OrderDTO> listOrdersByCustomerId(int userId, String status, Integer pageNumber, Integer pageSize,
+            boolean sortAscending) {
+
+        Integer customerId = customerBL.findCustomerByUserId(userId).getId();
         LOGGER.info("Listing orders by customer ID: {}", customerId);
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Order> orderPage = orderRepository.findAllByCustomerIdAndStatusOrderByOrderTimestamp(customerId, status, pageable);
+        Page<Order> orderPage = null;
+
+        if (status != null) {
+            orderPage = orderRepository.findAllByCustomerIdAndStatusOrderByOrderTimestamp(customerId, status, pageable);
+        } else {
+            orderPage = orderRepository.findAllByCustomerIdOrderByOrderTimestamp(customerId, pageable);
+        }
 
         if (orderPage.isEmpty()) {
             LOGGER.info("No orders found for customer ID: {} with status: {}", customerId, status);
