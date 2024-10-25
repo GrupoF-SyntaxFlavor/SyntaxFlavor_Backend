@@ -47,7 +47,7 @@ public class OrderAPI {
     )
     @GetMapping("/order")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByFilters(
-            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) LocalDateTime minDate,
             @RequestParam(required = false) LocalDateTime maxDate,
             @RequestParam(defaultValue = "0") Integer pageNumber,
@@ -58,6 +58,17 @@ public class OrderAPI {
         minDate = minDate != null ? minDate.withHour(0).withMinute(0).withSecond(0).withNano(0) : null;
         maxDate = maxDate != null ? maxDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999) : null;
         try {
+
+            //FIXME: mover a BL
+            // Si minDate es nulo, asignar la fecha de ayer
+            if (minDate == null) {
+                minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            }
+
+            // Si maxDate es nulo, asignar la fecha de hoy
+            if (maxDate == null) {
+                maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            }
             Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize,
                     sortAscending);
             sfr.setResponseCode("ORD-000");
@@ -211,7 +222,7 @@ public class OrderAPI {
     })
     @GetMapping("/order/customer")
     public ResponseEntity<SyntaxFlavorResponse<Page<OrderDTO>>> listOrdersByCustomerId(
-            @RequestParam(defaultValue = "Pendiente") String status,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "true") boolean sortAscending,
