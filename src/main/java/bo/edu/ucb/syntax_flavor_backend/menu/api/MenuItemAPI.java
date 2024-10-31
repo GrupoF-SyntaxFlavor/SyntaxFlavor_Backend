@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
+import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -150,6 +151,12 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item disabled successfully"),
+            @ApiResponse(responseCode = "500", description = "Error disabling menu item")
+        }
+    )
     @PatchMapping("/menu/item/{id}/disable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
             @PathVariable Integer id,
@@ -183,6 +190,12 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item enabled successfully"),
+            @ApiResponse(responseCode = "500", description = "Error enabling menu item")
+        }
+    )
     @PatchMapping("/menu/item/{id}/enable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
             @PathVariable Integer id,
@@ -215,5 +228,32 @@ public class MenuItemAPI {
         }
     }
 
+    @Operation(summary = "Create menu item", description = "Creates a new menu item with the provided details, the object is created without an image, and with status enabled by default")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
+            @ApiResponse(responseCode = "500", description = "Error creating menu item")
+        }
+    )
+    @PostMapping("/menu/item")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> createMenuItem(
+            @RequestBody MenuItemRequestDTO menuItemRequest
+            ) {
+        LOGGER.info("Endpoint POST /api/v1/menu/item");
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.createMenuItem(menuItemRequest);
+            sfrResponse.setResponseCode("MEN-001");
+            sfrResponse.setPayload(menuItemResponseDTO);
+            LOGGER.info("Menu item {} created successfully", menuItemResponseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error creating menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-601");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
 
 }

@@ -40,3 +40,14 @@ PATCH http://localhost:8080/api/v1/menu/item/1/enable
 Content-Type: application/json
 Authorization: Bearer <JWT_TOKEN>
 
+### Create menu item
+POST http://localhost:8080/api/v1/menu/item
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "name": "Sandwich Philadelphia",
+  "description": "Sándwich de carne de res con queso philadelphia y pimiento morrón",
+  "price": 15.3
+}
+

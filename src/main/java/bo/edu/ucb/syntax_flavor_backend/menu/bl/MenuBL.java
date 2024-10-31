@@ -4,6 +4,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.math.BigDecimal;
+
+import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import bo.edu.ucb.syntax_flavor_backend.menu.repository.MenuItemRepository;
@@ -138,6 +140,22 @@ public class MenuBL {
         } catch (Exception e) {
             LOGGER.error("Error enabling menu item: {}", e.getMessage());
             throw new RuntimeException("Error enabling menu item: " + e.getMessage(), e);
+        }
+    }
+
+    public MenuItemResponseDTO createMenuItem(MenuItemRequestDTO menuItemRequest) {
+        LOGGER.info("Creating menu item: {}", menuItemRequest);
+        try {
+            MenuItem menuItem = new MenuItem();
+            menuItem.setName(menuItemRequest.getName());
+            menuItem.setDescription(menuItemRequest.getDescription());
+            menuItem.setPrice(menuItemRequest.getPrice());
+            menuItem = menuItemRepository.save(menuItem);
+            LOGGER.info("Menu item created successfully with id: {}", menuItem.getId());
+            return new MenuItemResponseDTO(menuItem);
+        } catch (Exception e) {
+            LOGGER.error("Error creating menu item: {}", e.getMessage());
+            throw new RuntimeException("Error creating menu item: " + e.getMessage(), e);
         }
     }
 
