@@ -151,6 +151,12 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item disabled successfully"),
+            @ApiResponse(responseCode = "500", description = "Error disabling menu item")
+        }
+    )
     @PatchMapping("/menu/item/{id}/disable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
             @PathVariable Integer id,
@@ -184,6 +190,12 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item enabled successfully"),
+            @ApiResponse(responseCode = "500", description = "Error enabling menu item")
+        }
+    )
     @PatchMapping("/menu/item/{id}/enable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
             @PathVariable Integer id,
@@ -216,6 +228,13 @@ public class MenuItemAPI {
         }
     }
 
+    @Operation(summary = "Create menu item", description = "Creates a new menu item with the provided details, the object is created without an image, and with status enabled by default")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
+            @ApiResponse(responseCode = "500", description = "Error creating menu item")
+        }
+    )
     @PostMapping("/menu/item")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> createMenuItem(
             @RequestBody MenuItemRequestDTO menuItemRequest
