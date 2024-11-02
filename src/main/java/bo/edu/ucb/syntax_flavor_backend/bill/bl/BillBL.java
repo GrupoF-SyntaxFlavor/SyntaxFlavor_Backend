@@ -128,8 +128,6 @@ public class BillBL {
             LOGGER.error("Error during createBillFromOrder: {}", e.getMessage());
             throw new RuntimeException("Unidentified error during creation of bill from Order " + e.getMessage());
         }
-
-        
     }
 
     private void sendBillEmail(BillPdf billPdf) throws BillGenerationException {
