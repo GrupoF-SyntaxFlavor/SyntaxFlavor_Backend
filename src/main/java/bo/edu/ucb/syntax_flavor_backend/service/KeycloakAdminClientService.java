@@ -34,7 +34,8 @@ public class KeycloakAdminClientService {
     Logger LOGGER = LoggerFactory.getLogger(KeycloakAdminClientService.class);
 
     @Value("${spring.keycloak.realm}")
-    private String REALM; // FIXME: El archivo de importación de REALM debería poder ser configurable desde un archivo de propiedades o env
+    private String REALM; // FIXME: El archivo de importación de REALM debería poder ser configurable
+                          // desde un archivo de propiedades o env
 
     @Autowired
     private UserRepository userRepository;
@@ -159,7 +160,8 @@ public class KeycloakAdminClientService {
                     createdUserCount++;
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage(), e);
+                LOGGER.error("Failed to create user in Keycloak for email {}: {}", localUser.getEmail(), e.getMessage(),
+                        e);
             }
         }
 
@@ -178,7 +180,7 @@ public class KeycloakAdminClientService {
     }
 
     public AccessTokenResponse login(String username, String password) {
-    Client client = ClientBuilder.newClient();
+        Client client = ClientBuilder.newClient();
         try {
             // Construimos el formulario con los datos del usuario
             Form form = new Form();
@@ -190,7 +192,17 @@ public class KeycloakAdminClientService {
 
             // Realizamos la solicitud POST para obtener el token
             Response response = client
-                    .target("http://localhost:8082/realms/syntaxflavor_users/protocol/openid-connect/token") // FIXME: Debería ser configurable desde un archivo de propiedades o env
+                    .target("http://syntaxflavor_keycloak:8080/realms/syntaxflavor_users/protocol/openid-connect/token") // FIXME:
+                    // Debería
+                    // ser
+                    // configurable
+                    // desde
+                    // un
+                    // archivo
+                    // de
+                    // propiedades
+                    // o
+                    // env
                     .request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
                     .post(Entity.form(form));
 
