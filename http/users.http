@@ -4,7 +4,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "test@gmail.com",
+    "email": "ocampohermoso@gmail.com",
     "password": "1234qwer"
 }
 // FIXME: manejar el error de cuenta no verificada
