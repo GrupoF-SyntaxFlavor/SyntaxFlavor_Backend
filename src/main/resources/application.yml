@@ -19,7 +19,7 @@ spring:
     secret-key: minioadmin
     bucket-name: syntaxflavorbucket
   mail:
-    host: mailserver
+    host: mailhog
     port: 1025
     default-encoding: UTF-8
     protocol: smtp
