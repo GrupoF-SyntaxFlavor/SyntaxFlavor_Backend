@@ -23,7 +23,7 @@ Accept: application/json
 
 {
     "name": "customer2",
-    "email": "customer2@example.com",
+    "email": "customer5@example.com",
     "password": "123456789",
     "nit": "987654321",
     "billName": "ExampleBillName"

@@ -30,14 +30,14 @@ spring:
           starttls:
             enable: false
   keycloak:
-    auth-server-url: http://keycloak:8082
+    auth-server-url: http://syntaxflavor_keycloak:8080
     realm: syntaxflavor_users
     resource: syntaxflavor
     public-client: false
     ssl-required: external
     bearer-only: false
     credentials:
-      secret: I4IRfT26OhjlJAiTbVtSApIHvf4zXl0G # Use environment variables for sensitive data
+      secret: NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr # Use environment variables for sensitive data
     admin:
       username: admin
       password: admin

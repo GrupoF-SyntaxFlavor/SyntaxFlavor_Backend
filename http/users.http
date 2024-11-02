@@ -4,8 +4,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "ocampohermoso@gmail.com",
-    "password": "1234qwer"
+    "email": "customer5@example.com",
+    "password": "123456789"
 }
 // FIXME: manejar el error de cuenta no verificada
 // TODO: Documentar todos los endpoints de la API

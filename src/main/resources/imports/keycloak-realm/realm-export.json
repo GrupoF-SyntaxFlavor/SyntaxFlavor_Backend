@@ -729,7 +729,7 @@
         "client.use.lightweight.access.token.enabled": "false",
         "backchannel.logout.session.required": "true",
         "jwks.url": "http://syntaxflavor_keycloak:8080/realms/myrealm/protocol/openid-connect/token",
-        "client_credentials.use_refresh_token": "false", 
+        "client_credentials.use_refresh_token": "false",
         "tls.client.certificate.bound.access.tokens": "false",
         "require.pushed.authorization.requests": "false",
         "acr.loa.map": "{}",
@@ -2256,6 +2256,3 @@
     "policies": []
   }
 }
-
-
-
