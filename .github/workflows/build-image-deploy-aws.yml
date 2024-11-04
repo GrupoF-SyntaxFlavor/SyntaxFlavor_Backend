@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - CarrascoAlejandro
+      - develop
   workflow_dispatch:
 
 env:
@@ -52,27 +53,14 @@ jobs:
           ECR_URI=${{ secrets.ECR_URI }}
           docker push $ECR_URI:$IMAGE_TAG
 
-      # # Step 7: Deploy to ECS Fargate
-      # - name: Deploy to ECS Fargate
-      #   env:
-      #     AWS_REGION: ${{ env.AWS_REGION }}
-      #     AWS_ECS_CLUSTER: "arn:aws:ecs:us-east-1:860946857945:cluster/test-demo-fargate"
-      #     AWS_ECS_SERVICE: "test-demo-service"  # Reemplaza con el nombre exacto de tu servicio ECS
-      #     AWS_ECS_TASK_DEFINITION: "arn:aws:ecs:us-east-1:860946857945:task-definition/test-spring-boot"
-      #     ECR_REPOSITORY_URI: ${{ env.ECR_REPOSITORY }}
+      # Step 7: Update the ECS service on Fargate
+      # - name: Update ECS service
       #   run: |
-      #     # Instalar jq para manipular JSON
-      #     sudo apt-get install -y jq
-
-      #     # Obtener la definición de tarea actual y actualizarla con la nueva imagen
-      #     TASK_DEF_JSON=$(aws ecs describe-task-definition --task-definition $AWS_ECS_TASK_DEFINITION --region $AWS_REGION)
-      #     NEW_TASK_DEF=$(echo $TASK_DEF_JSON | jq --arg IMAGE "$ECR_REPOSITORY_URI:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities)')
-
-      #     # Registrar la nueva definición de tarea con la imagen actualizada
-      #     NEW_TASK_DEF_ARN=$(echo $NEW_TASK_DEF | aws ecs register-task-definition --cli-input-json file:///dev/stdin --region $AWS_REGION | jq -r '.taskDefinition.taskDefinitionArn')
-
-      #     # Actualizar el servicio ECS con la nueva definición de tarea
-      #     aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --task-definition $NEW_TASK_DEF_ARN --region $AWS_REGION
+      #     aws ecs update-service \
+      #       --cluster ${{ secrets.ECS_CLUSTER_NAME }} \
+      #       --service ${{ secrets.ECS_SERVICE_NAME }} \
+      #       --force-new-deployment \
+      #       --region us-east-1
 
 
     # Permisos de AWS para GitHub
