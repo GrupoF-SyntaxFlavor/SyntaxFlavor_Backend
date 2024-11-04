@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
-import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,8 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -151,12 +148,6 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "Menu item disabled successfully"),
-            @ApiResponse(responseCode = "500", description = "Error disabling menu item")
-        }
-    )
     @PatchMapping("/menu/item/{id}/disable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
             @PathVariable Integer id,
@@ -190,12 +181,6 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "Menu item enabled successfully"),
-            @ApiResponse(responseCode = "500", description = "Error enabling menu item")
-        }
-    )
     @PatchMapping("/menu/item/{id}/enable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
             @PathVariable Integer id,
@@ -228,32 +213,36 @@ public class MenuItemAPI {
         }
     }
 
-    @Operation(summary = "Create menu item", description = "Creates a new menu item with the provided details, the object is created without an image, and with status enabled by default")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
-            @ApiResponse(responseCode = "500", description = "Error creating menu item")
+    @Operation(summary = "Update a menu item", description = "Updates the details of an existing menu item by ID")
+@ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
+    @ApiResponse(responseCode = "404", description = "Menu item not found"),
+    @ApiResponse(responseCode = "500", description = "Error updating the menu item")
+})
+@PutMapping("/menu/item/{id}")
+public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
+        @PathVariable Integer id,
+        @RequestPart("details") MenuItemResponseDTO menuItemDetails,
+        @RequestPart(value = "file", required = false) MultipartFile file) {
+    LOGGER.info("Endpoint PUT /api/v1/menu/item/{}", id);
+    SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+    try {
+        // Actualizar imagen si se incluye un archivo nuevo
+        if (file != null && !file.isEmpty()) {
+            menuBL.updateMenuItemImage(id, file);  // Asume que este método actualiza la imagen y regresa la URL nueva
         }
-    )
-    @PostMapping("/menu/item")
-    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> createMenuItem(
-            @RequestBody MenuItemRequestDTO menuItemRequest
-            ) {
-        LOGGER.info("Endpoint POST /api/v1/menu/item");
-
-        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
-        try {
-            MenuItemResponseDTO menuItemResponseDTO = menuBL.createMenuItem(menuItemRequest);
-            sfrResponse.setResponseCode("MEN-001");
-            sfrResponse.setPayload(menuItemResponseDTO);
-            LOGGER.info("Menu item {} created successfully", menuItemResponseDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(sfrResponse);
-        } catch (Exception e) {
-            LOGGER.error("Error creating menu item: {}", e.getMessage());
-            sfrResponse.setResponseCode("MEN-601");
-            sfrResponse.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
-        }
+        // Actualizar otros detalles del platillo
+        MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails);
+        sfrResponse.setResponseCode("MEN-001");
+        sfrResponse.setPayload(updatedMenuItem);
+        LOGGER.info("Menu item {} updated successfully", id);
+        return ResponseEntity.ok(sfrResponse);
+    } catch (Exception e) {
+        LOGGER.error("Error updating menu item: {}", e.getMessage());
+        sfrResponse.setResponseCode("MEN-601");
+        sfrResponse.setErrorMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
     }
+}
 
 }
