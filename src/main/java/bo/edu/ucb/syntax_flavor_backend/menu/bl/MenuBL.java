@@ -160,21 +160,14 @@ public class MenuBL {
         }
     }
 
-    public MenuItemResponseDTO updateMenuItem(Integer id, MenuItemRequestDTO menuItemRequest, MultipartFile file) {
+    public MenuItemResponseDTO updateMenuItem(Integer id, MenuItemRequestDTO menuItemRequest) {
         LOGGER.info("Updating menu item with id: {}", id);
         try {
             MenuItem menuItem = menuItemRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
             menuItem.setName(menuItemRequest.getName());
             menuItem.setDescription(menuItemRequest.getDescription());
-            menuItem.setPrice(menuItemRequest.getPrice());
-    
-            // Actualiza la imagen si se incluye un archivo nuevo
-            if (file != null && !file.isEmpty()) {
-                String imageUrl = updateMenuItemImage(id, file);
-                menuItem.setImageUrl(imageUrl);
-            }
-    
+            menuItem.setPrice(menuItemRequest.getPrice());    
             menuItem.setUpdatedAt(new Date()); // Actualiza la fecha de modificación
             menuItem = menuItemRepository.save(menuItem);
             LOGGER.info("Menu item updated successfully for id: {}", id);
@@ -184,6 +177,4 @@ public class MenuBL {
             throw new RuntimeException("Error updating menu item: " + e.getMessage(), e);
         }
     }
-     
-
 }
