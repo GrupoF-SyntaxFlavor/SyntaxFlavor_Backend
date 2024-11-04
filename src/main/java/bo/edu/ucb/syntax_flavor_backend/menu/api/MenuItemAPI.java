@@ -214,32 +214,31 @@ public class MenuItemAPI {
         }
     }
 
-    @Operation(summary = "Update a menu item", description = "Updates the details of an existing menu item by ID")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
-        @ApiResponse(responseCode = "404", description = "Menu item not found"),
-        @ApiResponse(responseCode = "500", description = "Error updating the menu item")
-    })
+    @Operation(summary = "Update menu item", description = "Update a menu item with the provided details, the image is optional")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
+            @ApiResponse(responseCode = "500", description = "Error creating menu item")
+        }
+    )
     @PutMapping("/menu/item/{id}")
-public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
-        @PathVariable Integer id,
-        @RequestPart("details") MenuItemRequestDTO menuItemDetails,
-        @RequestPart(value = "file", required = false) MultipartFile file) {
-    LOGGER.info("Endpoint PUT /api/v1/menu/item/{}", id);
-    SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
-    try {
-        MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails, file);
-        sfrResponse.setResponseCode("MEN-001");
-        sfrResponse.setPayload(updatedMenuItem);
-        LOGGER.info("Menu item {} updated successfully", id);
-        return ResponseEntity.ok(sfrResponse);
-    } catch (Exception e) {
-        LOGGER.error("Error updating menu item: {}", e.getMessage());
-        sfrResponse.setResponseCode("MEN-601");
-        sfrResponse.setErrorMessage(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
+            @PathVariable Integer id,
+            @RequestBody MenuItemRequestDTO menuItemDetails) {
+        LOGGER.info("Endpoint PUT /api/v1/menu/item/{}", id);
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails);
+            sfrResponse.setResponseCode("MEN-002");
+            sfrResponse.setPayload(updatedMenuItem);
+            LOGGER.info("Menu item {} updated successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error updating menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-601");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
     }
-}
-
 
 }
