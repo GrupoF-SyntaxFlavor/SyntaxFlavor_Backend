@@ -2,6 +2,7 @@ package bo.edu.ucb.syntax_flavor_backend.menu.bl;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Date;
 import java.util.List;
 import java.math.BigDecimal;
 
@@ -159,4 +160,21 @@ public class MenuBL {
         }
     }
 
+    public MenuItemResponseDTO updateMenuItem(Integer id, MenuItemRequestDTO menuItemRequest) {
+        LOGGER.info("Updating menu item with id: {}", id);
+        try {
+            MenuItem menuItem = menuItemRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
+            menuItem.setName(menuItemRequest.getName());
+            menuItem.setDescription(menuItemRequest.getDescription());
+            menuItem.setPrice(menuItemRequest.getPrice());    
+            menuItem.setUpdatedAt(new Date()); // Actualiza la fecha de modificación
+            menuItem = menuItemRepository.save(menuItem);
+            LOGGER.info("Menu item updated successfully for id: {}", id);
+            return new MenuItemResponseDTO(menuItem);
+        } catch (Exception e) {
+            LOGGER.error("Error updating menu item: {}", e.getMessage());
+            throw new RuntimeException("Error updating menu item: " + e.getMessage(), e);
+        }
+    }
 }
