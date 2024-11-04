@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
+import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -214,25 +215,20 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Update a menu item", description = "Updates the details of an existing menu item by ID")
-@ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
-    @ApiResponse(responseCode = "404", description = "Menu item not found"),
-    @ApiResponse(responseCode = "500", description = "Error updating the menu item")
-})
-@PutMapping("/menu/item/{id}")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
+        @ApiResponse(responseCode = "404", description = "Menu item not found"),
+        @ApiResponse(responseCode = "500", description = "Error updating the menu item")
+    })
+    @PutMapping("/menu/item/{id}")
 public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
         @PathVariable Integer id,
-        @RequestPart("details") MenuItemResponseDTO menuItemDetails,
+        @RequestPart("details") MenuItemRequestDTO menuItemDetails,
         @RequestPart(value = "file", required = false) MultipartFile file) {
     LOGGER.info("Endpoint PUT /api/v1/menu/item/{}", id);
     SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
     try {
-        // Actualizar imagen si se incluye un archivo nuevo
-        if (file != null && !file.isEmpty()) {
-            menuBL.updateMenuItemImage(id, file);  // Asume que este método actualiza la imagen y regresa la URL nueva
-        }
-        // Actualizar otros detalles del platillo
-        MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails);
+        MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails, file);
         sfrResponse.setResponseCode("MEN-001");
         sfrResponse.setPayload(updatedMenuItem);
         LOGGER.info("Menu item {} updated successfully", id);
@@ -244,5 +240,6 @@ public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
     }
 }
+
 
 }
