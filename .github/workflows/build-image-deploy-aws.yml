@@ -43,13 +43,13 @@ jobs:
       # Step 5: Tag Docker image
       - name: Tag Docker image
         run: |
-          ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION --query 'repositories[0].repositoryUri' --output text)
+          ECR_URI=${{ secrets.ECR_URI }}
           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
 
       # Step 6: Push Docker image to ECR
       - name: Push to Amazon ECR
         run: |
-          ECR_URI="860946857945.dkr.ecr.us-east-1.amazonaws.com/demo-app"
+          ECR_URI=${{ secrets.ECR_URI }}
           docker push $ECR_URI:$IMAGE_TAG
 
       # # Step 7: Deploy to ECS Fargate
