@@ -159,4 +159,21 @@ public class MenuBL {
         }
     }
 
+    public MenuItemResponseDTO deleteMenuItem(Integer id) {
+        LOGGER.info("Deleting menu item with id: {}", id);
+        try {
+            MenuItem menuItem = menuItemRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
+            
+            MenuItem deletedItem  = menuItemRepository.deleteByIdAndReturn(menuItem.getId());
+            
+            LOGGER.info("Menu item disabled successfully for id: {}", id);
+            return new MenuItemResponseDTO(deletedItem); // Return the updated menu item details
+        } catch (Exception e) {
+            LOGGER.error("Error deleting menu item: {}", e.getMessage());
+            throw new RuntimeException("Error deleting menu item: " + e.getMessage(), e);
+        }
+    }
+
+
 }
