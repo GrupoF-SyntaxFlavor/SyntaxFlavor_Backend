@@ -1,0 +1,5 @@
+FROM mailhog/mailhog
+
+# Expose SMTP and web interface ports
+EXPOSE 1025
+EXPOSE 8025

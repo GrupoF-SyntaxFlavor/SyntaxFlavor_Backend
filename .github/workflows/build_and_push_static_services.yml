@@ -1,0 +1,53 @@
+name: Build and Push Static Services to ECR
+
+on:
+  push:
+    branches:
+      - main
+      - OscarCB
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  IMAGE_TAG: latest
+
+jobs:
+  build_and_push_static_services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [syntaxflavor_db, syntaxflavor_keycloak, mailhog, minio]
+        dockerfile: [Dockerfile.postgres, Dockerfile.keycloak, Dockerfile.mailhog, Dockerfile.minio]
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Step 3: Log in to Amazon ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+
+      # Step 4: Build and Tag Docker image
+      - name: Build Docker image for ${{ matrix.service }}
+        run: |
+          docker build -f ${{ matrix.dockerfile }} -t ${{ secrets['ECR_URI_' + matrix.service.toUpperCase()] }}:${{ env.IMAGE_TAG }} .
+
+      # Step 5: Push Docker image to ECR
+      - name: Push ${{ matrix.service }} to Amazon ECR
+        run: |
+          docker push ${{ secrets['ECR_URI_' + matrix.service.toUpperCase()] }}:${{ env.IMAGE_TAG }}
+
+permissions:
+  contents: read
+  id-token: write
