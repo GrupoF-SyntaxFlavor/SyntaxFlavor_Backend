@@ -53,6 +53,13 @@ jobs:
           ECR_URI=${{ secrets.ECR_URI }}
           docker push $ECR_URI:$IMAGE_TAG
 
+      # Step 6.5 Push to DockerHub
+      - name: Push to DockerHub
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
+
       # Step 7: Update the ECS service on Fargate
       # - name: Update ECS service
       #   run: |
