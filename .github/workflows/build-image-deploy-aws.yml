@@ -48,15 +48,15 @@ jobs:
           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
 
       # Step 6: Push Docker image to ECR
-      - name: Push to Amazon ECR
-        run: |
-          ECR_URI=${{ secrets.ECR_URI }}
-          docker push $ECR_URI:$IMAGE_TAG
+      # - name: Push to Amazon ECR
+      #   run: |
+      #     ECR_URI=${{ secrets.ECR_URI }}
+      #     docker push $ECR_URI:$IMAGE_TAG
 
       # Step 6.5 Push to DockerHub
       - name: Push to DockerHub
         run: |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
 
