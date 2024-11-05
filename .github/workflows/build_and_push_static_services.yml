@@ -1,6 +1,10 @@
 name: Build and Push Static Services to ECR
 
 on:
+  push:
+    branches:
+      - main
+      - OscarCB
   workflow_dispatch:
 
 env:
