@@ -1,10 +1,6 @@
 name: Build and Push Static Services to ECR
 
 on:
-  push:
-    branches:
-      - main
-      - OscarCB
   workflow_dispatch:
 
 env:
@@ -12,19 +8,12 @@ env:
   IMAGE_TAG: latest
 
 jobs:
-  build_and_push_static_services:
+  build_and_push_syntaxflavor_db:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [syntaxflavor_db, syntaxflavor_keycloak, mailhog, minio]
-        dockerfile: [Dockerfile.postgres, Dockerfile.keycloak, Dockerfile.mailhog, Dockerfile.minio]
-
     steps:
-      # Step 1: Check out the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Configure AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -32,22 +21,85 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Step 3: Log in to Amazon ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image for syntaxflavor_db
+        run: |
+          docker build -f Dockerfile.postgres -t ${{ secrets.ECR_URI_SYNTAXFLAVOR_DB }}:${{ env.IMAGE_TAG }} .
+
+      - name: Push syntaxflavor_db to Amazon ECR
+        run: |
+          docker push ${{ secrets.ECR_URI_SYNTAXFLAVOR_DB }}:${{ env.IMAGE_TAG }}
+
+  build_and_push_syntaxflavor_keycloak:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          mask-password: 'true'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # Step 4: Build and Tag Docker image
-      - name: Build Docker image for ${{ matrix.service }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image for syntaxflavor_keycloak
         run: |
-          docker build -f ${{ matrix.dockerfile }} -t ${{ secrets['ECR_URI_' + matrix.service.toUpperCase()] }}:${{ env.IMAGE_TAG }} .
+          docker build -f Dockerfile.keycloak -t ${{ secrets.ECR_URI_SYNTAXFLAVOR_KEYCLOAK }}:${{ env.IMAGE_TAG }} .
 
-      # Step 5: Push Docker image to ECR
-      - name: Push ${{ matrix.service }} to Amazon ECR
+      - name: Push syntaxflavor_keycloak to Amazon ECR
         run: |
-          docker push ${{ secrets['ECR_URI_' + matrix.service.toUpperCase()] }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.ECR_URI_SYNTAXFLAVOR_KEYCLOAK }}:${{ env.IMAGE_TAG }}
 
-permissions:
-  contents: read
-  id-token: write
+  build_and_push_mailhog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image for syntaxflavor_keycloak
+        run: |
+          docker build -f Dockerfile.mailhog -t ${{ secrets.ECR_URI_MAILHOG }}:${{ env.IMAGE_TAG }} .
+
+      - name: Push syntaxflavor_keycloak to Amazon ECR
+        run: |
+          docker push ${{ secrets.ECR_URI_MAILHOG }}:${{ env.IMAGE_TAG }}
+
+  build_and_push_syntaxflavor_minio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image for syntaxflavor_keycloak
+        run: |
+          docker build -f Dockerfile.minio -t ${{ secrets.ECR_URI_MINIO }}:${{ env.IMAGE_TAG }} .
+
+      - name: Push syntaxflavor_keycloak to Amazon ECR
+        run: |
+          docker push ${{ secrets.ECR_URI_MINIO }}:${{ env.IMAGE_TAG }}
