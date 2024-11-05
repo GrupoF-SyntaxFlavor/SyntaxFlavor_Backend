@@ -3,6 +3,62 @@ spring:
     name: syntax_flavor_backend
   config:
     activate:
+      on-profile: default
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:syntaxflavor}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456} # environment variable with default for local dev
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+  minio:
+    url: ${MINIO_URL:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket-name: ${MINIO_BUCKET_NAME:syntaxflavorbucket}
+  mail:
+    host: ${MAIL_HOST:mailhog}
+    port: ${MAIL_PORT:1025}
+    default-encoding: UTF-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  keycloak:
+    auth-server-url: ${KEYCLOAK_URL:http://localhost:8080}
+    realm: ${KEYCLOAK_REALM:syntaxflavor_users}
+    resource: ${KEYCLOAK_RESOURCE:syntaxflavor}
+    public-client: false
+    ssl-required: external
+    bearer-only: false
+    credentials:
+      secret: ${KEYCLOAK_SECRET:NmuoI18AX2WNcXwnWmScVGUdjC7gMFvr}
+    admin:
+      username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+      password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate: INFO
+    org.keycloak: INFO
+    org.springframework.web: INFO
+    bo.edu.ucb: INFO
+server:
+  port: ${SERVER_PORT:8080}
+
+---
+
+spring:
+  application:
+    name: syntax_flavor_backend
+  config:
+    activate:
       on-profile: docker
   datasource:
     url: jdbc:postgresql://syntaxflavor_db:5432/syntaxflavor
@@ -12,6 +68,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
   minio:
     url: http://minio:9000
