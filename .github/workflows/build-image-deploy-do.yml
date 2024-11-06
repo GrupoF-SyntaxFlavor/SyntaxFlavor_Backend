@@ -1,10 +1,9 @@
-name: Build, Dockerize, and Push to ECR
+name: Build, Dockerize, and Push to DO
 
 on:
   push:
     branches:
       - main
-      - CarrascoAlejandro
       - develop
   workflow_dispatch:
 
