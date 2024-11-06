@@ -1,0 +1,8 @@
+FROM minio/minio:latest
+
+# Use the same command as in docker-compose.yml
+CMD ["server", "/data", "--console-address", ":9001"]
+
+# Expose the ports for MinIO and its console
+EXPOSE 9000
+EXPOSE 9001
