@@ -69,6 +69,16 @@ jobs:
       #       --force-new-deployment \
       #       --region us-east-1
 
+      - name: Set up SSH agent and deploy
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DO_DROPLET_KEY }}
+        
+      - name: Deploy via SSH
+        env:
+          HOST: CarrascoAlejandro@146.190.141.101
+        run: |
+            ssh $HOST 'cd /digital_ocean && docker-compose stop syntaxflavor_backend && docker-compose rm -f syntaxflavor_backend && docker-compose up -d syntaxflavor_backend'
 
     # Permisos de AWS para GitHub
     permissions:
