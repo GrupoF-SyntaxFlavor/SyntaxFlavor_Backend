@@ -12,6 +12,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: syntaxflavor-backend
   IMAGE_TAG: latest
+  DO_HOST: 146.190.141.101
 
 jobs:
   build_and_push:
@@ -73,10 +74,16 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.DO_DROPLET_KEY }}
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan $DO_HOST >> ~/.ssh/known_hosts
+  
         
       - name: Deploy via SSH
         env:
-          HOST: CarrascoAlejandro@146.190.141.101
+          HOST: root@$DO_HOST
         run: |
             ssh $HOST 'cd /digital_ocean && docker-compose stop syntaxflavor_backend && docker-compose rm -f syntaxflavor_backend && docker-compose up -d syntaxflavor_backend'
 
