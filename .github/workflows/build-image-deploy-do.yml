@@ -12,7 +12,6 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: syntaxflavor-backend
   IMAGE_TAG: latest
-  DO_HOST: 146.190.141.101
 
 jobs:
   build_and_push:
@@ -78,12 +77,12 @@ jobs:
       - name: Install SSH key
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan $DO_HOST >> ~/.ssh/known_hosts
+          ssh-keyscan 146.190.141.101 >> ~/.ssh/known_hosts
   
         
       - name: Deploy via SSH
         env:
-          HOST: root@$DO_HOST
+          HOST: root146.190.141.101
         run: |
             ssh $HOST 'cd /digital_ocean && docker-compose stop syntaxflavor_backend && docker-compose rm -f syntaxflavor_backend && docker-compose up -d syntaxflavor_backend'
 
