@@ -8,11 +8,12 @@ import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
@@ -49,8 +50,7 @@ public class MenuItemAPI {
     )
     @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
-        LOGGER.info("Endpoint GET /api/v1/menu/item");
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        LOGGER.info("Endpoint GET /api/v1/menu/item"); 
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
         try {
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
@@ -236,6 +236,54 @@ public class MenuItemAPI {
         } catch (Exception e) {
             LOGGER.error("Error updating menu item: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-601");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+
+    // deleting a menu item
+    @Operation(summary = "Delete menu item", description = "Deletes a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "Error deleting menu item")
+        }
+    )
+    @DeleteMapping("/menu/item/{id}")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> deleteMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        LOGGER.info("Endpoint DELETE /api/v1/menu/item/{}", id);
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
+
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            Boolean resp = menuBL.deleteMenuItem(id);
+            if(resp){
+                LOGGER.info("Menu item {} deleted successfully", id);
+            }
+            sfrResponse.setResponseCode("MEN-005");
+            sfrResponse.setPayload(null);
+            LOGGER.info("Menu item {} deleted successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (ResponseStatusException e) {
+            // Manejo de conflicto por relaciones existentes (código 409)
+            LOGGER.warn("Conflict deleting menu item with id {}: {}", id, e.getReason());
+            sfrResponse.setResponseCode("MEN-409");  // Código de error personalizado
+            sfrResponse.setErrorMessage(e.getReason());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(sfrResponse);
+        }catch (Exception e) {
+            LOGGER.error("Error deleting menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-605");
             sfrResponse.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
         }
