@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+  syntaxflavor_db:
+    image: postgres:latest
+    container_name: syntaxflavor_db
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    env_file:
+      - ./env/postgres.env
+    networks:
+      - syntaxflavor_network
+
+  syntaxflavor_backend:
+    image: recolorjacarandas/syntaxflavor-backend
+    container_name: syntaxflavor_backend
+    ports:
+      - '8080:8080'
+    depends_on:
+      - syntaxflavor_db
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - syntaxflavor_network
+
+  syntaxflavor_keycloak:
+    image: quay.io/keycloak/keycloak:25.0.6
+    container_name: syntaxflavor_keycloak
+    ports:
+      - '8082:8080'
+    env_file:
+      - ./env/keycloak.env
+    volumes:
+      - ./keycloak-realm:/opt/keycloak/data/import
+      - ./themes:/opt/keycloak/themes
+    depends_on:
+      - syntaxflavor_db
+    command: ["start-dev", "--import-realm"]
+    restart: unless-stopped
+    environment:
+      - KC_HOSTNAME=http://localhost:8082
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+    networks:
+      - syntaxflavor_network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    restart: unless-stopped
+    networks:
+      - syntaxflavor_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    restart: unless-stopped
+    env_file:
+      - ./env/minio.env
+    command: server /data --console-address ":9001"
+    networks:
+      - syntaxflavor_network
+
+networks:
+  syntaxflavor_network:
+    driver: bridge
