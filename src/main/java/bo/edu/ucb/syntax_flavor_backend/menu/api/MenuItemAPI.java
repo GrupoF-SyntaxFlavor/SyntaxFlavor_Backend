@@ -8,11 +8,12 @@ import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
@@ -22,8 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -51,8 +50,7 @@ public class MenuItemAPI {
     )
     @GetMapping("/menu/item/all")
     public ResponseEntity<SyntaxFlavorResponse<List<MenuItemResponseDTO>>> getAllMenuItems(HttpServletRequest request) {
-        LOGGER.info("Endpoint GET /api/v1/menu/item");
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        LOGGER.info("Endpoint GET /api/v1/menu/item"); 
         SyntaxFlavorResponse<List<MenuItemResponseDTO>> sfrResponse = new SyntaxFlavorResponse<>();
         try {
             List<MenuItemResponseDTO> menuItems = menuBL.getMenuItems();
@@ -151,12 +149,6 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Disable menu item", description = "Disables a menu item by id")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "Menu item disabled successfully"),
-            @ApiResponse(responseCode = "500", description = "Error disabling menu item")
-        }
-    )
     @PatchMapping("/menu/item/{id}/disable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> disableMenuItem(
             @PathVariable Integer id,
@@ -190,12 +182,6 @@ public class MenuItemAPI {
     }
 
     @Operation(summary = "Enable menu item", description = "Enables a menu item by id")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "Menu item enabled successfully"),
-            @ApiResponse(responseCode = "500", description = "Error enabling menu item")
-        }
-    )
     @PatchMapping("/menu/item/{id}/enable")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> enableMenuItem(
             @PathVariable Integer id,
@@ -228,29 +214,76 @@ public class MenuItemAPI {
         }
     }
 
-    @Operation(summary = "Create menu item", description = "Creates a new menu item with the provided details, the object is created without an image, and with status enabled by default")
+    @Operation(summary = "Update menu item", description = "Update a menu item with the provided details, the image is optional")
     @ApiResponses(
         value = {
             @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
             @ApiResponse(responseCode = "500", description = "Error creating menu item")
         }
     )
-    @PostMapping("/menu/item")
-    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> createMenuItem(
-            @RequestBody MenuItemRequestDTO menuItemRequest
-            ) {
-        LOGGER.info("Endpoint POST /api/v1/menu/item");
+    @PutMapping("/menu/item/{id}")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
+            @PathVariable Integer id,
+            @RequestBody MenuItemRequestDTO menuItemDetails) {
+        LOGGER.info("Endpoint PUT /api/v1/menu/item/{}", id);
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO updatedMenuItem = menuBL.updateMenuItem(id, menuItemDetails);
+            sfrResponse.setResponseCode("MEN-002");
+            sfrResponse.setPayload(updatedMenuItem);
+            LOGGER.info("Menu item {} updated successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error updating menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-601");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+
+    // deleting a menu item
+    @Operation(summary = "Delete menu item", description = "Deletes a menu item by id")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Menu item deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "Error deleting menu item")
+        }
+    )
+    @DeleteMapping("/menu/item/{id}")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> deleteMenuItem(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        LOGGER.info("Endpoint DELETE /api/v1/menu/item/{}", id);
+
+        String kcUserId = (String) request.getAttribute("kcUserId");
+        User user = userBL.findUserByKcUserId(kcUserId);
+        if (user == null) {
+            LOGGER.error("User with kcUserId {} not found", kcUserId);
+            SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+            sfrResponse.setResponseCode("ORD-601");
+            sfrResponse.setErrorMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfrResponse);
+        }
 
         SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            MenuItemResponseDTO menuItemResponseDTO = menuBL.createMenuItem(menuItemRequest);
-            sfrResponse.setResponseCode("MEN-001");
-            sfrResponse.setPayload(menuItemResponseDTO);
-            LOGGER.info("Menu item {} created successfully", menuItemResponseDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(sfrResponse);
-        } catch (Exception e) {
-            LOGGER.error("Error creating menu item: {}", e.getMessage());
-            sfrResponse.setResponseCode("MEN-601");
+            Boolean resp = menuBL.deleteMenuItem(id);
+            if(resp){
+                LOGGER.info("Menu item {} deleted successfully", id);
+            }
+            sfrResponse.setResponseCode("MEN-005");
+            sfrResponse.setPayload(null);
+            LOGGER.info("Menu item {} deleted successfully", id);
+            return ResponseEntity.ok(sfrResponse);
+        } catch (ResponseStatusException e) {
+            // Manejo de conflicto por relaciones existentes (código 409)
+            LOGGER.warn("Conflict deleting menu item with id {}: {}", id, e.getReason());
+            sfrResponse.setResponseCode("MEN-409");  // Código de error personalizado
+            sfrResponse.setErrorMessage(e.getReason());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(sfrResponse);
+        }catch (Exception e) {
+            LOGGER.error("Error deleting menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-605");
             sfrResponse.setErrorMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
         }

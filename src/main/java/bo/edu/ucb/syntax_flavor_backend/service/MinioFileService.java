@@ -26,6 +26,9 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class MinioFileService {
 
+    @Value("${spring.minio.url}")
+    private String minioUrl;
+
     Logger LOGGER = LoggerFactory.getLogger(MinioFileService.class);
 
     private final MinioClient minioClient;
@@ -35,11 +38,13 @@ public class MinioFileService {
         this.minioClient = minioClient;
         this.bucketName = bucketName;
     }
+
     @PostConstruct
     public void initBucket() {
         try {
             // Check connection by listing buckets
             LOGGER.info("Checking Minio connection...");
+            LOGGER.info("URL: {}", minioUrl);
             minioClient.listBuckets();
             LOGGER.info("Minio connection successful.");
 

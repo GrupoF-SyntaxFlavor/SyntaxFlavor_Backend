@@ -5,7 +5,6 @@ import java.util.List;
 
 import bo.edu.ucb.syntax_flavor_backend.provider.KeycloakProvider;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
-import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
