@@ -40,8 +40,7 @@ services:
     command: [ "start-dev", "--import-realm" ]
     restart: always
     environment:
-      - KC_HOSTNAME=localhost
-      - KC_HOSTNAME_PORT=8082
+      - KC_HOSTNAME=http://localhost:8082
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
     networks:
@@ -56,9 +55,9 @@ services:
     networks:
         - syntaxflavor_network
 
-  minio:
+  minio: # No sé por qué pero minio no acepta nombres con _ en su url
     image: minio/minio:latest
-    container_name: syntaxflavor_minio
+    container_name: minio
     ports:
       - '9000:9000'
       - '9001:9001'
