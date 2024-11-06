@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import bo.edu.ucb.syntax_flavor_backend.menu.bl.MenuBL;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
@@ -21,8 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -280,12 +280,21 @@ public class MenuItemAPI {
 
         SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
         try {
-            MenuItemResponseDTO menuItemResponseDTO = menuBL.deleteMenuItem(id);
+            Boolean resp = menuBL.deleteMenuItem(id);
+            if(resp){
+                LOGGER.info("Menu item {} deleted successfully", id);
+            }
             sfrResponse.setResponseCode("MEN-005");
-            sfrResponse.setPayload(menuItemResponseDTO);
+            sfrResponse.setPayload(null);
             LOGGER.info("Menu item {} deleted successfully", id);
             return ResponseEntity.ok(sfrResponse);
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
+            // Manejo de conflicto por relaciones existentes (código 409)
+            LOGGER.warn("Conflict deleting menu item with id {}: {}", id, e.getReason());
+            sfrResponse.setResponseCode("MEN-409");  // Código de error personalizado
+            sfrResponse.setErrorMessage(e.getReason());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(sfrResponse);
+        }catch (Exception e) {
             LOGGER.error("Error deleting menu item: {}", e.getMessage());
             sfrResponse.setResponseCode("MEN-605");
             sfrResponse.setErrorMessage(e.getMessage());
