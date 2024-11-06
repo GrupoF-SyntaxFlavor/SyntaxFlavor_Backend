@@ -22,4 +22,5 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
 
     @Query("SELECT m FROM MenuItem m WHERE m.price BETWEEN :minPrice AND :maxPrice ORDER BY m.name DESC")
     Page<MenuItem> findByPriceBetweenOrderByNameDesc(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
 }

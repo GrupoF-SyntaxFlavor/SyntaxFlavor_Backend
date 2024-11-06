@@ -10,15 +10,19 @@ import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemRequestDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.dto.MenuItemResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.menu.entity.MenuItem;
 import bo.edu.ucb.syntax_flavor_backend.menu.repository.MenuItemRepository;
+import bo.edu.ucb.syntax_flavor_backend.order.entity.OrderItem;
+import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderItemRepository;
 import bo.edu.ucb.syntax_flavor_backend.service.MinioFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class MenuBL {
@@ -30,6 +34,9 @@ public class MenuBL {
 
     @Autowired
     private MinioFileService minioFileService;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     public List<MenuItem> getMenuItemsFromIds(Set<Integer> menuItemsIdList) {
         LOGGER.info("Getting menu items from ids: {}", menuItemsIdList);
@@ -177,4 +184,30 @@ public class MenuBL {
             throw new RuntimeException("Error updating menu item: " + e.getMessage(), e);
         }
     }
+    public Boolean deleteMenuItem(Integer id) {
+        LOGGER.info("Deleting menu item with id: {}", id);
+        try {
+            MenuItem menuItem = menuItemRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Menu item not found for id: " + id));
+            
+            List<OrderItem> orderItems = orderItemRepository.findByMenuItemId(menuItem);
+            if (!orderItems.isEmpty()) {
+                // Lanza ResponseStatusException con el código de estado 409
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete menu item with id: " + id + " because it has related order items.");
+            }
+            menuItemRepository.delete(menuItem);
+            
+            LOGGER.info("Menu item disabled successfully for id: {}", id);
+            return true;
+        } catch (ResponseStatusException e) {
+            // Manejo específico del conflicto en los logs
+            LOGGER.warn("Conflict deleting menu item: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error("Error deleting menu item: {}", e.getMessage());
+            throw new RuntimeException("Error deleting menu item: " + e.getMessage(), e);
+        }
+    }
+
+
 }
