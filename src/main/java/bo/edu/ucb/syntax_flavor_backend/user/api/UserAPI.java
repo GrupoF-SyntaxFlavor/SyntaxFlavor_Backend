@@ -28,8 +28,6 @@ import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1")
 public class UserAPI {
