@@ -40,7 +40,7 @@ services:
     command: ["start-dev", "--import-realm"]
     restart: unless-stopped
     environment:
-      - KC_HOSTNAME=http://keycloak.go-to-hell.pro
+      - KC_HOSTNAME=http://146.190.141.101:8082
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
     networks:
