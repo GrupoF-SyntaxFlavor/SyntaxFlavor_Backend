@@ -5,7 +5,6 @@ package bo.edu.ucb.syntax_flavor_backend.menu.entity;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -32,13 +31,15 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "MenuItems")
 @NamedQueries({
-    @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
-    @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
-    @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
-    @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
-    @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
-    @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
-    @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt")})
+        @NamedQuery(name = "MenuItem.findAll", query = "SELECT m FROM MenuItem m"),
+        @NamedQuery(name = "MenuItem.findById", query = "SELECT m FROM MenuItem m WHERE m.id = :id"),
+        @NamedQuery(name = "MenuItem.findByName", query = "SELECT m FROM MenuItem m WHERE m.name = :name"),
+        @NamedQuery(name = "MenuItem.findByDescription", query = "SELECT m FROM MenuItem m WHERE m.description = :description"),
+        @NamedQuery(name = "MenuItem.findByPrice", query = "SELECT m FROM MenuItem m WHERE m.price = :price"),
+        @NamedQuery(name = "MenuItem.findByImageUrl", query = "SELECT m FROM MenuItem m WHERE m.imageUrl = :imageUrl"),
+        @NamedQuery(name = "MenuItem.findByStatus", query = "SELECT m FROM MenuItem m WHERE m.status = :status"),
+        @NamedQuery(name = "MenuItem.findByCreatedAt", query = "SELECT m FROM MenuItem m WHERE m.createdAt = :createdAt"),
+        @NamedQuery(name = "MenuItem.findByUpdatedAt", query = "SELECT m FROM MenuItem m WHERE m.updatedAt = :updatedAt") })
 public class MenuItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,14 +53,18 @@ public class MenuItem implements Serializable {
     private String name;
     @Column(name = "description")
     private String description;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "price")
     private BigDecimal price;
-    @Column(name = "created_at")
+    @Basic(optional = true)
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Column(name = "status")
+    private Boolean status = true; // status field
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "menuItemId")
@@ -78,6 +83,7 @@ public class MenuItem implements Serializable {
         this.price = price;
     }
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -108,6 +114,22 @@ public class MenuItem implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     public Date getCreatedAt() {
@@ -143,7 +165,6 @@ public class MenuItem implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MenuItem)) {
             return false;
         }
@@ -158,5 +179,5 @@ public class MenuItem implements Serializable {
     public String toString() {
         return "com.condominio.tables_syntax_flavor.MenuItem[ id=" + id + " ]";
     }
-    
+
 }

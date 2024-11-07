@@ -5,7 +5,6 @@ package bo.edu.ucb.syntax_flavor_backend.user.entity;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -29,13 +28,12 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "users")
 @NamedQueries({
-    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
-    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
-    @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
-    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-    @NamedQuery(name = "User.findByPhone", query = "SELECT u FROM User u WHERE u.phone = :phone"),
-    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
+        @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+        @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
+        @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
+        @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+        @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+        @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt") })
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,22 +42,28 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "kc_user_id", nullable = true, unique = true)
+    private String kcUserId;
     @Basic(optional = false)
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
     @Basic(optional = false)
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
-    @Column(name = "phone")
-    private String phone;
-    @Column(name = "created_at")
+    @Basic(optional = false)
+    @Column(name = "password")
+    private String password;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "usersId")
     private Collection<Customer> customersCollection;
+
+    @OneToMany(mappedBy = "usersId")
+    private Collection<Kitchen> kitchenCollection;
 
     public User() {
     }
@@ -82,6 +86,14 @@ public class User implements Serializable {
         this.id = id;
     }
 
+    public String getKcUserId() {
+        return kcUserId;
+    }
+
+    public void setKcUserId(String kcUserId) {
+        this.kcUserId = kcUserId;
+    }
+
     public String getName() {
         return name;
     }
@@ -98,12 +110,12 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Date getCreatedAt() {
@@ -130,6 +142,14 @@ public class User implements Serializable {
         this.customersCollection = customersCollection;
     }
 
+    public Collection<Kitchen> getKitchenCollection() {
+        return kitchenCollection;
+    }
+
+    public void setKitchenCollection(Collection<Kitchen> kitchenCollection) {
+        this.kitchenCollection = kitchenCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -154,5 +174,5 @@ public class User implements Serializable {
     public String toString() {
         return "com.condominio.tables_syntax_flavor.User[ id=" + id + " ]";
     }
-    
+
 }

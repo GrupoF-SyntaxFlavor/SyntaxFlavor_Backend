@@ -35,6 +35,7 @@ import jakarta.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o"),
     @NamedQuery(name = "Order.findById", query = "SELECT o FROM Order o WHERE o.id = :id"),
+    @NamedQuery(name = "Order.findByTableCode", query = "SELECT o FROM Order o WHERE o.tableCode = :tableCode"),
     @NamedQuery(name = "Order.findByOrderTimestamp", query = "SELECT o FROM Order o WHERE o.orderTimestamp = :orderTimestamp"),
     @NamedQuery(name = "Order.findByStatus", query = "SELECT o FROM Order o WHERE o.status = :status"),
     @NamedQuery(name = "Order.findByCreatedAt", query = "SELECT o FROM Order o WHERE o.createdAt = :createdAt"),
@@ -50,19 +51,22 @@ public class Order implements Serializable {
     @Column(name = "order_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderTimestamp = new Date();
+    @Column(name = "table_code")//puede ser nulo
+    @Basic(optional = true)
+    private String tableCode;
     @Column(name = "status")
     private String status;
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
     @OneToMany(mappedBy = "orderId")
     private Collection<OrderItem> OrderItemsCollection;
     @OneToMany(mappedBy = "ordersId")
     private Collection<Bill> billsCollection;
-    @JoinColumn(name = "custom", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @ManyToOne
     private Customer custom;
 
@@ -87,6 +91,14 @@ public class Order implements Serializable {
 
     public void setOrderTimestamp(Date orderTimestamp) {
         this.orderTimestamp = orderTimestamp;
+    }
+
+    public String getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode;
     }
 
     public String getStatus() {
@@ -129,11 +141,11 @@ public class Order implements Serializable {
         this.billsCollection = billsCollection;
     }
 
-    public Customer getCustom() {
+    public Customer getCustomerId() {
         return custom;
     }
 
-    public void setCustom(Customer custom) {
+    public void setCustomerId(Customer custom) {
         this.custom = custom;
     }
 

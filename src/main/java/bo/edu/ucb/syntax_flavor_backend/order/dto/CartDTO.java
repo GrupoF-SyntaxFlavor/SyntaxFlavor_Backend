@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class CartDTO {
     private Integer orderId;
     private Integer customerId;
+    private String tableCode;
     private Map<Integer, Integer> itemIdQuantityMap;
 }

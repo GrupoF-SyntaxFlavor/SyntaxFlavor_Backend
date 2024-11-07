@@ -29,5 +29,12 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Node ###
+node_modules/
+
+
 ### VS Code ###
 .vscode/
+
+### Configuration keycloak ###
+# src/main/resources/imports/keycloak-realm/realm-export.json

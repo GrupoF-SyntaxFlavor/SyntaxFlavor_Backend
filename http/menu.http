@@ -1,4 +1,69 @@
 # GET /api/v1/menu/item
-### 
-GET http://localhost:8080/api/v1/menu/item
+### trata de dejar este test con <JWT_TOKEN> debes copiar el access_token
+GET http://localhost:8080/api/v1/menu/item/all
+Authorization: Bearer <JWT_TOKEN>
 Accept: application/json
+
+
+###
+GET http://localhost:8080/api/v1/menu/item?minPrice=10&maxPrice=20&pageNumber=0&pageSize=20&sortAscending=false
+Authorization: Bearer <JWT_TOKEN>
+Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/menu/item/1/image
+
+### 
+PATCH https://localhost:8080/api/v1/public/menu/item/51/image
+Content-Type: multipart/form-data boundary="------uploadImageLimiter"
+
+------uploadImageLimiter
+Content-Disposition: form-data; name="text"
+
+title
+------uploadImageLimiter
+Content-Disposition: form-data; name="file"; filename="copa.png"
+Content-Type: image/png
+
+< ./resources/copa.png
+------uploadImageLimiter--
+
+
+### Disable Menu Item
+PATCH http://localhost:8080/api/v1/menu/item/1/disable
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+
+### Enable Menu Item
+PATCH http://localhost:8080/api/v1/menu/item/1/enable
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+### Create menu item
+POST http://localhost:8080/api/v1/menu/item
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "name": "Sandwich Philadelphia",
+  "description": "Sándwich de carne de res con queso philadelphia y pimiento morrón",
+  "price": 15.3
+}
+
+### deleting a menu item
+
+DELETE http://localhost:8080/api/v1/menu/item/1
+Authorization: Bearer <JWT_TOKEN>
+Accept: application/json
+### Update menu item without image
+PUT http://localhost:8080/api/v1/menu/item/51
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhLTR0X1N6aUpYZGx4dFFZRTRHUkxSa2JtaTZ6cmh6bzdxT2FUOFRGVVQ4In0.eyJleHAiOjE3MzA3OTM5MTUsImlhdCI6MTczMDc1NzkxNSwianRpIjoiZTFjM2Q5NDYtMjU4Ny00MmM1LWE4ZTAtNDYwMzMzNmNmYzliIiwiaXNzIjoiaHR0cDovL3N5bnRheGZsYXZvcl9rZXljbG9hazo4MDgwL3JlYWxtcy9zeW50YXhmbGF2b3JfdXNlcnMiLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiMmVlMjI4ZTYtOGE3Ny00OTJjLTg3ZTgtNTAxYjEwMDM3YjgyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3ludGF4Zmxhdm9yIiwic2lkIjoiZDUzMDU3MGQtNWZkMC00YjYwLWIwMjQtN2M3NWQzMzNkNDViIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vMTcyLjE4LjUuNzQ6ODA4MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1zeW50YXhmbGF2b3JfdXNlcnMiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsicmVhbG0tbWFuYWdlbWVudCI6eyJyb2xlcyI6WyJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwidmlldy11c2VycyIsInF1ZXJ5LWdyb3VwcyIsInF1ZXJ5LXVzZXJzIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50Il19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJTY290dCIsInByZWZlcnJlZF91c2VybmFtZSI6InNob3N0b24wQGltZ3VyLmNvbSIsImdpdmVuX25hbWUiOiJTY290dCIsImVtYWlsIjoic2hvc3RvbjBAaW1ndXIuY29tIn0.um3o9WAO4VhymOGa9iY2oLNO0-UXNzASMmOq-4JG9mZ5Fe0fkcB8FWOfjYSCMp4c79LhiqMQt-KzHLsmyxsivvuKn-BKl73r4SEj0-PdZ2eb6_HutmJNtiSLKs0ZYjsnNyVmDZRYXFc-UPXLPp-VKP-ZUmmXVIINcvfQ-NdpZEFZTylGCjBUaJiYh2xXlfeQbjowQk2vBHld6aaK_eViwgzwI_1DuankHyaNoo1_4e3IdybsnEGqnRgQKCW4Rj6sINE5rCI_ZnDNA626Ob5XAzaRhxY97kr0q3Jyx6-71yhfW_8AQ8MDavS_7IkOMN-jcx33hP1yuIszWE51E5-Z1w
+Content-Type: application/json
+
+{
+  "name": "Vegetarian Pizza",
+  "description": "Updated description with new ingredients",
+  "price": 25.0
+}
+

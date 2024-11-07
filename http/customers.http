@@ -1,14 +1,30 @@
-### obtener información del comensal por id #####
+### Obtener perfil del cliente (extraído del token JWT)
+###
 GET http://localhost:8080/api/v1/user/customer/profile
+Authorization: Bearer <JWT_TOKEN>
 Accept: application/json
-customerId: 1
 
-### actualizar información de facturación del comensal #####
+# PATCH /api/v1/user/customer
+###
 PATCH http://localhost:8080/api/v1/user/customer
+Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
+Accept: application/json
 
 {
-  "customerId": 1,
   "billName": "MonteroUpdated",
-  "nit":"12334135"
+  "nit": "12334135"
+}
+
+### crear comensal este endpoint no debe usar JWT #####
+POST http://localhost:8080/api/v1/public/signup?type=customer
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "customer2",
+    "email": "customer5@example.com",
+    "password": "123456789",
+    "nit": "987654321",
+    "billName": "ExampleBillName"
 }
