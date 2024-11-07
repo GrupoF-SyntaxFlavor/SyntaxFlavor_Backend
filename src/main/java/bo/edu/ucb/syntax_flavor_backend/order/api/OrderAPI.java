@@ -50,20 +50,8 @@ public class OrderAPI {
             @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
-        minDate = minDate != null ? minDate.withHour(0).withMinute(0).withSecond(0).withNano(0) : null;
-        maxDate = maxDate != null ? maxDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999) : null;
+        
         try {
-
-            //FIXME: mover a BL
-            // Si minDate es nulo, asignar la fecha de ayer
-            if (minDate == null) {
-                minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-            }
-
-            // Si maxDate es nulo, asignar la fecha de hoy
-            if (maxDate == null) {
-                maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-            }
             Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize,
                     sortAscending);
             sfr.setResponseCode("ORD-000");

@@ -1,4 +1,4 @@
-package bo.edu.ucb.syntax_flavor_backend.provider;
+package bo.edu.ucb.syntax_flavor_backend.config;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
 
-@Configuration // FIXME mover a Config y cambiar nombre a KeycloakConfig
-public class KeycloakProvider {
+@Configuration
+public class KeycloakConfig {
 
-    Logger LOGGER = LoggerFactory.getLogger(KeycloakProvider.class);
+    Logger LOGGER = LoggerFactory.getLogger(KeycloakConfig.class);
 
     @Value("${spring.keycloak.auth-server-url}")
     private String SERVER_URL;
