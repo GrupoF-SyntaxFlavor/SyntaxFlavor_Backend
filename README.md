@@ -163,3 +163,15 @@ Este comando permite cambiar las urls del Json para la creación de keycloak a t
    ```
 #### Notas importantes:
 - Recuerda que cuando creas un usuario debes verificar el correo mediante MailHog antes de hacer login.
+
+### Alternativa corriendo el backend en Docker
+
+Existe un Dockerfile con su docker-compose.yml para correr el backend en un contenedor Docker. Para ello, corre el siguiente comando:
+
+```bash
+docker compose stop syntaxflavor_backend
+docker compose rm -f syntaxflavor_backend
+docker compose up --build -d syntaxflavor_backend
+```
+
+Si es la primera vez que corres el contenedor, las primeras dos líneas no serán necesarias.
