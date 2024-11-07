@@ -61,7 +61,6 @@ services:
     ports:
       - '9000:9000'
       - '9001:9001'
-    restart: always
     env_file:
       - ./env/minio.env
     command: server /data --console-address ":9001"

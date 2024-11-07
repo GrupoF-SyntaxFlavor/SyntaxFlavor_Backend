@@ -144,10 +144,8 @@ public class OrderBL {
         return OrderDTO.fromEntity(order);
     }
 
-    public Page<OrderDTO> listOrdersByCustomerId(int userId, String status, Integer pageNumber, Integer pageSize,
+    public Page<OrderDTO> listOrdersByCustomerId(int customerId, String status, Integer pageNumber, Integer pageSize,
             boolean sortAscending) {
-
-        Integer customerId = customerBL.findCustomerByUserId(userId).getId();
         LOGGER.info("Listing orders by customer ID: {}", customerId);
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
