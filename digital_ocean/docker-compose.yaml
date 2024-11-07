@@ -13,7 +13,7 @@ services:
       - syntaxflavor_network
 
   syntaxflavor_backend:
-    image: recolorjacarandas/syntaxflavor_backend
+    image: recolorjacarandas/syntaxflavor-backend
     container_name: syntaxflavor_backend
     ports:
       - '8080:8080'
