@@ -85,7 +85,7 @@ jobs:
         env:
           HOST: root@146.190.141.101
         run: |
-            ssh $HOST 'cd ~/SyntaxFlavor_Backend/digital_ocean && docker compose stop syntaxflavor_backend && docker compose rm -f syntaxflavor_backend && docker compose up -d syntaxflavor_backend'
+            ssh $HOST 'cd ~/SyntaxFlavor_Backend/digital_ocean && docker compose stop syntaxflavor_backend && docker compose rm -f syntaxflavor_backend && docker compose up -d --pull always syntaxflavor_backend'
 
     # Permisos de AWS para GitHub
     permissions:
