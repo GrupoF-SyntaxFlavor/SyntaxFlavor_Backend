@@ -40,7 +40,7 @@ services:
     command:
       - "start"
       - "--proxy=edge"
-      - "--hostname=localhost"
+      - "--hostname=146.190.141.101"
       - "--hostname-strict=false"
       - "--import-realm"
     restart: unless-stopped
