@@ -70,24 +70,6 @@ services:
     networks:
       - syntaxflavor_network
 
-  nginx_proxy:
-    image: nginx:latest
-    container_name: nginx_proxy
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/certs:/etc/ssl/certs
-    depends_on:
-      - syntaxflavor_backend
-      - syntaxflavor_keycloak
-      - mailhog
-      - minio
-    networks:
-      - syntaxflavor_network
-
 networks:
   syntaxflavor_network:
     driver: bridge
