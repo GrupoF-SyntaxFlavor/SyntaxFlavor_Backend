@@ -147,7 +147,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "com.condominio.tables_syntax_flavor.Customer[ id=" + id + " ]";
+        return "com.condominio.tables_syntax_flavor.Customer[ id=" + id + ", name" + billName + " ]";
     }
     
 }

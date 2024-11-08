@@ -1,11 +1,12 @@
-name: Build, Dockerize, and Push to ECR
+name: Build, Dockerize, and Push to DO
 
 on:
   push:
     branches:
       - main
-      - CarrascoAlejandro
       - develop
+  schedule:
+      - cron: '0 3/6 * * *'
   workflow_dispatch:
 
 env:
@@ -69,6 +70,22 @@ jobs:
       #       --force-new-deployment \
       #       --region us-east-1
 
+      - name: Set up SSH agent and deploy
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DO_DROPLET_KEY }}
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan 146.190.141.101 >> ~/.ssh/known_hosts
+  
+        
+      - name: Deploy via SSH
+        env:
+          HOST: root@146.190.141.101
+        run: |
+            ssh $HOST 'docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" &&cd ~/SyntaxFlavor_Backend/digital_ocean && docker compose stop syntaxflavor_backend && docker compose rm -f syntaxflavor_backend && docker compose up -d --force-recreate syntaxflavor_backend'
 
     # Permisos de AWS para GitHub
     permissions:

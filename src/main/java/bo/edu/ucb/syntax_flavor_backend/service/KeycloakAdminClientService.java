@@ -3,7 +3,7 @@ package bo.edu.ucb.syntax_flavor_backend.service;
 import java.util.Collections;
 import java.util.List;
 
-import bo.edu.ucb.syntax_flavor_backend.provider.KeycloakProvider;
+import bo.edu.ucb.syntax_flavor_backend.config.KeycloakConfig;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -42,7 +42,7 @@ public class KeycloakAdminClientService {
     @Autowired
     private UserBL userBL;
 
-    private final KeycloakProvider kcProvider;
+    private final KeycloakConfig kcProvider;
 
     public String syncUsersToKeycloak() {
         try {
@@ -56,7 +56,7 @@ public class KeycloakAdminClientService {
         }
     }
 
-    public KeycloakAdminClientService(KeycloakProvider keycloakProvider, UserRepository userRepository) {
+    public KeycloakAdminClientService(KeycloakConfig keycloakProvider, UserRepository userRepository) {
         this.kcProvider = keycloakProvider;
         this.userRepository = userRepository;
     }

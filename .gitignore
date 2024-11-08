@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Ignore SSL certificate and challenge directories
+digital_ocean/nginx/certs/
+digital_ocean/nginx/html/
+
 ### STS ###
 .apt_generated
 .classpath

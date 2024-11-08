@@ -1,9 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.order.api;
 
 import bo.edu.ucb.syntax_flavor_backend.user.bl.CustomerBL;
-import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import bo.edu.ucb.syntax_flavor_backend.user.entity.Customer;
-import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +31,6 @@ public class OrderAPI {
     private OrderBL orderBL;
 
     @Autowired
-    private UserBL userBL;
-
-    @Autowired
     private CustomerBL customerBL;
 
     @Operation(summary = "List orders by status and date range", description = "Retrieve a paginated list of orders filtered by status and date range. You can specify the order status, the minimum and maximum dates for the order timestamps, the page number, page size, and whether to sort by ascending or descending order based on the timestamp.")
@@ -55,20 +50,8 @@ public class OrderAPI {
             @RequestParam(defaultValue = "true") boolean sortAscending) {
         LOGGER.info("Endpoint GET /api/v1/order with pageNumber: {}", pageNumber);
         SyntaxFlavorResponse<Page<OrderDTO>> sfr = new SyntaxFlavorResponse<>();
-        minDate = minDate != null ? minDate.withHour(0).withMinute(0).withSecond(0).withNano(0) : null;
-        maxDate = maxDate != null ? maxDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999) : null;
+        
         try {
-
-            //FIXME: mover a BL
-            // Si minDate es nulo, asignar la fecha de ayer
-            if (minDate == null) {
-                minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-            }
-
-            // Si maxDate es nulo, asignar la fecha de hoy
-            if (maxDate == null) {
-                maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-            }
             Page<OrderDTO> orders = orderBL.listOrdersByFilters(status, minDate, maxDate, pageNumber, pageSize,
                     sortAscending);
             sfr.setResponseCode("ORD-000");
@@ -128,25 +111,12 @@ public class OrderAPI {
             // Fetch the user by kcUserId
             //FIXME: This should be done elsewhere, if the user is now authenticated a special exception should be thrown
             String kcUserId = (String) request.getAttribute("kcUserId");
-            User user = userBL.findUserByKcUserId(kcUserId);
-            if (user == null) {
-                LOGGER.error("User with kcUserId {} not found", kcUserId);
-                sfr.setResponseCode("ORD-601");
-                sfr.setErrorMessage("User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr); // Return 404 if user is not found
-            }
 
             // Fetch the customer associated with the user
-            Customer customer = customerBL.findCustomerByUserId(user.getId());
-            if (customer == null) {
-                LOGGER.error("Customer for userId {} not found", user.getId());
-                sfr.setResponseCode("ORD-602");
-                sfr.setErrorMessage("Customer not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sfr); // Return 404 if customer is not found
-            }
+            Customer customer = customerBL.findCustomerByKcUserId(kcUserId);
 
             // Set the customerId in the CartDTO (we no longer take it from the request
-            // body)
+            // body) // FIXME: This should be done in the BL
             cart.setCustomerId(customer.getId());
             LOGGER.info("Creating order from cart: {}", cart);
             // Create the order using the updated CartDTO (with customerId set)
@@ -232,9 +202,8 @@ public class OrderAPI {
         try {
             LOGGER.info("Endpoint GET /api/v1/order/customer with pageNumber: {}", pageNumber);
             String kcUserId = (String) request.getAttribute("kcUserId");
-            User user = userBL.findUserByKcUserId(kcUserId);
             // Get Customer ID
-            Customer customer = customerBL.findCustomerByUserId(user.getId());
+            Customer customer = customerBL.findCustomerByKcUserId(kcUserId);
             // Obtener las órdenes del cliente usando el userId
             Page<OrderDTO> orders = orderBL.listOrdersByCustomerId(customer.getId(), status, pageNumber, pageSize,
                     sortAscending);

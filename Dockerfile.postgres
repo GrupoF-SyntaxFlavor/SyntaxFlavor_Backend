@@ -1,9 +1,0 @@
-# Use the official PostgreSQL image
-FROM postgres:latest
-
-# Copy initialization scripts or configuration files if necessary
-# COPY init.sql /docker-entrypoint-initdb.d/
-# COPY custom.conf /etc/postgresql/postgresql.conf
-
-# Expose PostgreSQL port
-EXPOSE 5432
