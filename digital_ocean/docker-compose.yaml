@@ -43,6 +43,8 @@ services:
       - "--hostname=146.190.141.101"
       - "--hostname-strict=false"
       - "--import-realm"
+    environment:
+      - KC_HTTP_ENABLED=true
     restart: unless-stopped
     networks:
       - syntaxflavor_network
