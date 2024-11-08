@@ -40,10 +40,8 @@ services:
     command:
       - "start"
       - "--proxy=edge"
-      - "--hostname=146.190.141.101"
-      - "--hostname-port=8082"
+      - "--hostname=localhost"
       - "--hostname-strict=false"
-      - "--hostname-strict-https=false"
       - "--import-realm"
     restart: unless-stopped
     networks:
