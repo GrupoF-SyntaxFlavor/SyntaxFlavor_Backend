@@ -30,11 +30,22 @@ services:
     container_name: syntaxflavor_keycloak
     ports:
       - '8082:8080'
+    env_file:
+      - ./env/keycloak.env
+    volumes:
+      - ./keycloak-realm:/opt/keycloak/data/import
+      - ./themes:/opt/keycloak/themes
+    depends_on:
+      - syntaxflavor_db
     command:
-      - "start-dev"
+      - "start"
+      - "--proxy=edge"
+      - "--hostname=http://146.190.141.101:8082"
+      - "--hostname-strict=false"
+      - "--import-realm"
     environment:
-      - KC_HOSTNAME=146.190.141.101
-      - KC_HOSTNAME_STRICT=false
+      - KC_HTTP_ENABLED=true
+      - KEYCLOAK_FORCE_HTTPS=false
     restart: unless-stopped
     networks:
       - syntaxflavor_network
