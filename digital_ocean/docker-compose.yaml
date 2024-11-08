@@ -40,7 +40,7 @@ services:
     command:
       - "start"
       - "--proxy=edge"
-      - "--hostname=146.190.141.101"
+      - "--hostname=http://146.190.141.101:8082"
       - "--hostname-strict=false"
       - "--import-realm"
     environment:
