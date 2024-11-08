@@ -46,14 +46,6 @@ services:
       - "--hostname-strict-https=false"
       - "--import-realm"
     restart: unless-stopped
-<<<<<<< HEAD
-=======
-    environment:
-      - KC_HOSTNAME=https://146.190.141.101:8082
-      - KC_HOSTNAME_STRICT=false
-      - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_PROXY=edge
->>>>>>> 773a50df155cc361caaeafd15bfe56ff16d300ad
     networks:
       - syntaxflavor_network
 
