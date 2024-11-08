@@ -45,6 +45,7 @@ services:
       - "--import-realm"
     environment:
       - KC_HTTP_ENABLED=true
+      - KEYCLOAK_FORCE_HTTPS=false
     restart: unless-stopped
     networks:
       - syntaxflavor_network
