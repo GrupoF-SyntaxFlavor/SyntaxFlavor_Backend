@@ -37,13 +37,23 @@ services:
       - ./themes:/opt/keycloak/themes
     depends_on:
       - syntaxflavor_db
-    command: ["start-dev", "--import-realm"]
+    command:
+      - "start"
+      - "--proxy=edge"
+      - "--hostname=146.190.141.101"
+      - "--hostname-port=8082"
+      - "--hostname-strict=false"
+      - "--hostname-strict-https=false"
+      - "--import-realm"
     restart: unless-stopped
+<<<<<<< HEAD
+=======
     environment:
       - KC_HOSTNAME=https://146.190.141.101:8082
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
       - KC_PROXY=edge
+>>>>>>> 773a50df155cc361caaeafd15bfe56ff16d300ad
     networks:
       - syntaxflavor_network
 
@@ -67,24 +77,6 @@ services:
     env_file:
       - ./env/minio.env
     command: server /data --console-address ":9001"
-    networks:
-      - syntaxflavor_network
-
-  nginx_proxy:
-    image: nginx:latest
-    container_name: nginx_proxy
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/certs:/etc/ssl/certs
-    depends_on:
-      - syntaxflavor_backend
-      - syntaxflavor_keycloak
-      - mailhog
-      - minio
     networks:
       - syntaxflavor_network
 
