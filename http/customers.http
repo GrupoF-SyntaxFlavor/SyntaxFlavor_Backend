@@ -17,7 +17,7 @@ Accept: application/json
 }
 
 ### crear comensal este endpoint no debe usar JWT #####
-POST http://localhost:8080/api/v1/public/signup?type=customer
+POST http://146.190.141.101:8080/api/v1/public/signup?type=customer
 Content-Type: application/json
 Accept: application/json
 

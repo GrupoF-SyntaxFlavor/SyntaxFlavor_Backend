@@ -38,7 +38,7 @@ public class KitchenBL {
             newKitchen.setLocation(location);
             newKitchen.setUsersId(localUser);
 
-            Kitchen savedKitchen = kitchenRepository.save(newKitchen);
+            kitchenRepository.save(newKitchen);
             LOGGER.info("Kitchen created successfully for user: {}", user.getEmail());
 
             return new KitchenDTO();

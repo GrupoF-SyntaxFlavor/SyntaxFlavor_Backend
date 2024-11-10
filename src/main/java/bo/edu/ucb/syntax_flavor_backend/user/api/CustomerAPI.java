@@ -1,8 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.user.api;
 
-import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import bo.edu.ucb.syntax_flavor_backend.user.dto.CustomerUpdateDTO;
-import bo.edu.ucb.syntax_flavor_backend.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +31,6 @@ public class CustomerAPI {
     @Autowired
     private CustomerBL customerBL;
 
-    @Autowired
-    private UserBL userBL;
-
     @Operation(summary = "Get customer profile", description = "Returns the profile (name, email, NIT) of a customer using the kc_user_id from JWT token")
     @ApiResponses(
         value = {
@@ -44,6 +39,7 @@ public class CustomerAPI {
             @ApiResponse(responseCode = "500", description = "Error retrieving customer profile")
         }
     )
+
     @GetMapping("/customer/profile")
     public ResponseEntity<SyntaxFlavorResponse<CustomerDTO>> getCustomerProfile(@RequestHeader("Authorization") String token, HttpServletRequest request) {
 
@@ -53,24 +49,9 @@ public class CustomerAPI {
             String kcUserId = (String) request.getAttribute("kcUserId");
             LOGGER.info("Endpoint GET /api/v1/user/customer/profile with kc_user_id extracted from token: {}", kcUserId);
 
-            // Buscar el usuario en la tabla 'users' usando kc_user_id
-            User user = userBL.findUserByKcUserId(kcUserId);  // Asegúrate de tener este método implementado en userBL
-
-            if (user == null) {
-                response.setResponseCode("USR-601");
-                response.setErrorMessage("User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
             // FIXME: La lógica de negocio debería estar en el BL, no en la API.
             // TODO: Mover esta lógica al CustomerBL.
-            Customer customer = customerBL.findCustomerByUserId(user.getId());
-
-            if (customer == null) {
-                response.setResponseCode("USR-602");
-                response.setErrorMessage("Customer not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
+            Customer customer = customerBL.findCustomerByKcUserId(kcUserId);
 
             CustomerDTO customerDTO = new CustomerDTO(customer);
             response.setResponseCode("USR-000");
@@ -104,21 +85,8 @@ public class CustomerAPI {
         try {
 
             String kcUserId = (String) request.getAttribute("kcUserId");
-            User user = userBL.findUserByKcUserId(kcUserId);
-            if (user == null) {
-                LOGGER.error("User with kcUserId {} not found", kcUserId);
-                response.setResponseCode("USR-601");
-                response.setErrorMessage("User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
 
-            Customer customer = customerBL.findCustomerByUserId(user.getId());
-            if (customer == null) {
-                LOGGER.error("Customer for userId {} not found", user.getId());
-                response.setResponseCode("USR-602");
-                response.setErrorMessage("Customer not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
+            Customer customer = customerBL.findCustomerByKcUserId(kcUserId);
 
             // FIXME: La actualización del cliente también debería estar manejada en el BL.
             // TODO: Mover esta lógica al CustomerBL.

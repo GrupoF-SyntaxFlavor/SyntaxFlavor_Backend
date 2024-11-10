@@ -1,7 +1,0 @@
-FROM quay.io/keycloak/keycloak:25.0.6
-
-# Custom configurations or files can be added here if needed
-WORKDIR /opt/keycloak
-
-# Use the same start command as in docker-compose.yml
-CMD ["start-dev", "--import-realm"]
