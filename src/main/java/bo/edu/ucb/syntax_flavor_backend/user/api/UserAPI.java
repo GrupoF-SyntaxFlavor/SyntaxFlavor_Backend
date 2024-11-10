@@ -79,7 +79,7 @@ public class UserAPI {
             }
 
             // TODO: esta funcionalidad debería moverse a un UserBL...
-            UserDTO userResponse = kcAdminClient.createKeycloakUser(user.getName(), user.getEmail(), user.getPassword(), true);
+            UserDTO userResponse = kcAdminClient.createKeycloakUser(user.getName(), user.getEmail(), user.getPassword(),type, true);//FIXME: revisar si es necesario crear la tabla de usuario "administrator"
             if(type.equals("customer")){
                 CustomerDTO newCustomer = customerBL.createCustomer(userResponse, user.getNit(), user.getBillName());
                 if(newCustomer == null)
@@ -88,6 +88,8 @@ public class UserAPI {
                 KitchenDTO newKitchen = kitchenBL.createKitchen(userResponse, user.getLocation());
                 if(newKitchen == null)
                     throw new RuntimeException("Error creating kitchen");
+            } else if (type.equals("administrator")){
+                LOGGER.info("Administrator created successfully");
             } else {
                 throw new RuntimeException("Invalid user type");
             }

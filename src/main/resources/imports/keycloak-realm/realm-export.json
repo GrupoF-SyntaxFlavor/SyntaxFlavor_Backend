@@ -28,7 +28,7 @@
   "oauth2DeviceCodeLifespan": 36000,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "external",
+  "sslRequired": "none",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
@@ -291,7 +291,35 @@
           "attributes": {}
         }
       ],
-      "syntaxflavor": [],
+      "syntaxflavor": [
+        {
+          "id": "6b125a15-451e-4eef-b816-3008f1fb50c4",
+          "name": "administrator",
+          "description": "Restaurant manager.",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "701c066b-245f-4fa7-bfbb-aa4fd9f73b41",
+          "attributes": {}
+        },
+        {
+          "id": "d93325f4-1bae-4930-9c24-d1593cab9566",
+          "name": "kitchen",
+          "description": "User of a kitchen's restaurant.",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "701c066b-245f-4fa7-bfbb-aa4fd9f73b41",
+          "attributes": {}
+        },
+        {
+          "id": "d8e2103f-dd15-465c-8be3-df7716a4f20b",
+          "name": "customer",
+          "description": "Final customer of a mobile app.",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "701c066b-245f-4fa7-bfbb-aa4fd9f73b41",
+          "attributes": {}
+        }
+      ],
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
