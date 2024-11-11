@@ -3,7 +3,7 @@ package bo.edu.ucb.syntax_flavor_backend.service;
 import java.util.Collections;
 import java.util.List;
 
-import bo.edu.ucb.syntax_flavor_backend.provider.KeycloakProvider;
+import bo.edu.ucb.syntax_flavor_backend.config.KeycloakConfig;
 import bo.edu.ucb.syntax_flavor_backend.user.bl.UserBL;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -12,9 +12,12 @@ import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.keycloak.admin.client.resource.ClientResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,7 @@ public class KeycloakAdminClientService {
     @Autowired
     private UserBL userBL;
 
-    private final KeycloakProvider kcProvider;
+    private final KeycloakConfig kcProvider;
 
     public String syncUsersToKeycloak() {
         try {
@@ -56,12 +59,12 @@ public class KeycloakAdminClientService {
         }
     }
 
-    public KeycloakAdminClientService(KeycloakProvider keycloakProvider, UserRepository userRepository) {
+    public KeycloakAdminClientService(KeycloakConfig keycloakProvider, UserRepository userRepository) {
         this.kcProvider = keycloakProvider;
         this.userRepository = userRepository;
     }
 
-    public UserDTO createKeycloakUser(String name, String email, String password, Boolean inDB) {
+    public UserDTO createKeycloakUser(String name, String email, String password, String roleType, Boolean inDB) {
         try {
             LOGGER.info("Creating user in Keycloak Realm {}", REALM);
             UserRequestDTO user = new UserRequestDTO();
@@ -72,6 +75,10 @@ public class KeycloakAdminClientService {
             // Validación de campos obligatorios
             if (user.getEmail() == null || user.getName() == null) {
                 throw new IllegalArgumentException("Email and Name are required to create a user in Keycloak.");
+            }
+            //validacion del tipo de rol "administrator", "kitchen" o "customer"
+            if (!roleType.equals("administrator") && !roleType.equals("kitchen") && !roleType.equals("customer")) {
+                throw new IllegalArgumentException("Role type must be 'administrator', 'kitchen' or 'customer'.");
             }
 
             UsersResource usersResource = kcProvider.getInstance().realm(REALM).users();
@@ -96,6 +103,18 @@ public class KeycloakAdminClientService {
             if (response.getStatus() == 201) {
                 // Extraer el ID del usuario creado
                 String kcUserId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+                // Obtener el recurso del usuario recién creado
+                UserResource userResource = usersResource.get(kcUserId);
+
+                // Obtener el ClientResource de "syntaxflavor"
+                ClientResource clientResource = kcProvider.getInstance()
+                    .realm(REALM)
+                    .clients()
+                    .get(kcProvider.getInstance().realm(REALM).clients().findByClientId("syntaxflavor").get(0).getId());
+
+                // Obtener la representación del rol y asignarla al usuario
+                RoleRepresentation clientRole = clientResource.roles().get(roleType).toRepresentation();
+                userResource.roles().clientLevel(clientResource.toRepresentation().getId()).add(Collections.singletonList(clientRole));
 
                 // Enviar el correo de verificación
                 sendVerificationEmail(kcUserId);
@@ -154,7 +173,7 @@ public class KeycloakAdminClientService {
                     userRequest.setName(localUser.getName());
                     userRequest.setPassword(localUser.getPassword());
 
-                    createKeycloakUser(userRequest.getName(), userRequest.getEmail(), userRequest.getPassword(), false);
+                    createKeycloakUser(userRequest.getName(), userRequest.getEmail(), userRequest.getPassword(),"customer",  false);//TODO: eliminar esta funcionalidad :)
                     LOGGER.info("User {} created in Keycloak", localUser.getEmail());
                     createdUserCount++;
                 }

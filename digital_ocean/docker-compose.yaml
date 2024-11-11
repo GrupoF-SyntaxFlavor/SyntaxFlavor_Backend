@@ -37,12 +37,16 @@ services:
       - ./themes:/opt/keycloak/themes
     depends_on:
       - syntaxflavor_db
-    command: ["start-dev", "--import-realm"]
-    restart: unless-stopped
+    command:
+      - "start"
+      - "--proxy=edge"
+      - "--hostname=http://146.190.141.101:8082"
+      - "--hostname-strict=false"
+      - "--import-realm"
     environment:
-      - KC_HOSTNAME=http://146.190.141.101:8082
-      - KC_HOSTNAME_STRICT=false
-      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_ENABLED=true
+      - KEYCLOAK_FORCE_HTTPS=false
+    restart: unless-stopped
     networks:
       - syntaxflavor_network
 

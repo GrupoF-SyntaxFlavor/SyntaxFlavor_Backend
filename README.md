@@ -100,50 +100,48 @@ Accept: application/json
   }
 }
 ```
-### Pasos a seguir para levantar el backend (Provisional)
+### Pasos a seguir para levantar el backend (en localhost con docker)
 
-#### Cambia a tu ip:
-
-1. Json de creación de keycloak:
-- En Windows abre una terminal Powershell(importante)
-- Ejecuta el comando:
-  ```bash
-    .\update-keycloak-urls.ps1
-
-   ```
-Este comando permite cambiar las urls del Json para la creación de keycloak a tu ip actual.
-
-- Para macOS/Linux (Bash): Ejecuta el script Bash para realizar el reemplazo en macOS:
-
-```bash
-    .\update-keycloak-urls.sh
-
-   ```
-   NOTA: esta solución es temporal, ya que sólo reemplaza variables en el json por la ip utilizada.
 #### Crear el contenedor docker:
 - Haz click derecho en el archivo "docker-compose.yaml"
 - Selecciona la opción "Compose Up - Select Services"
-- Marca todas las opciones **menos syntaxflavor_backend**
+- Marca todas las opciones **incluyendo syntaxflavor_backend**
 - Espera a que se creen todos los contenedores
 
-#### Correr el backend:
-- Introduce el comando en la consola para levantar el backend:
-  ```bash
+**NOTA:** esto hace que ya NO sea necesario usar el comando:
+```bash
     mvn clean install exec:java
-
-   ```
+```
+Mientras esté corriendo el contenedor "syntaxflavor_backend".  
 
 #### Haz correr los scripts js:
 1. **Dirigete a la carpeta scripts**:  
    ```bash
     cd .\db\scripts
-
    ```
 2. **Instalación de dependencias**:  
    ```bash
    npm install pg axios form-data
    ```
-  NOTA: tambien puede utilizarse el comando "npm i"
+    NOTA: tambien puede utilizarse el comando:
+    ```bash
+      npm i
+    ```
+
+3. **Cambia a localhost en los siguientes archivos:**
+  * load_kitchen_users.js:
+    ![](image.png)
+
+  * load_menu_items.js:
+    ![alt text](image-1.png)
+
+  * load_mockdata.js:
+    ![alt text](image-2.png)
+
+  * load_users_keycloak.js:
+    ![alt text](image-3.png)
+
+
 3. **Ejecución del script `load_users_keycloak.js` y `load_kitchen_users.js`**:
 
    ```bash
@@ -162,4 +160,20 @@ Este comando permite cambiar las urls del Json para la creación de keycloak a t
    node load_mockdata.js
    ```
 #### Notas importantes:
-- Recuerda que cuando creas un usuario debes verificar el correo mediante MailHog antes de hacer login.
+
+- **Descarta tus cambios en los archivos** de cargado de datos anteriores para no eliminar las ips existentes en estos archivos.
+- Recuerda que cuando creas un usuario de cualquier rol, debes verificar el correo mediante MailHog antes de hacer login.
+- Ahora puedes crear un usuario "administrator" desde el archivo `users.http` si lo requieres.
+
+
+### Alternativa corriendo el backend en Docker
+
+Existe un Dockerfile con su docker-compose.yml para correr el backend en un contenedor Docker. Para ello, corre el siguiente comando:
+
+```bash
+docker compose stop syntaxflavor_backend
+docker compose rm -f syntaxflavor_backend
+docker compose up --build -d syntaxflavor_backend
+```
+
+Si es la primera vez que corres el contenedor, las primeras dos líneas no serán necesarias.

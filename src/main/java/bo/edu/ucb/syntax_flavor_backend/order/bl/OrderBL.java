@@ -47,6 +47,22 @@ public class OrderBL {
         LOGGER.debug("Parameters - status: {}, minDate: {}, maxDate: {}, pageNumber: {}, pageSize: {}, sortAscending: {}",
                 status, minDate, maxDate, pageNumber, pageSize, sortAscending);
 
+        // # Curando los parámetros de fecha
+        // Fijar las horas extremas del día para minDate y maxDate
+        // Esto se asegura que funcione con los campos TIMESTAMP
+        minDate = minDate != null ? minDate.withHour(0).withMinute(0).withSecond(0).withNano(0) : null;
+        maxDate = maxDate != null ? maxDate.withHour(23).withMinute(59).withSecond(59).withNano(999999999) : null;
+
+        // Si minDate es nulo, asignar la fecha de ayer
+        if (minDate == null) {
+            minDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        }
+
+        // Si maxDate es nulo, asignar la fecha de hoy
+        if (maxDate == null) {
+            maxDate = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        }
+
         Sort sort = sortAscending ? Sort.by("orderTimestamp").ascending() : Sort.by("orderTimestamp").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
