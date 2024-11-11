@@ -100,10 +100,10 @@ spring:
       password: admin
 logging:
   level:
-    org.springframework: DEBUG
-    org.hibernate: DEBUG
-    org.keycloak: DEBUG
-    org.springframework.web: TRACE
-    bo.edu.ucb: TRACE
+    org.springframework: INFO
+    org.hibernate: INFO
+    org.keycloak: INFO
+    org.springframework.web: INFO
+    bo.edu.ucb: INFO
 server:
   port: 8080
