@@ -64,6 +64,7 @@ services:
     env_file:
       - ./env/minio.env
     command: server /data --console-address ":9001"
+    restart: always
     networks:
         - syntaxflavor_network
 
