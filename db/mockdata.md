@@ -1,22 +1,4 @@
-# Introducción
-
-Se realizaron dos scripts para el cargado de datos a la BDD llamados `load_menu_items.js` y `load_mockdata.js`. Estos cargan los datos en el siguiente orden
-
-1. **MenuItems**
-2. **Users**
-3. **Customers**
-4. **Orders**
-5. **Bills**
-6. **OrderItems**
-
-Por lo que el orden de ejecución de los archivos es el siguiente:
-
-1. **load_menu_items.js**
-2. **load_mockdata.js**
-
-De no ejecutarse en este orden ocurrira un error en la tabla `order_items`.
-
-**Consideraciones:**
+## **Consideraciones:**
 
 1. Se recomienda recontruir el contenedor antes de ejecutar los scripts, de otra forma podrían ocurrir conflictos a causa de los ids.
 2. El sistema debe estar corriendo a la hora de ejecutar `load_menu_items.js` de otra forma no sé podrá realizar el cargado de imágenes ya que se hace mediante un **endpoint**.
@@ -24,7 +6,7 @@ De no ejecutarse en este orden ocurrira un error en la tabla `order_items`.
 
 ---
 
-# Procedimiento para ejecutar los scripts de carga de datos
+## Procedimiento para ejecutar los scripts de carga de datos
 
 Para poder cargar los datos de `menu_items` y subir las imágenes correspondientes al sistema MinIO, realizamos los siguientes pasos:
 

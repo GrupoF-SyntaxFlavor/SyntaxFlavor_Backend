@@ -221,6 +221,26 @@ public class MenuItemAPI {
             @ApiResponse(responseCode = "500", description = "Error creating menu item")
         }
     )
+    @PostMapping("/menu/item")
+    public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> createMenuItem(
+            @RequestBody MenuItemRequestDTO menuItemRequest
+            ) {
+        LOGGER.info("Endpoint POST /api/v1/menu/item");
+        SyntaxFlavorResponse<MenuItemResponseDTO> sfrResponse = new SyntaxFlavorResponse<>();
+        try {
+            MenuItemResponseDTO menuItemResponseDTO = menuBL.createMenuItem(menuItemRequest);
+            sfrResponse.setResponseCode("MEN-001");
+            sfrResponse.setPayload(menuItemResponseDTO);
+            LOGGER.info("Menu item {} created successfully", menuItemResponseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(sfrResponse);
+        } catch (Exception e) {
+            LOGGER.error("Error creating menu item: {}", e.getMessage());
+            sfrResponse.setResponseCode("MEN-601");
+            sfrResponse.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+        }
+    }
+    
     @PutMapping("/menu/item/{id}")
     public ResponseEntity<SyntaxFlavorResponse<MenuItemResponseDTO>> updateMenuItem(
             @PathVariable Integer id,
