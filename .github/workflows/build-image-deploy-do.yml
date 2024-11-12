@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - CarrascoAlejandro
   schedule:
       - cron: '0 3/6 * * *'
   workflow_dispatch:
@@ -78,12 +79,12 @@ jobs:
       - name: Install SSH key
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan 146.190.141.101 >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.DO_DROPLET_IP }} >> ~/.ssh/known_hosts
   
         
       - name: Deploy via SSH
         env:
-          HOST: root@146.190.141.101
+          HOST: root@${{ secrets.DO_DROPLET_IP }}
         run: |
             ssh $HOST 'docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" &&cd ~/SyntaxFlavor_Backend/digital_ocean && docker compose stop syntaxflavor_backend && docker compose rm -f syntaxflavor_backend && docker compose up -d --force-recreate syntaxflavor_backend'
 
