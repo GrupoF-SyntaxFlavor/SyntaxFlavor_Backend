@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - develop
-      - CarrascoAlejandro
   schedule:
       - cron: '0 3/6 * * *'
   workflow_dispatch:
@@ -24,51 +23,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Configure AWS credentials
-      #  - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
-
-      # Step 3: Log in to Amazon ECR
-      # - name: Login to Amazon ECR
-      #   uses: aws-actions/amazon-ecr-login@v2
-      #   with:
-      #     mask-password: 'true'
-
-      # Step 4: Build Docker image
+      # Step 2: Build Docker image
       - name: Build Docker image
         run: |
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
 
-      # Step 5: Tag Docker image
+      # Step 3: Tag Docker image
       - name: Tag Docker image
         run: |
           ECR_URI=${{ secrets.ECR_URI }}
           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
 
-      # Step 6 Push to DockerHub
+      # Step 4 Push to DockerHub
       - name: Push to DockerHub
         run: |
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # Step 7: Set up SSH agent and deploy
+      # Step 5: Set up SSH agent and deploy
       - name: Set up SSH agent and deploy
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.DO_DROPLET_KEY }}
 
-      # Step 8: Install SSH key
+      # Step 6: Install SSH key
       - name: Install SSH key
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan ${{ secrets.DO_DROPLET_IP}} >> ~/.ssh/known_hosts
   
-      # Step 9: Deploy via SSH
+      # Step 7: Deploy via SSH
       - name: Deploy via SSH
         env:
           HOST: root@${{ secrets.DO_DROPLET_IP}}
