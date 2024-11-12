@@ -40,7 +40,7 @@ services:
     command:
       - "start"
       - "--proxy=edge"
-      - "--hostname=http://146.190.141.101:8082"
+      - "--hostname=http://146.190.115.87:8082"
       - "--hostname-strict=false"
       - "--import-realm"
     environment:
@@ -70,6 +70,15 @@ services:
     env_file:
       - ./env/minio.env
     command: server /data --console-address ":9001"
+    networks:
+      - syntaxflavor_network
+
+  syntaxflavor_frontend:
+    image: recolorjacarandas/syntaxflavor-frontend-web
+    container_name: syntaxflavor_frontend
+    ports:
+      - '80:80'
+    restart: unless-stopped
     networks:
       - syntaxflavor_network
 
