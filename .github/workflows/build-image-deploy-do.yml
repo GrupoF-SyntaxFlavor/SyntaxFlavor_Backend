@@ -77,14 +77,17 @@ jobs:
           ssh-private-key: ${{ secrets.DO_DROPLET_KEY }}
 
       - name: Install SSH key
+        env:
+          DROPLET_IP: ${{ secrets.DO_DROPLET_IP }}
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan ${{ secrets.DO_DROPLET_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan $DROPLET_IP >> ~/.ssh/known_hosts
   
         
       - name: Deploy via SSH
         env:
-          HOST: root@${{ secrets.DO_DROPLET_IP }}
+          DROPLET_IP: ${{ secrets.DO_DROPLET_IP }}
+          HOST: root@$DROPLET_IP
         run: |
             ssh $HOST 'docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" &&cd ~/SyntaxFlavor_Backend/digital_ocean && docker compose stop syntaxflavor_backend && docker compose rm -f syntaxflavor_backend && docker compose up -d --force-recreate syntaxflavor_backend'
 
