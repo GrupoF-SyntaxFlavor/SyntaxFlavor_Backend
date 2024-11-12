@@ -81,6 +81,7 @@ jobs:
           DROPLET_IP: ${{ secrets.DO_DROPLET_IP }}
         run: |
           mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-keyscan $DROPLET_IP >> ~/.ssh/known_hosts
   
         
