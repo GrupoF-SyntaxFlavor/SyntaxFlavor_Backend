@@ -79,7 +79,6 @@ jobs:
       - name: Install SSH key
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-keyscan 146.190.115.87 >> ~/.ssh/known_hosts
   
         
