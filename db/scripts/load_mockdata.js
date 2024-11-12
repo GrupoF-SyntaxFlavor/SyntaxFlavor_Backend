@@ -2,7 +2,7 @@ const fs = require("fs");
 const { Client } = require("pg"); // Para conectarse a PostgreSQL
 
 // Configuración de la conexión a la base de datos PostgreSQL
-const DB_HOST = process.env.DB_HOST || "146.190.141.101"; // Cambia syntaxflavor_db por localhost
+const DB_HOST = process.env.DB_HOST || "localhost"; // Cambia syntaxflavor_db por localhost
 const DB_PORT = process.env.DB_PORT || "5432";
 const DB_NAME = process.env.DB_NAME || "syntaxflavor";
 const DB_USER = process.env.DB_USER || "postgres";
