@@ -107,7 +107,7 @@ public class UserAPI {
         }
     }
 
-    @Operation(summary = "Login user", description = "Login an user and compare data in keycloack realm. Data: username(email in keycloak), password.")
+    @Operation(summary = "Login user", description = "Login an user and compare data in keycloack realm. Data: username(email in keycloak), password. and testing the endpoint :D")
     @ApiResponses(
         value = {
             @ApiResponse(responseCode = "201", description = "User logged in successfully"),
