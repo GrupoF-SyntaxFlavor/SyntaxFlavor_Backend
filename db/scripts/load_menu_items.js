@@ -4,14 +4,14 @@ const axios = require("axios"); // Para hacer solicitudes HTTP
 const FormData = require("form-data"); // Para manejar multipart/form-data
 
 // Configuración de la conexión a la base de datos PostgreSQL
-const DB_HOST = process.env.DB_HOST || "146.190.141.101"; // Cambia syntaxflavor_db por localhost
+const DB_HOST = process.env.DB_HOST || "localhost"; // Cambia syntaxflavor_db por localhost
 const DB_PORT = process.env.DB_PORT || "5432";
 const DB_NAME = process.env.DB_NAME || "syntaxflavor";
 const DB_USER = process.env.DB_USER || "postgres";
 const DB_PASSWORD = process.env.DB_PASSWORD || "123456";
 
 // Configuración del MinIO y el API
-const BASE_URL = "http://146.190.141.101:8080/api/v1/public/menu/item";
+const BASE_URL = "http://localhost:8080/api/v1/public/menu/item";
 
 const IMG_FOLDER = "../img_menu_items";
 

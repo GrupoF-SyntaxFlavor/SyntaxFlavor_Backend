@@ -72,7 +72,7 @@ usersRL.on('close', () => {
 
         // Hacer la petición POST al endpoint
         try {
-          const response = await axios.post(`http://146.190.141.101:8080/api/v1/public/signup?type=customer`, userData, {
+          const response = await axios.post(`http://localhost:8080/api/v1/public/signup?type=customer`, userData, {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json'
