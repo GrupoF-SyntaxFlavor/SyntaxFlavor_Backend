@@ -18,7 +18,7 @@ Accept: application/json
 
 ### signup user customer
 
-POST http://localhost:8080/api/v1/public/signup?type=customer
+POST http://146.190.141.101:8080/api/v1/public/signup?type=customer
 Content-Type: application/json
 Accept: application/json
 
@@ -31,7 +31,7 @@ Accept: application/json
 }
 
 ### sign up user kitchen
-POST http://localhost:8080/api/v1/public/signup?type=kitchen
+POST http://146.190.141.101:8080/api/v1/public/signup?type=kitchen
 Content-Type: application/json
 Accept: application/json
 
@@ -42,7 +42,7 @@ Accept: application/json
     "location": "ExampleLocation"
 }
 ### signup user administrator
-POST http://localhost:8080/api/v1/public/signup?type=administrator
+POST http://146.190.141.101:8080/api/v1/public/signup?type=administrator
 Content-Type: application/json
 Accept: application/json
 

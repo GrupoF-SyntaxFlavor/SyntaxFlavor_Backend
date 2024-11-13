@@ -75,7 +75,7 @@ kitchenUsersRL.on('close', () => {
             // Enviar los datos al endpoint
             try {
                 //console.log(kitchenUserData);
-                const response = await axios.post('http://146.190.141.101:8080/api/v1/public/signup?type=kitchen', kitchenUserData);
+                const response = await axios.post('http://localhost:8080/api/v1/public/signup?type=kitchen', kitchenUserData);
                 console.log(`Usuario de cocina creado: ${response.data.payload.name}`);
             } catch (error) {
                 console.error(`Error al crear el usuario de cocina: ${error.message}`);
