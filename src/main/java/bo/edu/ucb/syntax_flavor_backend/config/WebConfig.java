@@ -15,9 +15,10 @@ public class WebConfig implements WebMvcConfigurer {
         String localIp = getLocalIp();
         String dynamicFrontendMobileUrl = "http://" + localIp + ":8081";
         String dynamicFrontendWebUrl = "http://" + localIp + ":3000";
+        String dynamicFrontendWebUrl2 = "http://146.190.115.87:80";
 
         registry.addMapping("/**")
-                .allowedOrigins(dynamicFrontendMobileUrl, dynamicFrontendWebUrl, "http://localhost:8081", "http://localhost:3000")
+                .allowedOrigins(dynamicFrontendMobileUrl, dynamicFrontendWebUrl, dynamicFrontendWebUrl2, "http://146.190.115.87", "http://146.190.115.87:3000","http://localhost:8081", "http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true);
