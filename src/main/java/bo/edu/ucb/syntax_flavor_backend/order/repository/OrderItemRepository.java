@@ -1,7 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.order.repository;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +22,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
                 "GROUP BY m.name " +
                 "ORDER BY SUM(oi.quantity) DESC")
         List<Object[]> findMostSoldMenuItems(
-                @Param("startDate") Date startDate,
-                @Param("endDate") Date endDate);
+                @Param("startDate") LocalDateTime startDate,
+                @Param("endDate") LocalDateTime endDate);
 
 }
