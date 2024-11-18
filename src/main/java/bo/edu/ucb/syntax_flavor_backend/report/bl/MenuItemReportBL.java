@@ -26,21 +26,7 @@ public class MenuItemReportBL {
 
     
 
-    public List<MostSoldMenuItemDTO> getMostSoldMenuItems(String period) {
-        LocalDateTime startDate; // Calcular según el período
-        LocalDateTime endDate = LocalDateTime.now(); // Fecha actual
-
-        // Calcular fechas de inicio según el período
-        switch (period.toLowerCase()) {
-            case "semanal":
-                startDate = endDate.minusWeeks(1); // Hace una semana
-                break;
-            case "mensual":
-                startDate = endDate.minusMonths(1); // Hace un mes
-                break;
-            default:
-                throw new IllegalArgumentException("Período no válido. Usa 'semanal' o 'mensual'.");
-        }
+    public List<MostSoldMenuItemDTO> getMostSoldMenuItems(LocalDateTime startDate, LocalDateTime endDate) {
 
         // Obtener datos en bruto
         List<Object[]> rawData = orderItemRepository.findMostSoldMenuItems(startDate, endDate);
@@ -48,7 +34,7 @@ public class MenuItemReportBL {
         // Calcular totales y poblar DTOs
         BigDecimal totalRevenue = rawData.stream()
                                          .map(row -> (BigDecimal) row[2]) // totalPrice
-                                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         List<MostSoldMenuItemDTO> items = new ArrayList<>();
         for (Object[] row : rawData) {
