@@ -38,6 +38,7 @@ class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/v1/order/**").hasAuthority("kitchen")
                 .requestMatchers(HttpMethod.GET, "/api/v1/order/customer/**").hasAnyAuthority("customer", "administrator")
                 .requestMatchers(HttpMethod.GET, "/api/v1/users-with-kitchen").hasAuthority("administrator")
+                .requestMatchers(HttpMethod.GET, "/api/v1/report/**").hasAuthority("administrator")
                 .anyRequest().authenticated()
             )
             .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
