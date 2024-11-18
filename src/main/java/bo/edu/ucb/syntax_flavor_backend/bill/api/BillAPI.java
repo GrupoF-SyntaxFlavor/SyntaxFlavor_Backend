@@ -6,12 +6,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import bo.edu.ucb.syntax_flavor_backend.bill.bl.BillBL;
 import bo.edu.ucb.syntax_flavor_backend.bill.dto.BillRequestDTO;
@@ -22,6 +20,10 @@ import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/bill")
@@ -73,4 +75,24 @@ public class BillAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfr);
         }
     }
+
+    @GetMapping("/weekly-sales")
+    public ResponseEntity<SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>>> getWeeklySalesReport(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>> response = new SyntaxFlavorResponse<>();
+        try {
+            LOGGER.info("Generating weekly sales report for dates: {} - {}", startDate, endDate);
+            Map<String, List<BillResponseDTO>> report = billBL.getWeeklySalesReport(startDate, endDate);
+            response.setResponseCode("REP-001");
+            response.setPayload(report);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            LOGGER.error("Error generating weekly sales report: {}", e.getMessage());
+            response.setResponseCode("REP-500");
+            response.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

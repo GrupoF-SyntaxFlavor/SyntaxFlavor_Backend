@@ -4,7 +4,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "customerTest@example.com",
+    "email": "customerTest2@example.com",
     "password": "123456"
 }
 // FIXME: manejar el error de cuenta no verificada
@@ -18,7 +18,7 @@ Accept: application/json
 
 ### signup user customer
 
-POST http://146.190.141.101:8080/api/v1/public/signup?type=customer
+POST http://localhost:8080/api/v1/public/signup?type=customer
 Content-Type: application/json
 Accept: application/json
 
@@ -42,12 +42,12 @@ Accept: application/json
     "location": "ExampleLocation"
 }
 ### signup user administrator
-POST http://146.190.141.101:8080/api/v1/public/signup?type=administrator
+POST http://localhost:8080/api/v1/public/signup?type=administrator
 Content-Type: application/json
 Accept: application/json
 
 {
     "name": "administratorTest",
-    "email": "administratorTest@example.com",
+    "email": "administratorTest2@example.com",
     "password": "123456"
 }
