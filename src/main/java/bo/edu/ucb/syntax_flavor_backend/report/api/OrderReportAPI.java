@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import bo.edu.ucb.syntax_flavor_backend.order.bl.OrderBL;
-import bo.edu.ucb.syntax_flavor_backend.order.dto.OrderDTO;
 import bo.edu.ucb.syntax_flavor_backend.report.bl.OrderReportBL;
 import bo.edu.ucb.syntax_flavor_backend.report.dto.OrderReportKPIResponseDTO;
 import bo.edu.ucb.syntax_flavor_backend.util.SyntaxFlavorResponse;
@@ -49,6 +46,11 @@ public class OrderReportAPI {
         
         try {
             OrderReportKPIResponseDTO orders = orderReportBL.calculateOrderKPI(startDate, endDate);
+            if(orders.getOrders()==null){
+                sfr.setResponseCode("ORD-404");
+                sfr.setErrorMessage("No orders found between "+startDate+" and "+endDate);
+                return ResponseEntity.ok(sfr);
+            }
             sfr.setResponseCode("ORD-000");
             sfr.setPayload(orders);
             return ResponseEntity.ok(sfr);
