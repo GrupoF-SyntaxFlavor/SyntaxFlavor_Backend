@@ -1,6 +1,7 @@
 package bo.edu.ucb.syntax_flavor_backend.order.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 //import java.util.List;
 
@@ -43,19 +44,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
         // filtrar solo por fechas y ordenar por fecha
         @Query("SELECT o FROM Order o WHERE o.orderTimestamp BETWEEN :minDate AND :maxDate")
-        Page<Order> findByMinDateBetweenMaxDate(LocalDateTime minDate, LocalDateTime maxDate, Pageable pageable);            
+        Page<Order> findByMinDateBetweenMaxDate(LocalDateTime minDate, LocalDateTime maxDate, Pageable pageable); 
+        
+        @Query("SELECT o FROM Order o WHERE o.orderTimestamp BETWEEN :minDate AND :maxDate")
+        List<Order> findByMinDateBetweenMaxDateList(LocalDateTime minDate, LocalDateTime maxDate);            
 
-    // @Query(value = " SELECT * FROM Orders o WHERE o.order_timestamp BETWEEN
-    // :startOfDay AND :endOfDay AND o.status <> 'FINISHED';", nativeQuery = true)
-    // Page<Order> findOrdersFromToday(@Param("startOfDay") LocalDateTime
-    // startOfDay, @Param("endOfDay") LocalDateTime endOfDay, Pageable pageable);
-
-    // @Query("SELECT o FROM Order o WHERE o.orderTimestamp BETWEEN :startOfDay AND
-    // :endOfDay AND o.status = :status ORDER BY o.orderTimestamp ASC")
-    // Page<Order> findOrdersBetweenDatesFilteredByStatus(
-    // @Param("startOfDay") LocalDateTime startOfDay,
-    // @Param("endOfDay") LocalDateTime endOfDay,
-    // @Param("status") String status,
-    // Pageable pageable
-    // );
 }
