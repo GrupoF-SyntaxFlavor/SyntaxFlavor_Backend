@@ -35,7 +35,7 @@ public class MenuItemReportAPI {
     }
 
     // Endpoint para obtener el reporte de los platos más vendidos
-    @GetMapping("/report/menu/items/most-sold")
+    @GetMapping("/report/menu/most-sold")
     @Operation(summary = "Get most sold menu items", description = "Returns a report of the most sold menu items in a given date range")
     @ApiResponses(
         value = {

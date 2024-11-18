@@ -14,15 +14,14 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
         List<OrderItem> findByMenuItemId(MenuItem menuItemId);
 
-        @Query("SELECT m.name AS name, SUM(oi.quantity) AS totalQuantity " +
-                "FROM OrderItem oi " +
-                "JOIN oi.menuItem m " +
-                "JOIN oi.order o " +
-                "WHERE o.orderTimestamp BETWEEN :startDate AND :endDate " +
-                "GROUP BY m.name " +
-                "ORDER BY SUM(oi.quantity) DESC")
+        @Query("SELECT m.id AS menuItemId, m.name AS menuItemName, SUM(oi.price) AS totalPrice, SUM(oi.quantity) AS totalQuantity " +
+                "FROM OrderItem oi JOIN oi.menuItemId m " +
+                "WHERE oi.orderId.orderTimestamp BETWEEN :startDate AND :endDate " +
+                "GROUP BY m.id, m.name " +
+                "ORDER BY totalQuantity DESC")
         List<Object[]> findMostSoldMenuItems(
-                @Param("startDate") LocalDateTime startDate,
+                @Param("startDate") LocalDateTime startDate, 
                 @Param("endDate") LocalDateTime endDate);
+
 
 }
