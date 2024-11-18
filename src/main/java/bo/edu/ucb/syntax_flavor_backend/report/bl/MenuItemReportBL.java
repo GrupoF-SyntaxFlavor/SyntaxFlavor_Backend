@@ -7,9 +7,9 @@ import bo.edu.ucb.syntax_flavor_backend.report.dto.MostSoldMenuItemDTO;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ManuItemReportBL {
-    Logger LOGGER = LoggerFactory.getLogger(ManuItemReportBL.class);
+public class MenuItemReportBL {
+    Logger LOGGER = LoggerFactory.getLogger(MenuItemReportBL.class);
 
     @Autowired
     private OrderItemRepository orderItemRepository;
@@ -27,23 +27,16 @@ public class ManuItemReportBL {
     
 
     public List<MostSoldMenuItemDTO> getMostSoldMenuItems(String period) {
-        Date startDate; // Calcular según el período
-        Date endDate = new Date();
+        LocalDateTime startDate; // Calcular según el período
+        LocalDateTime endDate = LocalDateTime.now(); // Fecha actual
 
+        // Calcular fechas de inicio según el período
         switch (period.toLowerCase()) {
             case "semanal":
-                // Hace una semana desde hoy
-                startDate = Date.from(LocalDate.now()
-                                            .minusWeeks(1)
-                                            .atStartOfDay(ZoneId.systemDefault())
-                                            .toInstant());
+                startDate = endDate.minusWeeks(1); // Hace una semana
                 break;
             case "mensual":
-                // Hace un mes desde hoy
-                startDate = Date.from(LocalDate.now()
-                                            .minusMonths(1)
-                                            .atStartOfDay(ZoneId.systemDefault())
-                                            .toInstant());
+                startDate = endDate.minusMonths(1); // Hace un mes
                 break;
             default:
                 throw new IllegalArgumentException("Período no válido. Usa 'semanal' o 'mensual'.");
@@ -63,8 +56,9 @@ public class ManuItemReportBL {
             String menuItemName = (String) row[1];
             BigDecimal totalPrice = (BigDecimal) row[2];
             Long totalQuantity = (Long) row[3];
-            Double percentage = totalPrice.divide(totalRevenue, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).doubleValue();
-
+            // Double percentage = totalPrice.divide(totalRevenue, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).doubleValue();
+            Double percentage = totalQuantity.doubleValue() / totalRevenue.doubleValue() * 100;
+            
             items.add(new MostSoldMenuItemDTO(menuItemId, menuItemName, totalPrice, totalQuantity, percentage));
         }
 
