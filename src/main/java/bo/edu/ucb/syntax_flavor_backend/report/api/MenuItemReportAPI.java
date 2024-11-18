@@ -1,5 +1,6 @@
 package bo.edu.ucb.syntax_flavor_backend.report.api;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import bo.edu.ucb.syntax_flavor_backend.report.bl.MenuItemReportBL;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,38 +35,41 @@ public class MenuItemReportAPI {
     }
 
     // Endpoint para obtener el reporte de los platos más vendidos
-    @Operation(summary = "Get most sold menu items", description = "Returns a report of the most sold menu items based on the selected period")
+    @GetMapping("/report/menu/items/most-sold")
+    @Operation(summary = "Get most sold menu items", description = "Returns a report of the most sold menu items in a given date range")
     @ApiResponses(
         value = {
-            @ApiResponse(responseCode = "200", description = "Report retrieved successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid period specified"),
+            @ApiResponse(responseCode = "200", description = "Report generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid date range provided"),
             @ApiResponse(responseCode = "500", description = "Error generating the report")
         }
     )
-    @GetMapping("/report/menu/items")
-    public ResponseEntity<SyntaxFlavorResponse<List<MostSoldMenuItemDTO>>> getMostSoldMenuItems(
-            @RequestParam String period, HttpServletRequest request) {
-        LOGGER.info("Endpoint GET /api/v1/report/menu/items called with period: {}", period);
-        SyntaxFlavorResponse<List<MostSoldMenuItemDTO>> sfrResponse = new SyntaxFlavorResponse<>();
-
+    public ResponseEntity<SyntaxFlavorResponse<List<MostSoldMenuItemDTO>>> getMostSoldMenuItemsReport(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        SyntaxFlavorResponse<List<MostSoldMenuItemDTO>> response = new SyntaxFlavorResponse<>();
         try {
-            // Llamar a la lógica de negocio para obtener el reporte
-            List<MostSoldMenuItemDTO> report = menuItemReportBL.getMostSoldMenuItems(period);
+            LOGGER.info("Generating report for most sold menu items from {} to {}", startDate, endDate);
 
-            sfrResponse.setResponseCode("REP-000");
-            sfrResponse.setPayload(report);
-            LOGGER.info("Returning report: {}", report);
-            return ResponseEntity.ok(sfrResponse);
+            // Llama al método del BL para obtener los datos
+            List<MostSoldMenuItemDTO> report = menuItemReportBL.getMostSoldMenuItems(startDate, endDate);
+
+            response.setResponseCode("REP-001");
+            response.setPayload(report);
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Invalid period specified: {}", e.getMessage());
-            sfrResponse.setResponseCode("REP-400");
-            sfrResponse.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sfrResponse);
+            LOGGER.error("Invalid date range: {}", e.getMessage());
+            response.setResponseCode("REP-400");
+            response.setErrorMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
         } catch (Exception e) {
-            LOGGER.error("Error generating report: {}", e.getMessage());
-            sfrResponse.setResponseCode("REP-500");
-            sfrResponse.setErrorMessage("Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sfrResponse);
+            LOGGER.error("Error generating the report: {}", e.getMessage());
+            response.setResponseCode("REP-500");
+            response.setErrorMessage("An unexpected error occurred while generating the report.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 }
