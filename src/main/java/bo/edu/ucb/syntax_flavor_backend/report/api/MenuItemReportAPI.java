@@ -46,13 +46,15 @@ public class MenuItemReportAPI {
     )
     public ResponseEntity<SyntaxFlavorResponse<List<MostSoldMenuItemDTO>>> getMostSoldMenuItemsReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam (value = "top", defaultValue = "10") Integer top
+            ) {
         SyntaxFlavorResponse<List<MostSoldMenuItemDTO>> response = new SyntaxFlavorResponse<>();
         try {
             LOGGER.info("Generating report for most sold menu items from {} to {}", startDate, endDate);
 
             // Llama al método del BL para obtener los datos
-            List<MostSoldMenuItemDTO> report = menuItemReportBL.getMostSoldMenuItems(startDate, endDate);
+            List<MostSoldMenuItemDTO> report = menuItemReportBL.getMostSoldMenuItems(startDate, endDate, top);
 
             response.setResponseCode("REP-001");
             response.setPayload(report);
