@@ -15,6 +15,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,18 +28,21 @@ public class MenuItemReportBL {
 
     
 
-    public List<MostSoldMenuItemDTO> getMostSoldMenuItems(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<MostSoldMenuItemDTO> getMostSoldMenuItems(LocalDateTime startDate, LocalDateTime endDate, Integer top) {
 
         // Obtener datos en bruto
-        List<Object[]> rawData = orderItemRepository.findMostSoldMenuItems(startDate, endDate);
+        // List<Object[]> rawData = orderItemRepository.findMostSoldMenuItems(startDate, endDate);
+        Pageable topX = PageRequest.of(0, top); // Cambia X por el número de resultados que quieres.
+        List<Object[]> topMenuItems = orderItemRepository.findMostSoldMenuItems(startDate, endDate, topX);
+
 
         // Calcular totales y poblar DTOs
-        BigDecimal totalRevenue = rawData.stream()
+        BigDecimal totalRevenue = topMenuItems.stream()
                                          .map(row -> (BigDecimal) row[2]) // totalPrice
                                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         List<MostSoldMenuItemDTO> items = new ArrayList<>();
-        for (Object[] row : rawData) {
+        for (Object[] row : topMenuItems) {
             Integer menuItemId = (Integer) row[0];
             String menuItemName = (String) row[1];
             BigDecimal totalPrice = (BigDecimal) row[2];
