@@ -76,23 +76,4 @@ public class BillAPI {
         }
     }
 
-    @GetMapping("/weekly-sales")
-    public ResponseEntity<SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>>> getWeeklySalesReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-        SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>> response = new SyntaxFlavorResponse<>();
-        try {
-            LOGGER.info("Generating weekly sales report for dates: {} - {}", startDate, endDate);
-            Map<String, List<BillResponseDTO>> report = billBL.getWeeklySalesReport(startDate, endDate);
-            response.setResponseCode("REP-001");
-            response.setPayload(report);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            LOGGER.error("Error generating weekly sales report: {}", e.getMessage());
-            response.setResponseCode("REP-500");
-            response.setErrorMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
 }
