@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +26,12 @@ public class BillReportAPI {
 
     @Autowired
     private BillReportBL billBL;
-    @GetMapping("/weekly-sales")
-    public ResponseEntity<SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>>> getWeeklySalesReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-        SyntaxFlavorResponse<Map<String, List<BillResponseDTO>>> response = new SyntaxFlavorResponse<>();
+    @GetMapping("/report/weekly-sales")
+    public ResponseEntity<SyntaxFlavorResponse<Map<String, BigDecimal>>> getWeeklySalesReportForLastSevenWeeks() {
+        SyntaxFlavorResponse<Map<String, BigDecimal>> response = new SyntaxFlavorResponse<>();
         try {
-            LOGGER.info("Generating weekly sales report for dates: {} - {}", startDate, endDate);
-            Map<String, List<BillResponseDTO>> report = billBL.getWeeklySalesReport(startDate, endDate);
+            LOGGER.info("Generating weekly sales report for the last 7 weeks.");
+            Map<String, BigDecimal> report = billBL.getWeeklySalesReportForLastSevenWeeks();
             response.setResponseCode("REP-001");
             response.setPayload(report);
             return ResponseEntity.ok(response);

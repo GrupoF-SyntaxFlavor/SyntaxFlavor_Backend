@@ -13,8 +13,3 @@ Accept: application/json
 ####
 
 
-### Weekly Sales Report
-GET http://localhost:8080/api/v1/bill/weekly-sales?startDate=2024-11-01&endDate=2024-11-15
-Authorization: Bearer <JWT_TOKEN>
-
-

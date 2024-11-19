@@ -23,7 +23,7 @@ class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**","/v3/api-docs**").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/bill/**").hasAuthority("customer")
-                    .requestMatchers(HttpMethod.GET, "/api/v1/bill/weekly-sales").hasAuthority("administrator")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/report/weekly-sales").hasAuthority("administrator")
                     .requestMatchers(HttpMethod.GET, "/api/v1/customer/profile").hasAnyAuthority("customer", "administrator")
                 .requestMatchers("/api/v1/customer/**").hasAuthority("customer")
                 .requestMatchers("/api/v1/send-email/**").authenticated()
