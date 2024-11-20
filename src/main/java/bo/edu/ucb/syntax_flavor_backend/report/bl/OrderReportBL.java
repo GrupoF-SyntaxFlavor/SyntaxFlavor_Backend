@@ -40,6 +40,11 @@ public class OrderReportBL {
         }
         if(orders.isEmpty()){
             LOGGER.info("No orders found between {} and {}", startDate, endDate);
+            orderReportKPIResponseDTO.setTotalOrders(0);
+            orderReportKPIResponseDTO.setTotalAcceptedOrders(0);
+            orderReportKPIResponseDTO.setTotalCancelledOrders(0);
+            orderReportKPIResponseDTO.setStartDate(startDate.toString());
+            orderReportKPIResponseDTO.setEndDate(endDate.toString());
             return orderReportKPIResponseDTO;
         }
         // Calcular el total de órdenes
@@ -55,14 +60,13 @@ public class OrderReportBL {
                 .count();
 
         // Convertir las órdenes a DTOs
-        List<OrderDTO> orderDTOs = OrderDTO.fromEntityList(orders);
+        //List<OrderDTO> orderDTOs = OrderDTO.fromEntityList(orders);
 
         orderReportKPIResponseDTO.setTotalOrders(totalOrders);
         orderReportKPIResponseDTO.setTotalAcceptedOrders(totalAcceptedOrders);
         orderReportKPIResponseDTO.setTotalCancelledOrders(totalCancelledOrders);
         orderReportKPIResponseDTO.setStartDate(startDate.toString());
         orderReportKPIResponseDTO.setEndDate(endDate.toString());
-        orderReportKPIResponseDTO.setOrders(orderDTOs);
 
         return orderReportKPIResponseDTO;
     }
