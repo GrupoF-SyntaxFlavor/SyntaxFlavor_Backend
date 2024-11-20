@@ -46,7 +46,7 @@ public class OrderReportAPI {
         
         try {
             OrderReportKPIResponseDTO orders = orderReportBL.calculateOrderKPI(startDate, endDate);
-            if(orders.getOrders()==null){
+            if(orders.getTotalOrders()<1){
                 sfr.setResponseCode("ORD-404");
                 sfr.setErrorMessage("No orders found between "+startDate+" and "+endDate);
                 return ResponseEntity.ok(sfr);
