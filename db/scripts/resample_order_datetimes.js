@@ -19,21 +19,26 @@ const client = new Client({
 client.connect();
 
 async function updateOrderTimestamps() {
+    console.log("Updating order timestamps...");
     for (let id = 1; id <= 1000; id++) {
         const randomTimestamp = new Date(
             Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000)
         ).toISOString();
 
-        const query = "UPDATE orders SET order_timestamp = $1 WHERE id = $2";
+        const query_orders = "UPDATE orders SET order_timestamp = $1 WHERE id = $2";
+        const query_bills = "UPDATE bills SET created_at = $1 WHERE orders_id = $2";
         const values = [randomTimestamp, id];
 
         try {
-            await client.query(query, values);
-            console.log(`Order ${id} updated with timestamp ${randomTimestamp}`);
+            await client.query(query_orders, values);
+            await client.query(query_bills, values);
+            //console.log(`Order ${id} updated with timestamp ${randomTimestamp}`);
         } catch (err) {
             console.error(`Error updating order ${id}:`, err);
         }
     }
+
+    console.log("Order timestamps updated!");
 
     client.end();
 }
