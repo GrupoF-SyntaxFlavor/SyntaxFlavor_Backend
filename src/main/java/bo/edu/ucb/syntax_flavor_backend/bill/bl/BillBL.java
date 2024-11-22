@@ -27,6 +27,8 @@ import bo.edu.ucb.syntax_flavor_backend.order.entity.Order;
 import bo.edu.ucb.syntax_flavor_backend.order.repository.OrderRepository;
 
 import java.math.BigDecimal;
+import java.util.*;
+import java.util.List;
 
 @Component
 public class BillBL {
@@ -49,6 +51,7 @@ public class BillBL {
 
     @Autowired
     private EmailService emailService;
+
 
     public BillResponseDTO createBillFromOrder(BillRequestDTO billRequest) throws RuntimeException, BillGenerationException {
         // FIXME: At this point this workds but using the customerBL is not the best approach, maybe a saga pattern would be better
@@ -309,4 +312,6 @@ public class BillBL {
         }
         return totalCost;
     }
+
+
 }

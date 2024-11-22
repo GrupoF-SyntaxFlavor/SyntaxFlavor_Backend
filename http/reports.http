@@ -1,0 +1,13 @@
+### Weekly Sales Report
+//TODO: no recibe filtro por fechas
+GET http://localhost:8080/api/v1/report/weekly-sales
+Authorization: Bearer <JWT_TOKEN>
+
+### Order KPI
+GET http://localhost:8080/api/v1/report/order-kpi?startDate=2024-10-29T04:05:00&endDate=2024-11-29T23:59:59
+Authorization: Bearer <JWT_TOKEN>
+Accept: application/json
+
+###Report most sold 
+GET http://localhost:8080/api/v1/report/menu/most-sold?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59&top=10
+Authorization: Bearer <JWT_TOKEN>
